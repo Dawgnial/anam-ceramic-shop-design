@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        iranyekan: ['IranYekan', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +60,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        'search-icon': "hsl(var(--search-icon-bg))",
+        'footer': "hsl(var(--footer-bg))",
+        'back-top': "hsl(var(--back-top-bg))",
+        'reviews': "hsl(var(--reviews-bg))",
       },
       borderRadius: {
         lg: "var(--radius)",
