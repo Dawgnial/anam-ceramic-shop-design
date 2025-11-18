@@ -2,6 +2,7 @@ import { Search, Menu, Scale, Heart, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { toPersianNumber } from "@/lib/utils";
 
 export const Header = () => {
@@ -57,15 +58,19 @@ export const Header = () => {
 
             {/* Main Navigation - Center */}
             <nav className="flex items-center gap-6">
-              <Button variant="ghost" className="text-foreground hover:text-primary">
-                صفحه نخست 🔔
-              </Button>
+              <Link to="/">
+                <Button variant="ghost" className="text-foreground hover:text-primary">
+                  صفحه نخست 🔔
+                </Button>
+              </Link>
               <Button variant="ghost" className="text-foreground hover:text-primary">
                 درباره ما
               </Button>
-              <Button variant="ghost" className="text-foreground hover:text-primary">
-                فروشگاه
-              </Button>
+              <Link to="/shop">
+                <Button variant="ghost" className="text-foreground hover:text-primary">
+                  فروشگاه
+                </Button>
+              </Link>
               <Button variant="ghost" className="text-foreground hover:text-primary">
                 بلاگ
               </Button>
