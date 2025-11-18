@@ -2,6 +2,7 @@ import { Search, Menu, Scale, Heart, ShoppingCart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useState } from "react";
+import { toPersianNumber } from "@/lib/utils";
 
 export const Header = () => {
   const [cartTotal, setCartTotal] = useState(0);
@@ -11,11 +12,9 @@ export const Header = () => {
       {/* Top Header */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          {/* Login/Register - Left */}
+          {/* Logo - Right */}
           <div className="flex-shrink-0">
-            <Button variant="ghost" className="text-foreground hover:text-primary">
-              ورود / ثبت نام
-            </Button>
+            <h1 className="text-2xl font-bold text-primary">آنام</h1>
           </div>
 
           {/* Search Bar - Center */}
@@ -35,9 +34,11 @@ export const Header = () => {
             </div>
           </div>
 
-          {/* Logo - Right */}
+          {/* Login/Register - Left */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-primary">آنام</h1>
+            <Button variant="ghost" className="text-foreground hover:text-primary">
+              ورود / ثبت نام
+            </Button>
           </div>
         </div>
       </div>
@@ -46,44 +47,44 @@ export const Header = () => {
       <div className="border-t">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            {/* Cart Icons - Left */}
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-              </Button>
-              <span className="text-sm font-medium">{cartTotal} تومان</span>
-              <Button variant="ghost" size="icon">
-                <Heart className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Scale className="h-5 w-5" />
+            {/* Mega Menu - Right */}
+            <div className="flex items-center gap-2">
+              <Button variant="outline" className="gap-2">
+                <Menu className="h-5 w-5" />
+                دسته بندی محصولات
               </Button>
             </div>
 
             {/* Main Navigation - Center */}
             <nav className="flex items-center gap-6">
               <Button variant="ghost" className="text-foreground hover:text-primary">
-                ارتباط با ما
-              </Button>
-              <Button variant="ghost" className="text-foreground hover:text-primary">
-                بلاگ
-              </Button>
-              <Button variant="ghost" className="text-foreground hover:text-primary">
-                فروشگاه
+                صفحه نخست 🔔
               </Button>
               <Button variant="ghost" className="text-foreground hover:text-primary">
                 درباره ما
               </Button>
               <Button variant="ghost" className="text-foreground hover:text-primary">
-                صفحه نخست 🔔
+                فروشگاه
+              </Button>
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                بلاگ
+              </Button>
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                ارتباط با ما
               </Button>
             </nav>
 
-            {/* Mega Menu - Right */}
-            <div className="flex items-center gap-2">
-              <Button variant="outline" className="gap-2">
-                <Menu className="h-5 w-5" />
-                دسته بندی محصولات
+            {/* Cart Icons - Left */}
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon">
+                <Scale className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon">
+                <Heart className="h-5 w-5" />
+              </Button>
+              <span className="text-sm font-medium">{toPersianNumber(cartTotal)} تومان</span>
+              <Button variant="ghost" size="icon" className="relative">
+                <ShoppingCart className="h-5 w-5" />
               </Button>
             </div>
           </div>

@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
+import { toPersianNumber } from "@/lib/utils";
 
 const products = [
   { id: 1, name: "کاسه سرامیکی", price: "250,000", image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=300&h=300&fit=crop" },
@@ -15,15 +16,31 @@ const products = [
 
 export const ProductsCarousel = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 300;
-      scrollRef.current.scrollBy({
-        left: direction === "right" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
   };
 
   return (
@@ -37,8 +54,12 @@ export const ProductsCarousel = () => {
         <div className="relative">
           <div
             ref={scrollRef}
-            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth"
+            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth cursor-grab active:cursor-grabbing"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseLeave}
           >
             {products.map((product) => (
               <Card key={product.id} className="min-w-[280px] flex-shrink-0">
@@ -51,7 +72,7 @@ export const ProductsCarousel = () => {
                 </CardContent>
                 <CardFooter className="flex flex-col items-start gap-2 p-4">
                   <h3 className="font-semibold text-foreground">{product.name}</h3>
-                  <p className="text-primary font-bold">{product.price} تومان</p>
+                  <p className="text-primary font-bold">{toPersianNumber(product.price)} تومان</p>
                   <Button className="w-full">افزودن به سبد خرید</Button>
                 </CardFooter>
               </Card>
