@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import useEmblaCarousel from "embla-carousel-react";
@@ -36,7 +36,7 @@ const slides = [
 
 export const HeroSlider = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, direction: 'rtl' },
+    { loop: true },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   );
 
@@ -49,7 +49,7 @@ export const HeroSlider = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full h-[500px] overflow-hidden bg-muted">
+    <div className="relative w-full h-[500px] overflow-hidden bg-muted" dir="rtl">
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide) => (
