@@ -63,9 +63,11 @@ export const Header = () => {
                   صفحه نخست
                 </Button>
               </Link>
-              <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
-                درباره ما
-              </Button>
+              <Link to="/about">
+                <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
+                  درباره ما
+                </Button>
+              </Link>
               <Link to="/shop">
                 <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
                   فروشگاه
