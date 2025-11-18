@@ -1,0 +1,72 @@
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "./ui/card";
+import { Star } from "lucide-react";
+
+const reviews = [
+  {
+    id: 1,
+    name: "مریم احمدی",
+    text: "کیفیت محصولات عالی و بسته‌بندی بسیار حرفه‌ای بود. از خرید خود بسیار راضی هستم.",
+    rating: 5,
+  },
+  {
+    id: 2,
+    name: "علی رضایی",
+    text: "ظروف زیبا و دست‌ساز با قیمت مناسب. حتماً دوباره خرید می‌کنم.",
+    rating: 5,
+  },
+  {
+    id: 3,
+    name: "فاطمه کریمی",
+    text: "محصولات منحصر به فرد و خدمات پس از فروش عالی. پیشنهاد می‌کنم.",
+    rating: 5,
+  },
+];
+
+export const CustomerReviews = () => {
+  const [currentReview, setCurrentReview] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentReview((prev) => (prev + 1) % reviews.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section className="py-16 bg-reviews">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center text-foreground mb-12">نظرات مشتریان</h2>
+
+        <div className="max-w-2xl mx-auto">
+          <Card className="border-none shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="flex justify-center gap-1 mb-4">
+                {[...Array(reviews[currentReview].rating)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                ))}
+              </div>
+              <p className="text-lg text-foreground mb-4 leading-relaxed">
+                "{reviews[currentReview].text}"
+              </p>
+              <p className="font-bold text-primary">{reviews[currentReview].name}</p>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-center gap-2 mt-6">
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                className={`w-3 h-3 rounded-full transition-colors ${
+                  index === currentReview ? "bg-primary" : "bg-muted-foreground/30"
+                }`}
+                onClick={() => setCurrentReview(index)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
