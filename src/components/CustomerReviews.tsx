@@ -25,10 +25,15 @@ const reviews = [
 
 export const CustomerReviews = () => {
   const [currentReview, setCurrentReview] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentReview((prev) => (prev + 1) % reviews.length);
+      setIsAnimating(true);
+      setTimeout(() => {
+        setCurrentReview((prev) => (prev + 1) % reviews.length);
+        setIsAnimating(false);
+      }, 300);
     }, 4000);
 
     return () => clearInterval(timer);
@@ -39,18 +44,24 @@ export const CustomerReviews = () => {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-foreground mb-12">نظرات مشتریان</h2>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto overflow-hidden">
           <Card className="border-none shadow-lg">
             <CardContent className="p-8 text-center">
-              <div className="flex justify-center gap-1 mb-4">
-                {[...Array(reviews[currentReview].rating)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                ))}
+              <div
+                className={`transition-transform duration-300 ${
+                  isAnimating ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                }`}
+              >
+                <div className="flex justify-center gap-1 mb-4">
+                  {[...Array(reviews[currentReview].rating)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                  ))}
+                </div>
+                <p className="text-lg text-foreground mb-4 leading-relaxed">
+                  "{reviews[currentReview].text}"
+                </p>
+                <p className="font-bold text-primary">{reviews[currentReview].name}</p>
               </div>
-              <p className="text-lg text-foreground mb-4 leading-relaxed">
-                "{reviews[currentReview].text}"
-              </p>
-              <p className="font-bold text-primary">{reviews[currentReview].name}</p>
             </CardContent>
           </Card>
 

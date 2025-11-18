@@ -1,6 +1,9 @@
 import { Header } from "@/components/Header";
 import { HeroSlider } from "@/components/HeroSlider";
+import { Features } from "@/components/Features";
+import { Welcome } from "@/components/Welcome";
 import { ProductsCarousel } from "@/components/ProductsCarousel";
+import { PotteryShowcase } from "@/components/PotteryShowcase";
 import { BlogPosts } from "@/components/BlogPosts";
 import { CustomerReviews } from "@/components/CustomerReviews";
 import { ImageGallery } from "@/components/ImageGallery";
@@ -12,7 +15,10 @@ const Index = () => {
     <div className="min-h-screen">
       <Header />
       <HeroSlider />
+      <Features />
+      <Welcome />
       <ProductsCarousel />
+      <PotteryShowcase />
       <BlogPosts />
       <CustomerReviews />
       <ImageGallery />

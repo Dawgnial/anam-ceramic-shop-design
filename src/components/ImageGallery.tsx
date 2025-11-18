@@ -12,13 +12,13 @@ const galleryImages = [
 export const ImageGallery = () => {
   return (
     <section className="w-full">
-      <div className="grid grid-cols-4 gap-0">
+      <div className="flex w-full">
         {galleryImages.map((image, index) => (
-          <div key={index} className="aspect-square overflow-hidden">
+          <div key={index} className="flex-1">
             <img
               src={image}
               alt={`Gallery ${index + 1}`}
-              className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+              className="w-full h-64 object-cover hover:scale-110 transition-transform duration-300"
             />
           </div>
         ))}
