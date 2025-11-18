@@ -1,54 +1,79 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import slider1 from "@/assets/slider1-min.jpg";
+import slider2 from "@/assets/slider2-min.jpg";
+import slider3 from "@/assets/slider3-min.jpg";
 
 const slides = [
-  { id: 1, image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=1200&h=500&fit=crop", alt: "Ceramic 1" },
-  { id: 2, image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=1200&h=500&fit=crop", alt: "Ceramic 2" },
-  { id: 3, image: "https://images.unsplash.com/photo-1610650876093-a9ec4e8f264b?w=1200&h=500&fit=crop", alt: "Ceramic 3" },
+  { 
+    id: 1, 
+    image: slider1, 
+    alt: "سفالگری 1",
+    title: "فروش آنلاین",
+    subtitle: "ظروف سفالی و سرامیک",
+    description: "حس زیبایی و اصالت"
+  },
+  { 
+    id: 2, 
+    image: slider2, 
+    alt: "سفالگری 2",
+    title: "فروش آنلاین",
+    subtitle: "ظروف سفالی و سرامیک",
+    description: "تجلی روح زیبای زندگی در گِل"
+  },
+  { 
+    id: 3, 
+    image: slider3, 
+    alt: "سفالگری 3",
+    title: "فروش آنلاین",
+    subtitle: "ظروف سفالی و سرامیک",
+    description: "هنر نزد ایرانیان است و بس"
+  },
 ];
 
 export const HeroSlider = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, direction: 'rtl' },
+    [Autoplay({ delay: 3000, stopOnInteraction: false })]
+  );
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000);
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
 
-    return () => clearInterval(timer);
-  }, []);
-
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
 
   return (
     <div className="relative w-full h-[500px] overflow-hidden bg-muted">
-      <div
-        className="flex transition-transform duration-500 ease-in-out h-full"
-        style={{ transform: `translateX(${currentSlide * 100}%)` }}
-      >
-        {slides.map((slide) => (
-          <div key={slide.id} className="min-w-full h-full">
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
+      <div className="overflow-hidden h-full" ref={emblaRef}>
+        <div className="flex h-full">
+          {slides.map((slide) => (
+            <div key={slide.id} className="relative min-w-0 flex-[0_0_100%] h-full">
+              <img
+                src={slide.image}
+                alt={slide.alt}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
+                <h1 className="text-5xl font-bold mb-2">{slide.title}</h1>
+                <h2 className="text-4xl font-semibold mb-4">{slide.subtitle}</h2>
+                <p className="text-2xl">{slide.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <Button
         variant="ghost"
         size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-        onClick={prevSlide}
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+        onClick={scrollPrev}
       >
         <ChevronLeft className="h-6 w-6" />
       </Button>
@@ -56,23 +81,11 @@ export const HeroSlider = () => {
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white"
-        onClick={nextSlide}
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+        onClick={scrollNext}
       >
         <ChevronRight className="h-6 w-6" />
       </Button>
-
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentSlide ? "bg-primary" : "bg-white/50"
-            }`}
-            onClick={() => setCurrentSlide(index)}
-          />
-        ))}
-      </div>
     </div>
   );
 };
