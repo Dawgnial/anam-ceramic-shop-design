@@ -54,11 +54,11 @@ export const HeroSlider = () => {
         <div className="flex h-full">
           {slides.map((slide) => (
             <div key={slide.id} className="relative min-w-0 flex-[0_0_100%] h-full">
-              <img
-                src={slide.image}
-                alt={slide.alt}
-                className="w-full h-full object-cover"
-              />
+            <img
+              src={slide.image}
+              alt={slide.alt}
+              className="w-full h-full object-contain"
+            />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
                 <h1 className="text-5xl font-bold mb-2">{slide.title}</h1>
                 <h2 className="text-4xl font-semibold mb-4">{slide.subtitle}</h2>
