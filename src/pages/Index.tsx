@@ -9,8 +9,12 @@ import { CustomerReviews } from "@/components/CustomerReviews";
 import { ImageGallery } from "@/components/ImageGallery";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
+import { AdminFloatingButton } from "@/components/AdminFloatingButton";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
+  const { isAdmin } = useAuth();
+  
   return (
     <div className="min-h-screen">
       <Header />
@@ -24,6 +28,7 @@ const Index = () => {
       <ImageGallery />
       <Footer />
       <BackToTop />
+      {isAdmin && <AdminFloatingButton />}
     </div>
   );
 };

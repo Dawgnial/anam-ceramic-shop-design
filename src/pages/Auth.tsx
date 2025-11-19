@@ -4,15 +4,29 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0 });
   const [userAnswer, setUserAnswer] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const { signUp, signIn, user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     generateCaptcha();
-  }, []);
+    
+    // Redirect if already logged in
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const generateCaptcha = () => {
     const num1 = Math.floor(Math.random() * 10);
@@ -20,6 +34,59 @@ const Auth = () => {
     const operation = Math.random() > 0.5 ? 'add' : 'subtract';
     const answer = operation === 'add' ? num1 + num2 : num1 - num2;
     setCaptcha({ num1, num2, answer });
+  };
+
+  const handleSubmit = async () => {
+    // Validate captcha
+    if (parseInt(userAnswer) !== captcha.answer) {
+      toast({
+        title: "خطا",
+        description: "پاسخ کپچا صحیح نیست",
+        variant: "destructive",
+      });
+      generateCaptcha();
+      setUserAnswer("");
+      return;
+    }
+
+    if (!phone || !password) {
+      toast({
+        title: "خطا",
+        description: "لطفا تمام فیلدها را پر کنید",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isSignUp) {
+      const { error } = await signUp(phone, password);
+      if (error) {
+        toast({
+          title: "خطا در ثبت نام",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "موفق",
+          description: "ثبت نام با موفقیت انجام شد",
+        });
+      }
+    } else {
+      const { error } = await signIn(phone, password);
+      if (error) {
+        toast({
+          title: "خطا در ورود",
+          description: "شماره موبایل یا رمز عبور اشتباه است",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "موفق",
+          description: "ورود با موفقیت انجام شد",
+        });
+      }
+    }
   };
 
   return (
@@ -34,16 +101,39 @@ const Auth = () => {
       {/* Content */}
       <div className="flex-1 container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-          {/* Login Section - Left */}
+          {/* Login/Register Section - Left */}
           <div className="border-l border-gray-300 pl-8">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-center">ورود</h2>
+              <h2 className="text-3xl font-bold text-center">{isSignUp ? "ثبت نام" : "ورود"}</h2>
               
               <div className="space-y-2">
                 <label className="block text-sm font-medium">
                   شماره موبایل <span className="text-red-500">*</span>
                 </label>
-                <Input type="tel" placeholder="شماره موبایل خود را وارد کنید" />
+                <div className="flex gap-2">
+                  <Input 
+                    type="tel" 
+                    placeholder="09123456789"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="flex-1"
+                  />
+                  <div className="w-16 flex items-center justify-center border rounded-md bg-muted">
+                    +۹۸
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">
+                  رمز عبور <span className="text-red-500">*</span>
+                </label>
+                <Input 
+                  type="password" 
+                  placeholder="رمز عبور خود را وارد کنید"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
 
               <div className="space-y-2">
@@ -63,27 +153,42 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <Checkbox 
-                  id="remember" 
-                  checked={rememberMe}
-                  onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                />
-                <label htmlFor="remember" className="text-sm cursor-pointer">
-                  مرا به خاطر بسپار
-                </label>
-              </div>
+              {!isSignUp && (
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id="remember" 
+                    checked={rememberMe}
+                    onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                  />
+                  <label htmlFor="remember" className="text-sm cursor-pointer">
+                    مرا به خاطر بسپار
+                  </label>
+                </div>
+              )}
+
+              {isSignUp && (
+                <p className="text-sm text-muted-foreground text-center leading-relaxed">
+                  از داده های شخصی شما برای پشتیبانی از تجربه شما در سراسر این وب سایت ، مدیریت دسترسی به حساب کاربری خود ، و اهداف دیگری که در سیاست حفظ حریم خصوصی ما شرح داده می شود ، استفاده می شود.
+                </p>
+              )}
 
               <Button 
                 className="w-full text-white"
                 style={{ backgroundColor: '#B3886D' }}
+                onClick={handleSubmit}
               >
-                ورود با رمز عبور
+                {isSignUp ? "ثبت نام" : "ورود با رمز عبور"}
               </Button>
+
+              {isSignUp && (
+                <div className="text-center text-muted-foreground text-sm">
+                  دیدن که در سیاست حفظ حریم خصوصی ما سرح داده می شود ، استفاده می شود.
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Register Section - Right */}
+          {/* Register Info Section - Right */}
           <div className="pr-8">
             <div className="space-y-6">
               <h2 className="text-3xl font-bold text-center">ثبت نام</h2>
@@ -92,12 +197,15 @@ const Auth = () => {
                 ثبت نام در این سایت به شما امکان می دهد تا به وضعیت سفارش و تاریخ سفارش خود دسترسی پیدا کنید. فقط فیلدهای زیر را پر کنید ، و بدون هیچ وقت حساب جدیدی را برای شما ایجاد خواهیم کرد. ما فقط از شما اطلاعات لازم را می خواهیم تا سریع تر و آسان تر روند خرید را انجام دهید.
               </p>
 
-              <Button 
-                className="w-full text-white"
-                style={{ backgroundColor: '#B3886D' }}
-              >
-                عضویت
-              </Button>
+              <div className="flex justify-center">
+                <Button 
+                  className="rounded-full px-8 py-2 h-auto"
+                  style={{ backgroundColor: '#EFEFEF', color: '#000' }}
+                  onClick={() => setIsSignUp(!isSignUp)}
+                >
+                  {isSignUp ? "ورود" : "عضویت"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
