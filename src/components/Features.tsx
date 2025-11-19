@@ -32,25 +32,25 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-16 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <section className="py-20 bg-background">
+      <div className="container mx-auto px-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
           {features.map((feature) => (
             <div
               key={feature.id}
-              className="flex flex-col items-center text-center p-6 transition-colors duration-300 hover:bg-[#F9F3F0]"
+              className="text-center p-8 hover:bg-[#F9F3F0] transition-colors group"
             >
-              <img
-                src={feature.image}
-                alt={feature.title}
-                className="w-24 h-24 mb-4"
-              />
-              <h3 className="text-xl font-bold text-foreground mb-2">
+              <div className="mb-6 flex justify-center">
+                <img
+                  src={feature.image}
+                  alt={feature.title}
+                  className="w-32 h-32 object-contain"
+                />
+              </div>
+              <h3 className="text-2xl font-bold mb-3" style={{ color: '#B3886D' }}>
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {feature.description}
-              </p>
+              <p className="text-muted-foreground text-lg">{feature.description}</p>
             </div>
           ))}
         </div>

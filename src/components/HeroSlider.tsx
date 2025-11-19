@@ -14,7 +14,8 @@ const slides = [
     alt: "سفالگری 1",
     title: "فروش آنلاین",
     subtitle: "ظروف سفالی و سرامیک",
-    description: "حس زیبایی و اصالت"
+    description: "تجلی روح زیبای زندگی در گِل",
+    color: "#11347A"
   },
   { 
     id: 2, 
@@ -22,7 +23,8 @@ const slides = [
     alt: "سفالگری 2",
     title: "فروش آنلاین",
     subtitle: "ظروف سفالی و سرامیک",
-    description: "تجلی روح زیبای زندگی در گِل"
+    description: "هنر نزد ایرانیان است و بس",
+    color: "#28405F"
   },
   { 
     id: 3, 
@@ -30,7 +32,8 @@ const slides = [
     alt: "سفالگری 3",
     title: "فروش آنلاین",
     subtitle: "ظروف سفالی و سرامیک",
-    description: "هنر نزد ایرانیان است و بس"
+    description: "حس زیبایی و اصالت",
+    color: "#2D211D"
   },
 ];
 
@@ -54,14 +57,14 @@ export const HeroSlider = () => {
         <div className="flex h-full">
           {slides.map((slide) => (
             <div key={slide.id} className="relative min-w-0 flex-[0_0_100%] h-full">
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-full object-contain"
-            />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
-                <h1 className="text-5xl font-bold mb-2">{slide.title}</h1>
-                <h2 className="text-4xl font-semibold mb-4">{slide.subtitle}</h2>
+              <img
+                src={slide.image}
+                alt={slide.alt}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-start pt-16 text-center" style={{ color: slide.color }}>
+                <p className="text-3xl mb-2">{slide.title}</p>
+                <h1 className="text-6xl font-bold mb-4">{slide.subtitle}</h1>
                 <p className="text-2xl">{slide.description}</p>
               </div>
             </div>
@@ -69,23 +72,21 @@ export const HeroSlider = () => {
         </div>
       </div>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+      <button
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
         onClick={scrollPrev}
+        aria-label="Previous slide"
       >
-        <ChevronLeft className="h-6 w-6" />
-      </Button>
+        <ChevronLeft className="h-12 w-12" strokeWidth={2} />
+      </button>
 
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+      <button
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
         onClick={scrollNext}
+        aria-label="Next slide"
       >
-        <ChevronRight className="h-6 w-6" />
-      </Button>
+        <ChevronRight className="h-12 w-12" strokeWidth={2} />
+      </button>
     </div>
   );
 };
