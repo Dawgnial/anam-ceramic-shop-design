@@ -32,7 +32,7 @@ export const Footer = () => {
               <li><a href="/about" className="text-sm hover:text-primary transition-colors">درباره ما</a></li>
               <li><a href="/blog" className="text-sm hover:text-primary transition-colors">بلاگ</a></li>
               <li><a href="/contact" className="text-sm hover:text-primary transition-colors">ارتباط با ما</a></li>
-              <li><a href="/rules" className="text-sm hover:text-primary transition-colors">قوانین فروشگاه</a></li>
+              <li><a href="/store-rules" className="text-sm hover:text-primary transition-colors">قوانین فروشگاه</a></li>
             </ul>
           </div>
 
