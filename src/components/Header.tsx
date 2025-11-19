@@ -1,12 +1,13 @@
-import { Search, Menu, Scale, Heart, ShoppingCart } from "lucide-react";
+import { Search, Menu, Scale, Heart } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toPersianNumber } from "@/lib/utils";
+import { useCart } from "@/contexts/CartContext";
+import { CartDrawer } from "./CartDrawer";
 
 export const Header = () => {
-  const [cartTotal, setCartTotal] = useState(0);
+  const { getTotalPrice } = useCart();
 
   return (
     <header className="w-full border-b sticky top-0 bg-background z-50">
@@ -37,9 +38,11 @@ export const Header = () => {
 
           {/* Login/Register - Left */}
           <div className="flex-shrink-0">
-            <Button variant="ghost" className="text-foreground hover:text-primary">
-              ورود / ثبت نام
-            </Button>
+            <Link to="/auth">
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                ورود / ثبت نام
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -73,9 +76,11 @@ export const Header = () => {
                   فروشگاه
                 </Button>
               </Link>
-              <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
-                بلاگ
-              </Button>
+              <Link to="/blog">
+                <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
+                  بلاگ
+                </Button>
+              </Link>
               <Button variant="ghost" className="text-sm h-9 px-3 text-foreground hover:text-primary">
                 ارتباط با ما
               </Button>
@@ -83,16 +88,18 @@ export const Header = () => {
 
             {/* Cart Icons - Left */}
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Scale className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Heart className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" className="relative h-9 w-9">
-                <ShoppingCart className="h-4 w-4" />
-              </Button>
-              <span className="text-sm font-medium">{toPersianNumber(cartTotal)} تومان</span>
+              <Link to="/compare">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Scale className="h-4 w-4" />
+                </Button>
+              </Link>
+              <Link to="/wishlist">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Heart className="h-4 w-4" />
+                </Button>
+              </Link>
+              <CartDrawer />
+              <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
             </div>
           </div>
         </div>
