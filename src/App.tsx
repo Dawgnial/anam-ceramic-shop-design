@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CompareProvider } from "./contexts/CompareContext";
+import { WishlistProvider } from "./contexts/WishlistContext";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import AboutUs from "./pages/AboutUs";
@@ -23,26 +25,30 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/wishlist" element={<Wishlist />} />
-              <Route path="/compare" element={<Compare />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/store-rules" element={<StoreRules />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </TooltipProvider>
-        </CartProvider>
+        <CompareProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/about" element={<AboutUs />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/compare" element={<Compare />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/store-rules" element={<StoreRules />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </TooltipProvider>
+            </CartProvider>
+          </WishlistProvider>
+        </CompareProvider>
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
