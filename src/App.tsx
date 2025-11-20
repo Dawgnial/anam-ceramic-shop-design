@@ -18,6 +18,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/store-rules" element={<StoreRules />} />
                   <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/profile" element={<Profile />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
