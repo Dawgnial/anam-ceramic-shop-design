@@ -1,4 +1,4 @@
-import { Search, Menu, Heart, ChevronDown } from "lucide-react";
+import { Search, Menu, Heart, ChevronDown, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation } from "react-router-dom";
@@ -6,6 +6,7 @@ import { toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { CartDrawer } from "./CartDrawer";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ export const Header = () => {
   const { getTotalPrice, items: cartItems } = useCart();
   const { items: compareItems } = useCompare();
   const { items: wishlistItems } = useWishlist();
+  const { user } = useAuth();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<typeof products>([]);
@@ -138,13 +140,22 @@ export const Header = () => {
               )}
             </div>
 
-            {/* Login/Register - Left */}
+            {/* User Profile/Login - Left */}
             <div className="flex-shrink-0">
-              <Link to="/auth">
-                <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
-                  ورود / ثبت نام
-                </Button>
-              </Link>
+              {user ? (
+                <Link to="/profile">
+                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
+                    <User className="h-4 w-4" />
+                    پروفایل
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth">
+                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
+                    ورود / ثبت نام
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
