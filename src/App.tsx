@@ -16,6 +16,11 @@ import Cart from "./pages/Cart";
 import Blog from "./pages/Blog";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminCategories from "./pages/admin/AdminCategories";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminBlog from "./pages/admin/AdminBlog";
 import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
@@ -43,7 +48,12 @@ const App = () => (
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/auth" element={<Auth />} />
-                  <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/products" element={<AdminProducts />} />
+              <Route path="/admin/categories" element={<AdminCategories />} />
+              <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/customers" element={<AdminCustomers />} />
+              <Route path="/admin/blog" element={<AdminBlog />} />
                   <Route path="/store-rules" element={<StoreRules />} />
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/profile" element={<Profile />} />
