@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Settings } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ProductForm } from "@/components/admin/ProductForm";
+import { ProductFeaturesDialog } from "@/components/admin/ProductFeaturesDialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -39,6 +40,8 @@ export default function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState<any>(null);
+  const [featuresDialogOpen, setFeaturesDialogOpen] = useState(false);
+  const [managingProduct, setManagingProduct] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const { data: products, isLoading } = useQuery({
@@ -146,6 +149,11 @@ export default function AdminProducts() {
     setDeleteDialogOpen(true);
   };
 
+  const handleManageFeatures = (product: any) => {
+    setManagingProduct(product);
+    setFeaturesDialogOpen(true);
+  };
+
   const confirmDelete = () => {
     if (deletingProduct) {
       deleteMutation.mutate(deletingProduct.id);
@@ -234,6 +242,14 @@ export default function AdminProducts() {
                           <Button
                             size="icon"
                             variant="outline"
+                            onClick={() => handleManageFeatures(product)}
+                            title="مدیریت ویژگی‌ها"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="outline"
                             onClick={() => handleEdit(product)}
                           >
                             <Pencil className="h-4 w-4" />
@@ -293,6 +309,15 @@ export default function AdminProducts() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {managingProduct && (
+        <ProductFeaturesDialog
+          open={featuresDialogOpen}
+          onOpenChange={setFeaturesDialogOpen}
+          productId={managingProduct.id}
+          productName={managingProduct.name}
+        />
+      )}
     </AdminLayout>
   );
 }

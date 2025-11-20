@@ -15,6 +15,7 @@ import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
 import { ProductReviews } from "@/components/ProductReviews";
 import { RelatedProducts } from "@/components/RelatedProducts";
+import { ProductFeatures } from "@/components/ProductFeatures";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -329,6 +330,11 @@ export default function ProductDetail() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Product Features Section */}
+        <div className="mt-12">
+          <ProductFeatures productId={product.id} />
         </div>
 
         {/* Product Reviews Section */}
