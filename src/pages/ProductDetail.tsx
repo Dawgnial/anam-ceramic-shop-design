@@ -7,7 +7,8 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ShoppingCart, Heart, ArrowLeftRight, Minus, Plus, ChevronLeft } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ShoppingCart, Heart, ArrowLeftRight, Minus, Plus, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -21,6 +22,8 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
+  const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [zoomImageIndex, setZoomImageIndex] = useState(0);
   
   const { addToCart } = useCart();
   const { toggleWishlist, items: wishlistItems } = useWishlist();
@@ -125,6 +128,19 @@ export default function ProductDetail() {
     toast.success(isInCompare ? 'محصول از لیست مقایسه حذف شد' : 'محصول به لیست مقایسه اضافه شد');
   };
 
+  const handleImageClick = () => {
+    setZoomImageIndex(selectedImage);
+    setIsZoomOpen(true);
+  };
+
+  const handlePrevImage = () => {
+    setZoomImageIndex((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = () => {
+    setZoomImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -157,11 +173,14 @@ export default function ProductDetail() {
           <div className="order-2 lg:order-1">
             <div className="sticky top-4 space-y-4">
               {/* Main Image */}
-              <div className="aspect-square rounded-lg overflow-hidden border">
+              <div 
+                className="aspect-square rounded-lg overflow-hidden border cursor-zoom-in"
+                onClick={handleImageClick}
+              >
                 <img
                   src={product.images[selectedImage] || '/placeholder.svg'}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform"
                 />
               </div>
 
@@ -323,6 +342,55 @@ export default function ProductDetail() {
           currentProductId={product.id} 
         />
       </div>
+
+      {/* Image Zoom Modal */}
+      <Dialog open={isZoomOpen} onOpenChange={setIsZoomOpen}>
+        <DialogContent className="max-w-5xl p-0 bg-black/95">
+          <div className="relative w-full h-[80vh] flex items-center justify-center">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsZoomOpen(false)}
+              className="absolute top-4 left-4 z-50 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+            >
+              <X className="w-6 h-6 text-white" />
+            </button>
+
+            {/* Previous Button */}
+            {product.images.length > 1 && (
+              <button
+                onClick={handlePrevImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="w-6 h-6 text-white" />
+              </button>
+            )}
+
+            {/* Image */}
+            <img
+              src={product.images[zoomImageIndex] || '/placeholder.svg'}
+              alt={`${product.name} - ${(zoomImageIndex + 1).toLocaleString('fa-IR')}`}
+              className="max-w-full max-h-full object-contain"
+            />
+
+            {/* Next Button */}
+            {product.images.length > 1 && (
+              <button
+                onClick={handleNextImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-50 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="w-6 h-6 text-white" />
+              </button>
+            )}
+
+            {/* Image Counter */}
+            {product.images.length > 1 && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
+                {(zoomImageIndex + 1).toLocaleString('fa-IR')} / {product.images.length.toLocaleString('fa-IR')}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
