@@ -13,6 +13,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
 import { ProductReviews } from "@/components/ProductReviews";
+import { RelatedProducts } from "@/components/RelatedProducts";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -315,6 +316,12 @@ export default function ProductDetail() {
         <div className="mt-12">
           <ProductReviews productId={product.id} />
         </div>
+
+        {/* Related Products Section */}
+        <RelatedProducts 
+          categoryId={product.category_id} 
+          currentProductId={product.id} 
+        />
       </div>
 
       <Footer />
