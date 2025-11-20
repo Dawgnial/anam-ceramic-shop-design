@@ -60,7 +60,7 @@ export const ProductsCarousel = () => {
   };
 
   return (
-    <section className="py-16 bg-background">
+    <section className="h-[725px] bg-background flex items-center">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-2">محصولات ما</h2>

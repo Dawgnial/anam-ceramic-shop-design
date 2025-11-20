@@ -40,7 +40,7 @@ export const CustomerReviews = () => {
   }, []);
 
   return (
-    <section className="py-16 bg-reviews">
+    <section className="h-[588px] bg-reviews flex items-center">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-foreground mb-12">نظرات مشتریان</h2>
 

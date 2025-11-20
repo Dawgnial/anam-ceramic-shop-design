@@ -15,7 +15,7 @@ export const PotteryShowcase = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {/* Right side - Pottery */}
         <div
-          className={`relative h-[500px] transition-transform duration-1000 ${
+          className={`relative h-[555px] transition-transform duration-1000 ${
             isVisible ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -40,7 +40,7 @@ export const PotteryShowcase = () => {
 
         {/* Left side - Ceramic */}
         <div
-          className={`relative h-[500px] transition-transform duration-1000 ${
+          className={`relative h-[555px] transition-transform duration-1000 ${
             isVisible ? "translate-x-0" : "-translate-x-full"
           }`}
         >
