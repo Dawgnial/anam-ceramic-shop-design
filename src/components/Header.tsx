@@ -1,7 +1,7 @@
 import { Search, Menu, Heart, ChevronDown, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -11,18 +11,9 @@ import { CartDrawer } from "./CartDrawer";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import compareIcon from "@/assets/compare.png";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-// Sample products for search - این باید از دیتابیس بیاید
-const products = [
-  { id: 1, name: "کاسه سرامیکی", price: 250000, image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=100&h=100&fit=crop" },
-  { id: 2, name: "بشقاب دستساز", price: 180000, image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=100&h=100&fit=crop" },
-  { id: 3, name: "ماگ سفالی", price: 120000, image: "https://images.unsplash.com/photo-1610650876093-a9ec4e8f264b?w=100&h=100&fit=crop" },
-  { id: 4, name: "سرویس چای خوری", price: 450000, image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=100&h=100&fit=crop" },
-  { id: 5, name: "کاسه نقاشی شده", price: 280000, image: "https://images.unsplash.com/photo-1493707553966-283afb8c7aee?w=100&h=100&fit=crop" },
-  { id: 6, name: "بشقاب تزئینی", price: 350000, image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&h=100&fit=crop" },
-  { id: 7, name: "گلدان سرامیکی", price: 200000, image: "https://images.unsplash.com/photo-1516886635086-2b3c423c0947?w=100&h=100&fit=crop" },
-  { id: 8, name: "سرویس قهوه خوری", price: 520000, image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=100&h=100&fit=crop" },
-];
 
 export const Header = () => {
   const { getTotalPrice, items: cartItems } = useCart();
@@ -30,12 +21,41 @@ export const Header = () => {
   const { items: wishlistItems } = useWishlist();
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<typeof products>([]);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Fetch categories from database
+  const { data: categories } = useQuery({
+    queryKey: ['header-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch products for search
+  const { data: products } = useQuery({
+    queryKey: ['header-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, slug, images')
+        .limit(100);
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,9 +77,9 @@ export const Header = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (query.trim()) {
+    if (query.trim() && products) {
       const filtered = products.filter(p => 
-        p.name.includes(query)
+        p.name.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filtered);
       setShowResults(true);
@@ -67,6 +87,12 @@ export const Header = () => {
       setSearchResults([]);
       setShowResults(false);
     }
+  };
+
+  const handleProductClick = (slug: string) => {
+    navigate(`/product/${slug}`);
+    setShowResults(false);
+    setSearchQuery("");
   };
 
   const isActivePage = (path: string) => {
@@ -114,17 +140,13 @@ export const Header = () => {
               {showResults && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
                   {searchResults.map((product) => (
-                    <Link
+                    <button
                       key={product.id}
-                      to={`/shop?product=${product.id}`}
-                      className="flex items-center gap-3 p-3 hover:bg-muted transition-colors"
-                      onClick={() => {
-                        setShowResults(false);
-                        setSearchQuery("");
-                      }}
+                      onClick={() => handleProductClick(product.slug)}
+                      className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-right"
                     >
                       <img 
-                        src={product.image} 
+                        src={product.images?.[0] || '/placeholder.svg'} 
                         alt={product.name}
                         className="w-12 h-12 object-cover rounded"
                       />
@@ -134,7 +156,7 @@ export const Header = () => {
                           {toPersianNumber(product.price)} تومان
                         </p>
                       </div>
-                    </Link>
+                    </button>
                   ))}
                 </div>
               )}
@@ -183,20 +205,18 @@ export const Header = () => {
               </Button>
 
               {/* Categories Dropdown */}
-              {showCategories && (
+              {showCategories && categories && categories.length > 0 && (
                 <div className="absolute top-full right-0 mt-2 bg-background border border-border rounded-md shadow-lg min-w-[200px] z-50">
-                  <Link to="/shop?category=ceramic" className="block px-4 py-2 hover:bg-muted transition-colors">
-                    ظروف سرامیکی
-                  </Link>
-                  <Link to="/shop?category=pottery" className="block px-4 py-2 hover:bg-muted transition-colors">
-                    ظروف سفالی
-                  </Link>
-                  <Link to="/shop?category=decorative" className="block px-4 py-2 hover:bg-muted transition-colors">
-                    ظروف تزئینی
-                  </Link>
-                  <Link to="/shop?category=tableware" className="block px-4 py-2 hover:bg-muted transition-colors">
-                    سرویس غذاخوری
-                  </Link>
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/shop?category=${category.slug}`}
+                      className="block px-4 py-2 hover:bg-muted transition-colors"
+                      onClick={() => setShowCategories(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
