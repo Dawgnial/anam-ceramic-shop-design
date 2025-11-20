@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Eye } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { OrderDetailsDialog } from "@/components/admin/OrderDetailsDialog";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500",
@@ -27,6 +31,9 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function AdminOrders() {
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
   const { data: orders, isLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
@@ -43,6 +50,11 @@ export default function AdminOrders() {
       return data;
     },
   });
+
+  const handleViewDetails = (order: any) => {
+    setSelectedOrder(order);
+    setDetailsDialogOpen(true);
+  };
 
   return (
     <AdminLayout>
@@ -75,6 +87,7 @@ export default function AdminOrders() {
                     <TableHead>وضعیت</TableHead>
                     <TableHead>آدرس</TableHead>
                     <TableHead>تاریخ</TableHead>
+                    <TableHead>عملیات</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -98,6 +111,15 @@ export default function AdminOrders() {
                       <TableCell>
                         {new Date(order.created_at).toLocaleDateString('fa-IR')}
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          onClick={() => handleViewDetails(order)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -106,6 +128,12 @@ export default function AdminOrders() {
           </CardContent>
         </Card>
       </div>
+
+      <OrderDetailsDialog
+        order={selectedOrder}
+        open={detailsDialogOpen}
+        onOpenChange={setDetailsDialogOpen}
+      />
     </AdminLayout>
   );
 }
