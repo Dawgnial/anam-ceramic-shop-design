@@ -52,7 +52,7 @@ export const HeroSlider = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full h-[500px] overflow-hidden bg-muted" dir="rtl">
+    <div className="relative w-full h-[527px] overflow-hidden bg-muted" dir="rtl">
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide) => (

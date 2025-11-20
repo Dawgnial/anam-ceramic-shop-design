@@ -78,83 +78,88 @@ export const Header = () => {
     )}>
       {/* Top Header */}
       <div className={cn(
-        "container mx-auto px-4 transition-all duration-300",
-        isScrolled ? "py-2" : "py-4"
+        "transition-all duration-300",
+        isScrolled ? "h-[60px]" : "h-[90px]"
       )}>
-        <div className="flex items-center justify-between gap-4">
-          {/* Logo - Right */}
-          <Link to="/" className="flex-shrink-0 group">
-            <h1 className="text-2xl font-bold text-primary transition-opacity hover:opacity-70">
-              ظروف سرامیکی آنام
-            </h1>
-          </Link>
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="flex items-center justify-between gap-4 w-full">
+            {/* Logo - Right */}
+            <Link to="/" className="flex-shrink-0 group">
+              <h1 className="text-2xl font-bold text-primary transition-opacity hover:opacity-70">
+                ظروف سرامیکی آنام
+              </h1>
+            </Link>
 
-          {/* Search Bar - Center */}
-          <div className="flex-1 max-w-3xl relative" ref={searchRef}>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="جستجوی محصولات"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full pr-4 pl-12 h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              <Button
-                size="icon"
-                className="absolute left-0 top-0 h-11 w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
-              >
-                <Search className="h-5 w-5" />
-              </Button>
+            {/* Search Bar - Center */}
+            <div className="flex-1 max-w-3xl relative" ref={searchRef}>
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="جستجوی محصولات"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="w-full pr-4 pl-12 h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Button
+                  size="icon"
+                  className="absolute left-0 top-0 h-11 w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* Search Results Dropdown */}
+              {showResults && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
+                  {searchResults.map((product) => (
+                    <Link
+                      key={product.id}
+                      to={`/shop?product=${product.id}`}
+                      className="flex items-center gap-3 p-3 hover:bg-muted transition-colors"
+                      onClick={() => {
+                        setShowResults(false);
+                        setSearchQuery("");
+                      }}
+                    >
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {toPersianNumber(product.price)} تومان
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Search Results Dropdown */}
-            {showResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
-                {searchResults.map((product) => (
-                  <Link
-                    key={product.id}
-                    to={`/shop?product=${product.id}`}
-                    className="flex items-center gap-3 p-3 hover:bg-muted transition-colors"
-                    onClick={() => {
-                      setShowResults(false);
-                      setSearchQuery("");
-                    }}
-                  >
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                    <div className="flex-1">
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {toPersianNumber(product.price)} تومان
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Login/Register - Left */}
-          <div className="flex-shrink-0">
-            <Link to="/auth">
-              <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
-                ورود / ثبت نام
-              </Button>
-            </Link>
+            {/* Login/Register - Left */}
+            <div className="flex-shrink-0">
+              <Link to="/auth">
+                <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
+                  ورود / ثبت نام
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom Header */}
-      <div className={cn(
-        "border-t transition-all duration-300",
-        isScrolled ? "py-1" : "py-2"
-      )} style={{ backgroundColor: '#F9F9F9' }}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+      <div 
+        className={cn(
+          "border-t transition-all duration-300",
+          isScrolled ? "h-[52px]" : "h-[40px]"
+        )} 
+        style={{ backgroundColor: '#F9F9F9' }}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center">
+          <div className="flex items-center justify-between w-full">
             {/* Mega Menu - Right */}
             <div 
               className="relative flex items-center gap-2"

@@ -24,7 +24,7 @@ const posts = [
 
 export const BlogPosts = () => {
   return (
-    <section className="py-16 bg-muted">
+    <section className="h-[716px] bg-background flex items-center">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-foreground mb-12">آخرین پست‌ها</h2>
 

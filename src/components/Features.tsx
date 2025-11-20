@@ -32,7 +32,7 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-20 bg-background">
+    <section className="h-[555px] bg-background flex items-center">
       <div className="container mx-auto px-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
           {features.map((feature) => (
