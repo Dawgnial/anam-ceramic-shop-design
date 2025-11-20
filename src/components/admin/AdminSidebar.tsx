@@ -1,4 +1,4 @@
-import { Home, Package, FolderTree, ShoppingCart, FileText, Users } from "lucide-react";
+import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const items = [
   { title: "محصولات", url: "/admin/products", icon: Package },
   { title: "دسته‌بندی‌ها", url: "/admin/categories", icon: FolderTree },
   { title: "سفارشات", url: "/admin/orders", icon: ShoppingCart },
+  { title: "کوپن‌های تخفیف", url: "/admin/coupons", icon: Tag },
   { title: "بلاگ", url: "/admin/blog", icon: FileText },
   { title: "مشتریان", url: "/admin/customers", icon: Users },
 ];
