@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
@@ -11,112 +13,177 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { toPersianNumber } from "@/lib/utils";
 import { Heart, ShoppingCart, Search, Shuffle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { toast } from "@/hooks/use-toast";
-
-// Sample product data - این محصولات نمونه هستند و بعدا از دیتابیس می‌آیند
-const products = [
-  {
-    id: 1,
-    name: "کاسه سرامیکی",
-    price: 250000,
-    image: "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&h=400&fit=crop",
-    category: "سرامیکی",
-    color: "قرمز"
-  },
-  {
-    id: 2,
-    name: "بشقاب دستساز",
-    price: 180000,
-    image: "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=400&h=400&fit=crop",
-    category: "سفالی",
-    color: "زرد"
-  },
-  {
-    id: 3,
-    name: "ماگ سفالی",
-    price: 120000,
-    image: "https://images.unsplash.com/photo-1610650876093-a9ec4e8f264b?w=400&h=400&fit=crop",
-    category: "سفالی",
-    color: "نارنجی"
-  },
-  {
-    id: 4,
-    name: "سرویس چای خوری",
-    price: 450000,
-    image: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=400&fit=crop",
-    category: "سرامیکی",
-    color: "زرد"
-  },
-  {
-    id: 5,
-    name: "کاسه نقاشی شده",
-    price: 280000,
-    image: "https://images.unsplash.com/photo-1493707553966-283afb8c7aee?w=400&h=400&fit=crop",
-    category: "سرامیکی",
-    color: "قرمز"
-  },
-  {
-    id: 6,
-    name: "بشقاب تزئینی",
-    price: 350000,
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=400&fit=crop",
-    category: "سفالی",
-    color: "نارنجی"
-  },
-  {
-    id: 7,
-    name: "گلدان سرامیکی",
-    price: 200000,
-    image: "https://images.unsplash.com/photo-1516886635086-2b3c423c0947?w=400&h=400&fit=crop",
-    category: "سرامیکی",
-    color: "زرد"
-  },
-  {
-    id: 8,
-    name: "سرویس قهوه خوری",
-    price: 520000,
-    image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&h=400&fit=crop",
-    category: "سرامیکی",
-    color: "قرمز"
-  },
-];
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCompare } from "@/contexts/CompareContext";
+import { toast } from "sonner";
 
 const Shop = () => {
+  const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist } = useWishlist();
+  const { toggleCompare, items: compareItems } = useCompare();
+  
   const [itemsPerPage, setItemsPerPage] = useState(9);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("default");
-  const [priceRange, setPriceRange] = useState([120000, 520000]);
+  const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // محاسبه min و max قیمت از محصولات
-  const minPrice = Math.min(...products.map(p => p.price));
-  const maxPrice = Math.max(...products.map(p => p.price));
+  // Fetch products from database
+  const { data: products = [], isLoading: loadingProducts } = useQuery({
+    queryKey: ['shop-products'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-  // محاسبه تعداد محصولات برای هر رنگ
-  const colorCounts = products.reduce((acc, product) => {
-    acc[product.color] = (acc[product.color] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const handleAddToCart = (product: typeof products[0]) => {
+  // Fetch categories from database
+  const { data: categories = [], isLoading: loadingCategories } = useQuery({
+    queryKey: ['shop-categories'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Calculate min and max price from products
+  const minPrice = products.length > 0 ? Math.min(...products.map(p => p.price)) : 0;
+  const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 10000000;
+
+  // Initialize price range when products load
+  useState(() => {
+    if (products.length > 0 && priceRange[0] === 0 && priceRange[1] === 10000000) {
+      setPriceRange([minPrice, maxPrice]);
+    }
+  });
+
+  // Calculate color counts from all products
+  const colorCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    products.forEach(product => {
+      if (product.colors && Array.isArray(product.colors)) {
+        product.colors.forEach((color: string) => {
+          counts[color] = (counts[color] || 0) + 1;
+        });
+      }
+    });
+    return counts;
+  }, [products]);
+
+  // Filter and sort products
+  const filteredAndSortedProducts = useMemo(() => {
+    let filtered = [...products];
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter(p => p.category_id === selectedCategory);
+    }
+
+    // Filter by price range
+    filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+
+    // Filter by selected colors
+    if (selectedColors.length > 0) {
+      filtered = filtered.filter(p => 
+        p.colors && Array.isArray(p.colors) && 
+        p.colors.some((color: string) => selectedColors.includes(color))
+      );
+    }
+
+    // Sort products
+    switch (sortOrder) {
+      case 'price-asc':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case 'name-asc':
+        filtered.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+        break;
+      case 'name-desc':
+        filtered.sort((a, b) => b.name.localeCompare(a.name, 'fa'));
+        break;
+      default:
+        // Keep default order (by created_at desc)
+        break;
+    }
+
+    return filtered;
+  }, [products, selectedCategory, priceRange, selectedColors, sortOrder]);
+
+  const handleAddToCart = (product: any) => {
     addToCart({
-      id: product.id.toString(),
+      id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: product.images?.[0] || '/placeholder.svg',
     });
-    toast({
-      title: "محصول به سبد خرید اضافه شد",
-      description: product.name,
-    });
+    toast.success('محصول به سبد خرید اضافه شد');
   };
 
-  // محاسبه محصولات برای نمایش
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const handleAddToWishlist = (product: any) => {
+    toggleWishlist({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || '/placeholder.svg',
+    });
+    toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+  };
+
+  const handleAddToCompare = (product: any) => {
+    if (compareItems.length >= 4 && !compareItems.some(item => item.id === product.id)) {
+      toast.error('حداکثر ۴ محصول می‌توانید مقایسه کنید');
+      return;
+    }
+
+    toggleCompare({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || '/placeholder.svg',
+    });
+    toast.success('محصول به لیست مقایسه اضافه شد');
+  };
+
+  // Calculate products for display
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedProducts = products.slice(startIndex, endIndex);
+  const displayedProducts = filteredAndSortedProducts.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useState(() => {
+    setCurrentPage(1);
+  });
+
+  if (loadingProducts || loadingCategories) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
+            <p>در حال بارگذاری...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +204,36 @@ const Shop = () => {
             {/* دسته‌بندی‌ها */}
             <div>
               <h3 className="text-lg font-bold mb-4">دسته بندی ها</h3>
-              <p className="text-sm text-muted-foreground">موردی وجود ندارد</p>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`block w-full text-right text-sm py-1 px-2 rounded transition-colors ${
+                    selectedCategory === null 
+                      ? 'font-bold' 
+                      : 'hover:bg-accent'
+                  }`}
+                  style={selectedCategory === null ? { color: '#B3886D' } : undefined}
+                >
+                  همه محصولات ({toPersianNumber(products.length)})
+                </button>
+                {categories.map((category) => {
+                  const count = products.filter(p => p.category_id === category.id).length;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`block w-full text-right text-sm py-1 px-2 rounded transition-colors ${
+                        selectedCategory === category.id 
+                          ? 'font-bold' 
+                          : 'hover:bg-accent'
+                      }`}
+                      style={selectedCategory === category.id ? { color: '#B3886D' } : undefined}
+                    >
+                      {category.name} ({toPersianNumber(count)})
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             <hr className="border-gray-300" />
@@ -257,9 +353,10 @@ const Shop = () => {
                   >
                     <div className="relative aspect-square overflow-hidden">
                       <img
-                        src={product.image}
+                        src={product.images?.[0] || '/placeholder.svg'}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer"
+                        onClick={() => navigate(`/product/${product.slug}`)}
                       />
                       
                       {/* Hover Icons - عمودی */}
@@ -284,8 +381,11 @@ const Shop = () => {
                         {/* نمایش سریع */}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}>
+                            <button 
+                              onClick={() => navigate(`/product/${product.slug}`)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              style={{ backgroundColor: '#B3886D' }}
+                            >
                               <Search className="w-5 h-5 text-white" />
                             </button>
                           </TooltipTrigger>
@@ -297,8 +397,11 @@ const Shop = () => {
                         {/* افزودن به مقایسه */}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}>
+                            <button 
+                              onClick={() => handleAddToCompare(product)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              style={{ backgroundColor: '#B3886D' }}
+                            >
                               <Shuffle className="w-5 h-5 text-white" />
                             </button>
                           </TooltipTrigger>
@@ -310,8 +413,11 @@ const Shop = () => {
                         {/* افزودن به علاقه‌مندی */}
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <button className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}>
+                            <button 
+                              onClick={() => handleAddToWishlist(product)}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              style={{ backgroundColor: '#B3886D' }}
+                            >
                               <Heart className="w-5 h-5 text-white" />
                             </button>
                           </TooltipTrigger>
@@ -322,8 +428,13 @@ const Shop = () => {
                       </div>
                     </div>
 
-                    <div className="p-4 text-center">
-                      <h3 className="font-semibold text-foreground mb-2">{product.name}</h3>
+                    <div 
+                      className="p-4 text-center cursor-pointer"
+                      onClick={() => navigate(`/product/${product.slug}`)}
+                    >
+                      <h3 className="font-semibold text-foreground mb-2 hover:text-[#B3886D] transition-colors">
+                        {product.name}
+                      </h3>
                       <p className="text-lg font-bold" style={{ color: '#B3886D' }}>
                         {toPersianNumber(product.price)} تومان
                       </p>
