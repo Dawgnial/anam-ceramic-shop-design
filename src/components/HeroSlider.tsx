@@ -39,7 +39,11 @@ const slides = [
 
 export const HeroSlider = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true },
+    { 
+      loop: true,
+      direction: 'rtl',
+      align: 'start'
+    },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   );
 
@@ -54,9 +58,9 @@ export const HeroSlider = () => {
   return (
     <div className="relative w-full h-[527px] overflow-hidden bg-muted" dir="rtl">
       <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="flex h-full">
+        <div className="flex h-full" dir="ltr">
           {slides.map((slide) => (
-            <div key={slide.id} className="relative min-w-0 flex-[0_0_100%] h-full">
+            <div key={slide.id} className="relative flex-[0_0_100%] min-w-0 h-full">
               <img
                 src={slide.image}
                 alt={slide.alt}
