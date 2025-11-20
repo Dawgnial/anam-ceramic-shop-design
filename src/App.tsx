@@ -9,6 +9,7 @@ import { CompareProvider } from "./contexts/CompareContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
+import ProductDetail from "./pages/ProductDetail";
 import AboutUs from "./pages/AboutUs";
 import Wishlist from "./pages/Wishlist";
 import Compare from "./pages/Compare";
@@ -40,8 +41,9 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/shop" element={<Shop />} />
+              <Route path="/" element={<Index />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/compare" element={<Compare />} />

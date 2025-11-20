@@ -48,7 +48,7 @@ export const ProductsCarousel = () => {
 
   const handleAddToCart = (product: typeof products[0]) => {
     addToCart({
-      id: product.id,
+      id: product.id.toString(),
       name: product.name,
       price: product.price,
       image: product.image,
