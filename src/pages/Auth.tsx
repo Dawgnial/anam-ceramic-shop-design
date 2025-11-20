@@ -12,7 +12,7 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0 });
+  const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0, operation: 'add' as 'add' | 'subtract' });
   const [userAnswer, setUserAnswer] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const { signUp, signIn, user } = useAuth();
@@ -29,11 +29,11 @@ const Auth = () => {
   }, [user, navigate]);
 
   const generateCaptcha = () => {
-    const num1 = Math.floor(Math.random() * 10);
-    const num2 = Math.floor(Math.random() * 10);
-    const operation = Math.random() > 0.5 ? 'add' : 'subtract';
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const operation = Math.random() > 0.5 ? 'add' : 'subtract' as 'add' | 'subtract';
     const answer = operation === 'add' ? num1 + num2 : num1 - num2;
-    setCaptcha({ num1, num2, answer });
+    setCaptcha({ num1, num2, answer, operation });
   };
 
   const handleSubmit = async () => {
@@ -141,14 +141,15 @@ const Auth = () => {
                   لطفا پاسخ را به عدد انگلیسی وارد کنید:
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">
-                    {captcha.num1} {captcha.num1 >= captcha.num2 ? '-' : '+'} {captcha.num2} =
+                  <span className="text-lg font-bold">
+                    {captcha.num1} {captcha.operation === 'add' ? '+' : '-'} {captcha.num2} =
                   </span>
                   <Input 
-                    type="text" 
+                    type="number" 
                     className="w-24" 
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
+                    placeholder="؟"
                   />
                 </div>
               </div>
