@@ -12,6 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
+import { ProductReviews } from "@/components/ProductReviews";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -308,6 +309,11 @@ export default function ProductDetail() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Product Reviews Section */}
+        <div className="mt-12">
+          <ProductReviews productId={product.id} />
         </div>
       </div>
 
