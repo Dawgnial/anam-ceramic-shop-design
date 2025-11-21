@@ -27,13 +27,15 @@ import { supabase } from "@/integrations/supabase/client";
 
 const productSchema = z.object({
   name: z.string().min(3, "نام محصول باید حداقل ۳ کاراکتر باشد"),
-  description: z.string().min(10, "توضیحات باید حداقل ۱۰ کاراکتر باشد"),
+  description: z.string().optional(),
   price: z.number().min(1000, "قیمت باید حداقل ۱۰۰۰ تومان باشد"),
-  stock: z.number().min(0, "موجودی نمی‌تواند منفی باشد"),
+  stock: z.number().min(0, "موجودی نمی‌تواند منفی باشد").optional(),
   category_id: z.string().uuid("لطفا یک دسته‌بندی انتخاب کنید"),
-  colors: z.array(z.string()).min(1, "حداقل یک رنگ انتخاب کنید"),
+  colors: z.array(z.string()).optional(),
   images: z.array(z.string()).min(1, "حداقل یک عکس آپلود کنید"),
   is_featured: z.boolean().default(false),
+  discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional(),
+  in_stock: z.boolean().default(true),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -64,11 +66,13 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       price: defaultValues?.price || 0,
-      stock: defaultValues?.stock || 0,
+      stock: defaultValues?.stock,
       category_id: defaultValues?.category_id || "",
       colors: defaultValues?.colors || [],
       images: defaultValues?.images || [],
       is_featured: defaultValues?.is_featured || false,
+      discount_percentage: defaultValues?.discount_percentage,
+      in_stock: defaultValues?.in_stock ?? true,
     },
   });
 
@@ -116,7 +120,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>توضیحات</FormLabel>
+              <FormLabel>توضیحات (اختیاری)</FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="توضیحات محصول را وارد کنید"
@@ -154,13 +158,14 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
             name="stock"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>موجودی</FormLabel>
+                <FormLabel>موجودی (اختیاری)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
                     placeholder="۰"
                     {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -199,13 +204,13 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           name="colors"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>رنگ‌های موجود</FormLabel>
+              <FormLabel>رنگ‌های موجود (اختیاری)</FormLabel>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {availableColors.map((color) => (
                   <Button
                     key={color.value}
                     type="button"
-                    variant={field.value.includes(color.value) ? "default" : "outline"}
+                    variant={field.value?.includes(color.value) ? "default" : "outline"}
                     className="w-full"
                     onClick={() => handleColorToggle(color.value)}
                   >
@@ -238,6 +243,52 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="discount_percentage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>درصد تخفیف (اختیاری)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="۰"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  درصد تخفیف بین ۰ تا ۱۰۰
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="in_stock"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-base">موجود در انبار</FormLabel>
+                  <FormDescription>
+                    وضعیت موجودی محصول
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
