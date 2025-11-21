@@ -23,11 +23,24 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
     queryFn: async () => {
       if (!categoryId) return [];
 
+      // Find products that share this category
+      const { data: productCategoriesData, error: pcError } = await supabase
+        .from('product_categories')
+        .select('product_id')
+        .eq('category_id', categoryId);
+
+      if (pcError) throw pcError;
+
+      const productIds = productCategoriesData
+        ?.map((pc: any) => pc.product_id)
+        .filter((id: string) => id !== currentProductId) || [];
+
+      if (productIds.length === 0) return [];
+
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('category_id', categoryId)
-        .neq('id', currentProductId)
+        .in('id', productIds)
         .limit(4);
 
       if (error) throw error;

@@ -30,7 +30,7 @@ const productSchema = z.object({
   description: z.string().optional(),
   price: z.number().min(1000, "قیمت باید حداقل ۱۰۰۰ تومان باشد"),
   stock: z.number().min(0, "موجودی نمی‌تواند منفی باشد").optional(),
-  category_id: z.string().uuid("لطفا یک دسته‌بندی انتخاب کنید"),
+  category_ids: z.array(z.string().uuid()).min(1, "حداقل یک دسته‌بندی انتخاب کنید"),
   colors: z.array(z.string()).optional(),
   images: z.array(z.string()).min(1, "حداقل یک عکس آپلود کنید"),
   is_featured: z.boolean().default(false),
@@ -67,7 +67,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       description: defaultValues?.description || "",
       price: defaultValues?.price || 0,
       stock: defaultValues?.stock,
-      category_id: defaultValues?.category_id || "",
+      category_ids: defaultValues?.category_ids || [],
       colors: defaultValues?.colors || [],
       images: defaultValues?.images || [],
       is_featured: defaultValues?.is_featured || false,
@@ -95,6 +95,15 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       form.setValue('colors', currentColors.filter(c => c !== color));
     } else {
       form.setValue('colors', [...currentColors, color]);
+    }
+  };
+
+  const handleCategoryToggle = (categoryId: string) => {
+    const currentCategories = form.getValues('category_ids');
+    if (currentCategories.includes(categoryId)) {
+      form.setValue('category_ids', currentCategories.filter(c => c !== categoryId));
+    } else {
+      form.setValue('category_ids', [...currentCategories, categoryId]);
     }
   };
 
@@ -176,24 +185,26 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
 
         <FormField
           control={form.control}
-          name="category_id"
+          name="category_ids"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>دسته‌بندی</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="یک دسته‌بندی انتخاب کنید" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {categories?.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>دسته‌بندی‌ها</FormLabel>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {categories?.map((category) => (
+                  <Button
+                    key={category.id}
+                    type="button"
+                    variant={field.value?.includes(category.id) ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => handleCategoryToggle(category.id)}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+              <FormDescription>
+                حداقل یک دسته‌بندی برای محصول انتخاب کنید
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

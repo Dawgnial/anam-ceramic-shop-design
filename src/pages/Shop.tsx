@@ -34,13 +34,30 @@ const Shop = () => {
   const { data: products = [], isLoading: loadingProducts } = useQuery({
     queryKey: ['shop-products'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch products
+      const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (productsError) throw productsError;
+
+      // Fetch product categories
+      const { data: productCategoriesData, error: pcError } = await supabase
+        .from('product_categories')
+        .select('product_id, category_id');
+
+      if (pcError) throw pcError;
+
+      // Map categories to products
+      const productsWithCategories = productsData.map(product => ({
+        ...product,
+        category_ids: productCategoriesData
+          ?.filter((pc: any) => pc.product_id === product.id)
+          .map((pc: any) => pc.category_id) || []
+      }));
+
+      return productsWithCategories;
     },
   });
 
@@ -88,7 +105,7 @@ const Shop = () => {
 
     // Filter by category
     if (selectedCategory) {
-      filtered = filtered.filter(p => p.category_id === selectedCategory);
+      filtered = filtered.filter(p => p.category_ids && p.category_ids.includes(selectedCategory));
     }
 
     // Filter by price range
@@ -217,7 +234,7 @@ const Shop = () => {
                   همه محصولات ({toPersianNumber(products.length)})
                 </button>
                 {categories.map((category) => {
-                  const count = products.filter(p => p.category_id === category.id).length;
+                  const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
                   return (
                     <button
                       key={category.id}
