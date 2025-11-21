@@ -1,17 +1,5 @@
 import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
 
 const items = [
   { title: "خانه", url: "/", icon: Home },
@@ -25,39 +13,27 @@ const items = [
 ];
 
 export function AdminSidebar() {
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
-
   return (
-    <Sidebar collapsible="icon">
-      <SidebarTrigger className="m-2 self-end" />
+    <div className="h-full py-6 px-4">
+      <div className="mb-8">
+        <h2 className="text-lg font-bold px-4" style={{ color: '#B3886D' }}>پنل مدیریت</h2>
+      </div>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>پنل مدیریت</SidebarGroupLabel>
-
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/"}
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-muted font-medium"
-                      style={{ color: '#B3886D' }}
-                    >
-                      <item.icon className="ml-2 h-4 w-4" />
-                      {!isCollapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+      <nav className="space-y-2">
+        {items.map((item) => (
+          <NavLink
+            key={item.title}
+            to={item.url}
+            end={item.url === "/"}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-muted/50"
+            activeClassName="bg-muted font-medium"
+            style={{ color: '#B3886D' }}
+          >
+            <item.icon className="h-5 w-5" />
+            <span>{item.title}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </div>
   );
 }

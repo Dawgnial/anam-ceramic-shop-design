@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, Check, X } from "lucide-react";
 import { toast } from "sonner";
 
-export default function AdminReviews() {
+function AdminReviewsContent() {
   const queryClient = useQueryClient();
 
   // Fetch all reviews (approved and pending)
@@ -242,5 +243,13 @@ export default function AdminReviews() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdminReviews() {
+  return (
+    <AdminLayout>
+      <AdminReviewsContent />
+    </AdminLayout>
   );
 }

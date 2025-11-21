@@ -1,8 +1,14 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { Menu } from "lucide-react";
 import { AdminSidebar } from "./AdminSidebar";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -34,21 +40,35 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+    <div className="min-h-screen flex w-full" dir="rtl">
+      {/* Desktop Sidebar - Fixed 20% width */}
+      <aside className="hidden lg:block w-[20%] border-l bg-background sticky top-0 h-screen overflow-y-auto">
         <AdminSidebar />
-        
-        <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b flex items-center px-4 bg-background sticky top-0 z-10">
-            <SidebarTrigger />
-            <h1 className="mr-4 text-xl font-bold">پنل مدیریت آنام</h1>
-          </header>
+      </aside>
 
-          <main className="flex-1 p-6">
-            {children}
-          </main>
-        </div>
+      {/* Main Content - 80% width on desktop */}
+      <div className="flex-1 lg:w-[80%] flex flex-col">
+        {/* Mobile Header with Menu Toggle */}
+        <header className="h-16 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-10 lg:justify-start">
+          <h1 className="text-xl font-bold">پنل مدیریت آنام</h1>
+          
+          {/* Mobile Menu Toggle */}
+          <Sheet>
+            <SheetTrigger asChild className="lg:hidden">
+              <Button variant="outline" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] p-0">
+              <AdminSidebar />
+            </SheetContent>
+          </Sheet>
+        </header>
+
+        <main className="flex-1 p-6">
+          {children}
+        </main>
       </div>
-    </SidebarProvider>
+    </div>
   );
 }
