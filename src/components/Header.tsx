@@ -206,7 +206,7 @@ export const Header = () => {
 
               {/* Categories Dropdown */}
               {showCategories && categories && categories.length > 0 && (
-                <div className="absolute top-full right-0 mt-2 bg-background border border-border rounded-md shadow-lg min-w-[200px] z-50">
+                <div className="absolute top-full right-0 bg-background border border-border rounded-md shadow-lg min-w-[200px] z-50">
                   {categories.map((category) => (
                     <Link
                       key={category.id}
