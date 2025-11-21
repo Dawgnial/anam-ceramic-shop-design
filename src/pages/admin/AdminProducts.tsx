@@ -67,9 +67,14 @@ export default function AdminProducts() {
         .replace(/\s+/g, '-')
         .replace(/[^\u0600-\u06FF\w-]/g, '');
 
+      // Filter out undefined values
+      const productData = Object.fromEntries(
+        Object.entries({ ...values, slug }).filter(([_, v]) => v !== undefined)
+      ) as any;
+
       const { error } = await supabase
         .from('products')
-        .insert([{ ...values, slug }]);
+        .insert([productData]);
 
       if (error) throw error;
     },
@@ -91,9 +96,14 @@ export default function AdminProducts() {
         .replace(/\s+/g, '-')
         .replace(/[^\u0600-\u06FF\w-]/g, '');
 
+      // Filter out undefined values
+      const productData = Object.fromEntries(
+        Object.entries({ ...values, slug }).filter(([_, v]) => v !== undefined)
+      ) as any;
+
       const { error } = await supabase
         .from('products')
-        .update({ ...values, slug })
+        .update(productData)
         .eq('id', id);
 
       if (error) throw error;
