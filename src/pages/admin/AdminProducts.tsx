@@ -47,16 +47,39 @@ export default function AdminProducts() {
   const { data: products, isLoading } = useQuery({
     queryKey: ['admin-products'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch products
+      const { data: productsData, error: productsError } = await supabase
         .from('products')
-        .select(`
-          *,
-          categories (name)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (productsError) throw productsError;
+
+      // Fetch product categories
+      const { data: productCategoriesData, error: pcError } = await supabase
+        .from('product_categories')
+        .select(`
+          product_id,
+          categories (
+            id,
+            name
+          )
+        `);
+
+      if (pcError) throw pcError;
+
+      // Map categories to products
+      const productsWithCategories = productsData.map(product => ({
+        ...product,
+        categories: productCategoriesData
+          ?.filter((pc: any) => pc.product_id === product.id)
+          .map((pc: any) => pc.categories) || [],
+        category_ids: productCategoriesData
+          ?.filter((pc: any) => pc.product_id === product.id)
+          .map((pc: any) => pc.categories.id) || []
+      }));
+
+      return productsWithCategories;
     },
   });
 
@@ -67,16 +90,36 @@ export default function AdminProducts() {
         .replace(/\s+/g, '-')
         .replace(/[^\u0600-\u06FF\w-]/g, '');
 
+      // Extract category_ids and remove from product data
+      const { category_ids, ...productValues } = values;
+
       // Filter out undefined values
       const productData = Object.fromEntries(
-        Object.entries({ ...values, slug }).filter(([_, v]) => v !== undefined)
+        Object.entries({ ...productValues, slug }).filter(([_, v]) => v !== undefined)
       ) as any;
 
-      const { error } = await supabase
+      // Insert product
+      const { data: product, error: productError } = await supabase
         .from('products')
-        .insert([productData]);
+        .insert([productData])
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (productError) throw productError;
+
+      // Insert product categories
+      if (category_ids && category_ids.length > 0) {
+        const categoryInserts = category_ids.map((categoryId: string) => ({
+          product_id: product.id,
+          category_id: categoryId
+        }));
+
+        const { error: categoriesError } = await supabase
+          .from('product_categories')
+          .insert(categoryInserts);
+
+        if (categoriesError) throw categoriesError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
@@ -96,17 +139,43 @@ export default function AdminProducts() {
         .replace(/\s+/g, '-')
         .replace(/[^\u0600-\u06FF\w-]/g, '');
 
+      // Extract category_ids and remove from product data
+      const { category_ids, ...productValues } = values;
+
       // Filter out undefined values
       const productData = Object.fromEntries(
-        Object.entries({ ...values, slug }).filter(([_, v]) => v !== undefined)
+        Object.entries({ ...productValues, slug }).filter(([_, v]) => v !== undefined)
       ) as any;
 
-      const { error } = await supabase
+      // Update product
+      const { error: productError } = await supabase
         .from('products')
         .update(productData)
         .eq('id', id);
 
-      if (error) throw error;
+      if (productError) throw productError;
+
+      // Delete existing product categories
+      const { error: deleteError } = await supabase
+        .from('product_categories')
+        .delete()
+        .eq('product_id', id);
+
+      if (deleteError) throw deleteError;
+
+      // Insert new product categories
+      if (category_ids && category_ids.length > 0) {
+        const categoryInserts = category_ids.map((categoryId: string) => ({
+          product_id: id,
+          category_id: categoryId
+        }));
+
+        const { error: categoriesError } = await supabase
+          .from('product_categories')
+          .insert(categoryInserts);
+
+        if (categoriesError) throw categoriesError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
@@ -231,7 +300,9 @@ export default function AdminProducts() {
                         {product.name}
                       </TableCell>
                       <TableCell>
-                        {product.categories?.name || '-'}
+                        {product.categories?.length > 0 
+                          ? product.categories.map((cat: any) => cat.name).join('، ')
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         {product.price.toLocaleString('fa-IR')} تومان

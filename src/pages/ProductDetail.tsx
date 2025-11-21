@@ -33,17 +33,34 @@ export default function ProductDetail() {
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', slug],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: productData, error: productError } = await supabase
         .from('products')
-        .select(`
-          *,
-          categories (name, slug)
-        `)
+        .select('*')
         .eq('slug', slug)
         .single();
 
-      if (error) throw error;
-      return data;
+      if (productError) throw productError;
+
+      // Fetch product categories
+      const { data: productCategoriesData, error: pcError } = await supabase
+        .from('product_categories')
+        .select(`
+          category_id,
+          categories (
+            id,
+            name,
+            slug
+          )
+        `)
+        .eq('product_id', productData.id);
+
+      if (pcError) throw pcError;
+
+      return {
+        ...productData,
+        categories: productCategoriesData?.map((pc: any) => pc.categories) || [],
+        category_ids: productCategoriesData?.map((pc: any) => pc.category_id) || []
+      };
     },
   });
 
@@ -156,10 +173,12 @@ export default function ProductDetail() {
           <button onClick={() => navigate('/shop')} className="hover:text-foreground">
             فروشگاه
           </button>
-          {product.categories && (
+          {product.categories && product.categories.length > 0 && (
             <>
               <ChevronLeft className="w-4 h-4" />
-              <span className="hover:text-foreground">{product.categories.name}</span>
+              <span className="hover:text-foreground">
+                {product.categories.map((cat: any) => cat.name).join('، ')}
+              </span>
             </>
           )}
           <ChevronLeft className="w-4 h-4" />
@@ -212,12 +231,16 @@ export default function ProductDetail() {
 
           {/* Left Side - Product Info */}
           <div className="order-1 lg:order-2 space-y-6">
-            {/* Category */}
-            {product.categories && (
-              <Badge variant="outline" className="text-sm">
-                {product.categories.name}
-              </Badge>
-            )}
+          {/* Category */}
+          {product.categories && product.categories.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              {product.categories.map((category: any) => (
+                <Badge key={category.id} variant="outline" className="text-sm">
+                  {category.name}
+                </Badge>
+              ))}
+            </div>
+          )}
 
             {/* Product Name */}
             <h1 className="text-3xl font-bold">{product.name}</h1>
@@ -344,7 +367,7 @@ export default function ProductDetail() {
 
         {/* Related Products Section */}
         <RelatedProducts 
-          categoryId={product.category_id} 
+          categoryId={product.category_ids && product.category_ids.length > 0 ? product.category_ids[0] : null} 
           currentProductId={product.id} 
         />
       </div>

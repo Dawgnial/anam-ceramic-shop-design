@@ -58,15 +58,15 @@ export default function AdminCategories() {
     queryKey: ['category-product-counts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('products')
+        .from('product_categories')
         .select('category_id');
 
       if (error) throw error;
 
       const counts: Record<string, number> = {};
-      data.forEach((product: any) => {
-        if (product.category_id) {
-          counts[product.category_id] = (counts[product.category_id] || 0) + 1;
+      data.forEach((pc: any) => {
+        if (pc.category_id) {
+          counts[pc.category_id] = (counts[pc.category_id] || 0) + 1;
         }
       });
 
