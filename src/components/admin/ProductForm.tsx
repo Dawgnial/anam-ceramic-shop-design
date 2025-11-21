@@ -34,7 +34,7 @@ const productSchema = z.object({
   colors: z.array(z.string()).optional(),
   images: z.array(z.string()).min(1, "حداقل یک عکس آپلود کنید"),
   is_featured: z.boolean().default(false),
-  discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional(),
+  discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional().nullable(),
   in_stock: z.boolean().default(true),
 });
 
@@ -257,7 +257,15 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                     placeholder="۰"
                     {...field}
                     value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "" || val === null || val === undefined) {
+                        field.onChange(undefined);
+                      } else {
+                        const parsed = parseInt(val);
+                        field.onChange(isNaN(parsed) ? undefined : parsed);
+                      }
+                    }}
                   />
                 </FormControl>
                 <FormDescription>
