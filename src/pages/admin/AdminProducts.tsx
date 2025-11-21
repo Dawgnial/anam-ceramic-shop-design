@@ -201,6 +201,7 @@ export default function AdminProducts() {
                     <TableHead>نام محصول</TableHead>
                     <TableHead>دسته‌بندی</TableHead>
                     <TableHead>قیمت</TableHead>
+                    <TableHead>تخفیف</TableHead>
                     <TableHead>موجودی</TableHead>
                     <TableHead>وضعیت</TableHead>
                     <TableHead>عملیات</TableHead>
@@ -226,16 +227,36 @@ export default function AdminProducts() {
                         {product.price.toLocaleString('fa-IR')} تومان
                       </TableCell>
                       <TableCell>
+                        {product.discount_percentage ? (
+                          <Badge variant="secondary">
+                            {product.discount_percentage.toLocaleString('fa-IR')}٪
+                          </Badge>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
+                      <TableCell>
                         <Badge variant={product.stock > 0 ? "default" : "destructive"}>
-                          {product.stock.toLocaleString('fa-IR')}
+                          {product.stock?.toLocaleString('fa-IR') ?? '-'}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {product.is_featured && (
-                          <Badge style={{ backgroundColor: '#B3886D' }}>
-                            ویژه
-                          </Badge>
-                        )}
+                        <div className="flex gap-1 flex-wrap">
+                          {product.is_featured && (
+                            <Badge style={{ backgroundColor: '#B3886D' }}>
+                              ویژه
+                            </Badge>
+                          )}
+                          {product.in_stock ? (
+                            <Badge variant="outline" className="text-green-600 border-green-600">
+                              موجود
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-red-600 border-red-600">
+                              ناموجود
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-2">

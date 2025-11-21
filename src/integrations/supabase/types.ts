@@ -331,8 +331,10 @@ export type Database = {
           colors: string[] | null
           created_at: string
           description: string | null
+          discount_percentage: number | null
           id: string
           images: string[] | null
+          in_stock: boolean | null
           is_featured: boolean | null
           name: string
           price: number
@@ -345,8 +347,10 @@ export type Database = {
           colors?: string[] | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           images?: string[] | null
+          in_stock?: boolean | null
           is_featured?: boolean | null
           name: string
           price: number
@@ -359,8 +363,10 @@ export type Database = {
           colors?: string[] | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           images?: string[] | null
+          in_stock?: boolean | null
           is_featured?: boolean | null
           name?: string
           price?: number
