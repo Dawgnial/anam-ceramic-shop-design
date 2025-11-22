@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Lock, Phone, Calendar, Package, ShoppingBag } from "lucide-react";
+import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut } from "lucide-react";
 import { toPersianNumber } from "@/lib/utils";
 
 type Order = {
@@ -30,7 +30,7 @@ type OrderItem = {
 };
 
 const Profile = () => {
-  const { user, session, loading } = useAuth();
+  const { user, session, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [phone, setPhone] = useState("");
@@ -362,6 +362,27 @@ const Profile = () => {
                     className="text-white"
                   >
                     تغییر رمز عبور
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Logout Card */}
+              <Card className="border-2" style={{ borderColor: '#B3886D' }}>
+                <CardHeader className="border-b" style={{ borderColor: '#F9F3F0' }}>
+                  <CardTitle className="text-2xl flex items-center gap-2" style={{ color: '#896A59' }}>
+                    <LogOut className="w-6 h-6" />
+                    خروج از حساب کاربری
+                  </CardTitle>
+                  <CardDescription>خروج از حساب کاربری و بازگشت به صفحه اصلی</CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <Button
+                    onClick={signOut}
+                    variant="destructive"
+                    className="w-full md:w-auto"
+                  >
+                    <LogOut className="w-4 h-4 ml-2" />
+                    خروج از حساب
                   </Button>
                 </CardContent>
               </Card>
