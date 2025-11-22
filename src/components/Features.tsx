@@ -34,11 +34,11 @@ export const Features = () => {
   return (
     <section className="h-[555px] bg-background flex items-center">
       <div className="container mx-auto px-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-0 h-full">
           {features.map((feature) => (
             <div
               key={feature.id}
-              className="text-center p-8 hover:bg-[#F9F3F0] transition-colors group"
+              className="text-center hover:bg-[#F9F3F0] transition-colors group h-full flex flex-col items-center justify-center px-8"
             >
               <div className="mb-6 flex justify-center">
                 <img

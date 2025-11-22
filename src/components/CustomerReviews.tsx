@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 const reviews = [
   {
@@ -45,8 +45,8 @@ export const CustomerReviews = () => {
         <h2 className="text-3xl font-bold text-center text-foreground mb-12">نظرات مشتریان</h2>
 
         <div className="max-w-2xl mx-auto overflow-hidden">
-          <Card className="border-none shadow-lg">
-            <CardContent className="p-8 text-center">
+          <Card className="border-none shadow-lg min-h-[280px] flex items-center">
+            <CardContent className="p-8 text-center w-full">
               <div
                 className={`transition-transform duration-300 ${
                   isAnimating ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
@@ -65,7 +65,14 @@ export const CustomerReviews = () => {
             </CardContent>
           </Card>
 
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center items-center gap-4 mt-6">
+            <button
+              onClick={() => setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length)}
+              className="text-primary hover:opacity-80 transition-opacity"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+            
             {reviews.map((_, index) => (
               <button
                 key={index}
@@ -75,6 +82,13 @@ export const CustomerReviews = () => {
                 onClick={() => setCurrentReview(index)}
               />
             ))}
+            
+            <button
+              onClick={() => setCurrentReview((prev) => (prev + 1) % reviews.length)}
+              className="text-primary hover:opacity-80 transition-opacity"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
           </div>
         </div>
       </div>
