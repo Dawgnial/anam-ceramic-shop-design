@@ -2,6 +2,7 @@ import { Search, Menu, Heart, ChevronDown, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.png";
 import { toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -113,9 +114,7 @@ export const Header = () => {
           <div className="flex items-center justify-between gap-4 w-full">
             {/* Logo - Right */}
             <Link to="/" className="flex-shrink-0 group">
-              <h1 className="text-2xl font-bold text-primary transition-opacity hover:opacity-70">
-                ظروف سرامیکی آنام
-              </h1>
+              <img src={logo} alt="آنام" className="h-16 w-auto transition-opacity hover:opacity-90" />
             </Link>
 
             {/* Search Bar - Center */}
@@ -166,14 +165,14 @@ export const Header = () => {
             <div className="flex-shrink-0">
               {user ? (
                 <Link to="/profile">
-                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
+                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
                     <User className="h-4 w-4" />
                     پروفایل
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth">
-                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-70 transition-opacity">
+                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
                     ورود / ثبت نام
                   </Button>
                 </Link>
@@ -199,7 +198,7 @@ export const Header = () => {
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
             >
-              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:opacity-70 transition-opacity">
+              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:opacity-80 transition-opacity">
                 دسته بندی محصولات
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -276,9 +275,9 @@ export const Header = () => {
             </nav>
 
             {/* Cart Icons - Left */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link to="/compare" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-70 transition-opacity">
+                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
                   <img src={compareIcon} alt="مقایسه" className="h-6 w-6" />
                   {compareItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -289,7 +288,7 @@ export const Header = () => {
               </Link>
               
               <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-70 transition-opacity">
+                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
                   <Heart className="h-6 w-6" />
                   {wishlistItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -299,16 +298,17 @@ export const Header = () => {
                 </Button>
               </Link>
               
-              <div className="relative">
-                <CartDrawer />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {toPersianNumber(cartItems.length)}
-                  </span>
-                )}
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
+                <div className="relative">
+                  <CartDrawer />
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {toPersianNumber(cartItems.length)}
+                    </span>
+                  )}
+                </div>
               </div>
-              
-              <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
             </div>
           </div>
         </div>
