@@ -266,12 +266,17 @@ export const Header = () => {
                   بلاگ
                 </Button>
               </Link>
-              <Button 
-                variant="ghost" 
-                className="text-sm h-9 px-3 text-foreground hover:text-[#B3886D] transition-all hover:bg-transparent"
-              >
-                ارتباط با ما
-              </Button>
+              <Link to="/contact">
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
+                    isActivePage("/contact") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
+                  )}
+                >
+                  ارتباط با ما
+                </Button>
+              </Link>
             </nav>
 
             {/* Cart Icons - Left */}
