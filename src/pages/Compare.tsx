@@ -3,9 +3,14 @@ import { Footer } from "@/components/Footer";
 import { useCompare } from "@/contexts/CompareContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { X, ChevronLeft, Scale } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { X, ChevronLeft, Scale, ShoppingCart, Eye, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/contexts/CartContext";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -17,7 +22,58 @@ import {
 
 export default function Compare() {
   const { items, removeFromCompare, clearCompare } = useCompare();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
+
+  // Fetch full product details for comparison
+  const { data: products, isLoading } = useQuery({
+    queryKey: ['compare-products', items.map(i => i.id)],
+    queryFn: async () => {
+      if (items.length === 0) return [];
+
+      const productIds = items.map(i => i.id);
+      
+      // Fetch products with features
+      const { data: productsData, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', productIds);
+
+      if (productsError) throw productsError;
+
+      // Fetch features for each product
+      const { data: featuresData, error: featuresError } = await supabase
+        .from('product_features')
+        .select('*')
+        .in('product_id', productIds);
+
+      if (featuresError) throw featuresError;
+
+      // Map features to products
+      return productsData.map(product => ({
+        ...product,
+        features: featuresData?.filter(f => f.product_id === product.id) || []
+      }));
+    },
+    enabled: items.length > 0,
+  });
+
+  // Get all unique feature keys across all products
+  const allFeatureKeys = products
+    ? Array.from(new Set(
+        products.flatMap(p => p.features?.map((f: any) => f.feature_key) || [])
+      ))
+    : [];
+
+  const handleAddToCart = (product: any) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || '/placeholder.svg',
+    });
+    toast.success('محصول به سبد خرید اضافه شد');
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -78,62 +134,247 @@ export default function Compare() {
               </Button>
             </div>
 
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[150px]">ویژگی</TableHead>
-                    {items.map((item) => (
-                      <TableHead key={item.id} className="text-center min-w-[200px]">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="float-left"
-                          onClick={() => {
-                            removeFromCompare(item.id);
-                            toast.success('محصول از لیست مقایسه حذف شد');
-                          }}
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+            {isLoading ? (
+              <Card>
+                <CardContent className="py-12">
+                  <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-64 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="overflow-x-auto border rounded-lg bg-white shadow-sm">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-[#FCF8F4]">
+                      <TableHead className="w-[200px] font-bold text-base sticky right-0 bg-[#FCF8F4] z-10">
+                        مشخصات
                       </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">تصویر</TableCell>
-                    {items.map((item) => (
-                      <TableCell key={item.id} className="text-center">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-32 h-32 object-cover rounded mx-auto"
-                        />
+                      {products?.map((product) => (
+                        <TableHead key={product.id} className="text-center min-w-[250px] relative">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-2 left-2 hover:bg-destructive/10"
+                            onClick={() => {
+                              removeFromCompare(product.id);
+                              toast.success('محصول از لیست مقایسه حذف شد');
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {/* Product Images */}
+                    <TableRow className="hover:bg-muted/50">
+                      <TableCell className="font-semibold sticky right-0 bg-background">
+                        تصویر محصول
                       </TableCell>
-                    ))}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">نام محصول</TableCell>
-                    {items.map((item) => (
-                      <TableCell key={item.id} className="text-center font-semibold">
-                        {item.name}
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center p-4">
+                          <div className="flex justify-center">
+                            <img
+                              src={product.images?.[0] || '/placeholder.svg'}
+                              alt={product.name}
+                              className="w-48 h-48 object-cover rounded-lg shadow-md hover:scale-105 transition-transform cursor-pointer"
+                              onClick={() => navigate(`/product/${product.slug}`)}
+                            />
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Product Name */}
+                    <TableRow className="hover:bg-muted/50">
+                      <TableCell className="font-semibold sticky right-0 bg-background">
+                        نام محصول
                       </TableCell>
-                    ))}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">قیمت</TableCell>
-                    {items.map((item) => (
-                      <TableCell key={item.id} className="text-center">
-                        <span className="text-lg font-bold" style={{ color: '#B3886D' }}>
-                          {item.price.toLocaleString('fa-IR')} تومان
-                        </span>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center">
+                          <button
+                            onClick={() => navigate(`/product/${product.slug}`)}
+                            className="font-bold text-lg hover:text-[#B3886D] transition-colors"
+                          >
+                            {product.name}
+                          </button>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Price */}
+                    <TableRow className="hover:bg-muted/50 bg-[#FCF8F4]/30">
+                      <TableCell className="font-semibold sticky right-0 bg-[#FCF8F4]/30">
+                        قیمت
                       </TableCell>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center">
+                          <div className="space-y-1">
+                            <span className="text-2xl font-bold block" style={{ color: '#B3886D' }}>
+                              {product.price.toLocaleString('fa-IR')}
+                            </span>
+                            <span className="text-sm text-muted-foreground">تومان</span>
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Stock Status */}
+                    <TableRow className="hover:bg-muted/50">
+                      <TableCell className="font-semibold sticky right-0 bg-background">
+                        وضعیت موجودی
+                      </TableCell>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center">
+                          <div className="flex flex-col items-center gap-2">
+                            <Badge 
+                              variant={product.stock > 0 ? "default" : "destructive"}
+                              className="text-sm"
+                            >
+                              {product.stock > 0 
+                                ? `موجود (${product.stock.toLocaleString('fa-IR')} عدد)`
+                                : 'ناموجود'
+                              }
+                            </Badge>
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Description */}
+                    <TableRow className="hover:bg-muted/50">
+                      <TableCell className="font-semibold sticky right-0 bg-background align-top">
+                        توضیحات
+                      </TableCell>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center">
+                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4 text-justify px-2">
+                            {product.description || '-'}
+                          </p>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Colors */}
+                    <TableRow className="hover:bg-muted/50 bg-[#FCF8F4]/30">
+                      <TableCell className="font-semibold sticky right-0 bg-[#FCF8F4]/30">
+                        رنگ‌های موجود
+                      </TableCell>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center">
+                          <div className="flex flex-wrap gap-2 justify-center">
+                            {product.colors && product.colors.length > 0 ? (
+                              product.colors.map((color: string, idx: number) => (
+                                <Badge key={idx} variant="outline" className="text-sm">
+                                  {color}
+                                </Badge>
+                              ))
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+
+                    {/* Discount */}
+                    {products?.some(p => p.discount_percentage) && (
+                      <TableRow className="hover:bg-muted/50">
+                        <TableCell className="font-semibold sticky right-0 bg-background">
+                          تخفیف
+                        </TableCell>
+                        {products?.map((product) => (
+                          <TableCell key={product.id} className="text-center">
+                            {product.discount_percentage ? (
+                              <Badge variant="secondary" className="text-base">
+                                {product.discount_percentage.toLocaleString('fa-IR')}٪
+                              </Badge>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    )}
+
+                    {/* Features Section Header */}
+                    {allFeatureKeys.length > 0 && (
+                      <TableRow className="bg-[#FCF8F4]">
+                        <TableCell 
+                          colSpan={products?.length + 1} 
+                          className="font-bold text-base text-center py-4"
+                        >
+                          مشخصات فنی
+                        </TableCell>
+                      </TableRow>
+                    )}
+
+                    {/* Individual Features */}
+                    {allFeatureKeys.map((featureKey, idx) => (
+                      <TableRow 
+                        key={featureKey} 
+                        className={`hover:bg-muted/50 ${idx % 2 === 0 ? '' : 'bg-muted/20'}`}
+                      >
+                        <TableCell className="font-semibold sticky right-0 bg-background">
+                          {featureKey}
+                        </TableCell>
+                        {products?.map((product) => {
+                          const feature = product.features?.find(
+                            (f: any) => f.feature_key === featureKey
+                          );
+                          return (
+                            <TableCell key={product.id} className="text-center">
+                              {feature ? (
+                                <div className="flex items-center justify-center gap-2">
+                                  <Check className="w-4 h-4 text-green-600" />
+                                  <span className="font-medium">{feature.feature_value}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
                     ))}
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
+
+                    {/* Action Buttons */}
+                    <TableRow className="bg-[#FCF8F4]">
+                      <TableCell className="font-semibold sticky right-0 bg-[#FCF8F4]">
+                        عملیات
+                      </TableCell>
+                      {products?.map((product) => (
+                        <TableCell key={product.id} className="text-center p-4">
+                          <div className="flex flex-col gap-2">
+                            <Button
+                              onClick={() => handleAddToCart(product)}
+                              disabled={product.stock === 0}
+                              style={{ backgroundColor: '#B3886D' }}
+                              className="w-full"
+                            >
+                              <ShoppingCart className="ml-2 h-4 w-4" />
+                              افزودن به سبد خرید
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => navigate(`/product/${product.slug}`)}
+                              className="w-full"
+                            >
+                              <Eye className="ml-2 h-4 w-4" />
+                              مشاهده جزئیات
+                            </Button>
+                          </div>
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </div>
         )}
       </div>
