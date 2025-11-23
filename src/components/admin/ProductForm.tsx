@@ -31,11 +31,11 @@ const productSchema = z.object({
   price: z.number().min(1000, "قیمت باید حداقل ۱۰۰۰ تومان باشد"),
   stock: z.number().min(0, "موجودی نمی‌تواند منفی باشد").optional(),
   category_ids: z.array(z.string().uuid()).min(1, "حداقل یک دسته‌بندی انتخاب کنید"),
-  colors: z.array(z.string()).optional(),
   images: z.array(z.string()).min(1, "حداقل یک عکس آپلود کنید"),
   is_featured: z.boolean().default(false),
   discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional().nullable(),
   in_stock: z.boolean().default(true),
+  low_stock_threshold: z.number().min(0).optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -46,19 +46,6 @@ interface ProductFormProps {
   submitLabel: string;
 }
 
-const availableColors = [
-  { value: "سفید", label: "سفید" },
-  { value: "مشکی", label: "مشکی" },
-  { value: "قهوه‌ای", label: "قهوه‌ای" },
-  { value: "آبی", label: "آبی" },
-  { value: "سبز", label: "سبز" },
-  { value: "زرد", label: "زرد" },
-  { value: "نارنجی", label: "نارنجی" },
-  { value: "قرمز", label: "قرمز" },
-  { value: "صورتی", label: "صورتی" },
-  { value: "بنفش", label: "بنفش" },
-];
-
 export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFormProps) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -68,11 +55,11 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       price: defaultValues?.price || 0,
       stock: defaultValues?.stock,
       category_ids: defaultValues?.category_ids || [],
-      colors: defaultValues?.colors || [],
       images: defaultValues?.images || [],
       is_featured: defaultValues?.is_featured || false,
       discount_percentage: defaultValues?.discount_percentage,
       in_stock: defaultValues?.in_stock ?? true,
+      low_stock_threshold: defaultValues?.low_stock_threshold || 10,
     },
   });
 
@@ -88,15 +75,6 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       return data;
     },
   });
-
-  const handleColorToggle = (color: string) => {
-    const currentColors = form.getValues('colors');
-    if (currentColors.includes(color)) {
-      form.setValue('colors', currentColors.filter(c => c !== color));
-    } else {
-      form.setValue('colors', [...currentColors, color]);
-    }
-  };
 
   const handleCategoryToggle = (categoryId: string) => {
     const currentCategories = form.getValues('category_ids');
@@ -205,30 +183,6 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
               <FormDescription>
                 حداقل یک دسته‌بندی برای محصول انتخاب کنید
               </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="colors"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>رنگ‌های موجود (اختیاری)</FormLabel>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                {availableColors.map((color) => (
-                  <Button
-                    key={color.value}
-                    type="button"
-                    variant={field.value?.includes(color.value) ? "default" : "outline"}
-                    className="w-full"
-                    onClick={() => handleColorToggle(color.value)}
-                  >
-                    {color.label}
-                  </Button>
-                ))}
-              </div>
               <FormMessage />
             </FormItem>
           )}

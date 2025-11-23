@@ -7,6 +7,7 @@ export interface CartItem {
   image: string;
   quantity: number;
   color?: string;
+  attributes?: Record<string, string>;
 }
 
 interface CartContextType {

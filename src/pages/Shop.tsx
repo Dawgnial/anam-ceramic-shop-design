@@ -27,7 +27,6 @@ const Shop = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("default");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Fetch products from database
@@ -86,19 +85,6 @@ const Shop = () => {
     }
   });
 
-  // Calculate color counts from all products
-  const colorCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    products.forEach(product => {
-      if (product.colors && Array.isArray(product.colors)) {
-        product.colors.forEach((color: string) => {
-          counts[color] = (counts[color] || 0) + 1;
-        });
-      }
-    });
-    return counts;
-  }, [products]);
-
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...products];
@@ -110,14 +96,6 @@ const Shop = () => {
 
     // Filter by price range
     filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
-
-    // Filter by selected colors
-    if (selectedColors.length > 0) {
-      filtered = filtered.filter(p => 
-        p.colors && Array.isArray(p.colors) && 
-        p.colors.some((color: string) => selectedColors.includes(color))
-      );
-    }
 
     // Sort products
     switch (sortOrder) {
@@ -139,7 +117,7 @@ const Shop = () => {
     }
 
     return filtered;
-  }, [products, selectedCategory, priceRange, selectedColors, sortOrder]);
+  }, [products, selectedCategory, priceRange, sortOrder]);
 
   const handleAddToCart = (product: any) => {
     addToCart({
@@ -278,32 +256,6 @@ const Shop = () => {
                 >
                   صافی
                 </Button>
-              </div>
-            </div>
-
-            <hr className="border-gray-300" />
-
-            {/* فیلتر بر اساس رنگ */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">فیلتر بر اساس رنگ</h3>
-              <div className="space-y-2">
-                {Object.entries(colorCounts).map(([color, count]) => (
-                  <label key={color} className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="w-4 h-4"
-                      checked={selectedColors.includes(color)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedColors([...selectedColors, color]);
-                        } else {
-                          setSelectedColors(selectedColors.filter(c => c !== color));
-                        }
-                      }}
-                    />
-                    <span className="text-sm">{color} ({toPersianNumber(count)})</span>
-                  </label>
-                ))}
               </div>
             </div>
 
