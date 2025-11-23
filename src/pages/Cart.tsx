@@ -88,10 +88,11 @@ const Cart = () => {
                   </div>
                 </div>
                 <Button 
+                  onClick={() => navigate('/checkout')}
                   className="w-full text-white"
                   style={{ backgroundColor: '#B3886D' }}
                 >
-                  ادامه خرید
+                  ادامه به تسویه حساب
                 </Button>
               </div>
             </div>
