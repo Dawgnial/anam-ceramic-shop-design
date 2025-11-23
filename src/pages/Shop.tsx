@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
+import { QuickViewDialog } from "@/components/QuickViewDialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,6 +29,8 @@ const Shop = () => {
   const [sortOrder, setSortOrder] = useState("default");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   // Fetch products from database
   const { data: products = [], isLoading: loadingProducts } = useQuery({
@@ -351,7 +354,10 @@ const Shop = () => {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button 
-                              onClick={() => navigate(`/product/${product.slug}`)}
+                              onClick={() => {
+                                setQuickViewProductId(product.id);
+                                setQuickViewOpen(true);
+                              }}
                               className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
                               style={{ backgroundColor: '#B3886D' }}
                             >
@@ -450,8 +456,14 @@ const Shop = () => {
         </div>
       </div>
 
-      <Footer />
+      <QuickViewDialog
+        productId={quickViewProductId}
+        open={quickViewOpen}
+        onOpenChange={setQuickViewOpen}
+      />
+
       <BackToTop />
+      <Footer />
     </div>
   );
 };

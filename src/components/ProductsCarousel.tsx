@@ -4,17 +4,26 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { QuickViewDialog } from "./QuickViewDialog";
 import { toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
+import { Heart, ShoppingCart, Search, Shuffle } from "lucide-react";
 
 export const ProductsCarousel = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { toggleWishlist } = useWishlist();
+  const { toggleCompare } = useCompare();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
 
   // Fetch featured products from database
   const { data: products = [], isLoading } = useQuery({
@@ -65,6 +74,26 @@ export const ProductsCarousel = () => {
     toast.success('محصول به سبد خرید اضافه شد');
   };
 
+  const handleAddToWishlist = (product: any) => {
+    toggleWishlist({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || '/placeholder.svg',
+    });
+    toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+  };
+
+  const handleAddToCompare = (product: any) => {
+    toggleCompare({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images?.[0] || '/placeholder.svg',
+    });
+    toast.success('محصول به مقایسه اضافه شد');
+  };
+
   if (isLoading) {
     return (
       <section className="h-[725px] bg-background flex items-center">
@@ -107,15 +136,83 @@ export const ProductsCarousel = () => {
             {products.map((product) => (
               <Card 
                 key={product.id} 
-                className="min-w-[280px] flex-shrink-0 cursor-pointer hover:shadow-lg transition-shadow"
+                className="min-w-[280px] flex-shrink-0 group relative hover:shadow-lg transition-shadow"
               >
-                <CardContent className="p-0">
+                <CardContent className="p-0 relative">
                   <img
                     src={product.images?.[0] || '/placeholder.svg'}
                     alt={product.name}
-                    className="w-full h-64 object-cover rounded-t-lg"
+                    className="w-full h-64 object-cover rounded-t-lg cursor-pointer"
                     onClick={() => navigate(`/product/${product.slug}`)}
                   />
+                  
+                  {/* Hover Icons */}
+                  <TooltipProvider>
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            onClick={() => handleAddToCart(product)}
+                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            style={{ backgroundColor: '#B3886D' }}
+                          >
+                            <ShoppingCart className="w-5 h-5 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>افزودن به سبد خرید</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            onClick={() => {
+                              setQuickViewProductId(product.id);
+                              setQuickViewOpen(true);
+                            }}
+                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            style={{ backgroundColor: '#B3886D' }}
+                          >
+                            <Search className="w-5 h-5 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>نمایش سریع</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            onClick={() => handleAddToCompare(product)}
+                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            style={{ backgroundColor: '#B3886D' }}
+                          >
+                            <Shuffle className="w-5 h-5 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>افزودن به مقایسه</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            onClick={() => handleAddToWishlist(product)}
+                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            style={{ backgroundColor: '#B3886D' }}
+                          >
+                            <Heart className="w-5 h-5 text-white" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>افزودن به علاقه مندی</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
                 </CardContent>
                 <CardFooter className="flex flex-col items-start gap-2 p-4">
                   <h3 
@@ -127,18 +224,17 @@ export const ProductsCarousel = () => {
                   <p className="font-bold" style={{ color: '#B3886D' }}>
                     {toPersianNumber(product.price)} تومان
                   </p>
-                  <Button 
-                    className="w-full"
-                    onClick={() => handleAddToCart(product)}
-                    style={{ backgroundColor: '#B3886D' }}
-                  >
-                    افزودن به سبد خرید
-                  </Button>
                 </CardFooter>
               </Card>
             ))}
           </div>
         </div>
+
+        <QuickViewDialog
+          productId={quickViewProductId}
+          open={quickViewOpen}
+          onOpenChange={setQuickViewOpen}
+        />
       </div>
     </section>
   );
