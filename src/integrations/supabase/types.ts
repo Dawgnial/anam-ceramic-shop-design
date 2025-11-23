@@ -245,6 +245,55 @@ export type Database = {
         }
         Relationships: []
       }
+      product_attributes: {
+        Row: {
+          attribute_name: string
+          attribute_values: string[]
+          created_at: string | null
+          id: string
+          product_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          attribute_name: string
+          attribute_values?: string[]
+          created_at?: string | null
+          id?: string
+          product_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          attribute_name?: string
+          attribute_values?: string[]
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_attributes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "low_stock_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_attributes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_attributes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_with_ratings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_categories: {
         Row: {
           category_id: string
@@ -399,7 +448,6 @@ export type Database = {
       products: {
         Row: {
           category_id: string | null
-          colors: string[] | null
           created_at: string
           description: string | null
           discount_percentage: number | null
@@ -416,7 +464,6 @@ export type Database = {
         }
         Insert: {
           category_id?: string | null
-          colors?: string[] | null
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
@@ -433,7 +480,6 @@ export type Database = {
         }
         Update: {
           category_id?: string | null
-          colors?: string[] | null
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
@@ -533,7 +579,6 @@ export type Database = {
         Row: {
           average_rating: number | null
           category_id: string | null
-          colors: string[] | null
           created_at: string | null
           description: string | null
           id: string | null

@@ -33,7 +33,7 @@ export default function Compare() {
 
       const productIds = items.map(i => i.id);
       
-      // Fetch products with features
+      // Fetch products with features and attributes
       const { data: productsData, error: productsError } = await supabase
         .from('products')
         .select('*')
@@ -49,19 +49,34 @@ export default function Compare() {
 
       if (featuresError) throw featuresError;
 
-      // Map features to products
+      // Fetch attributes for each product
+      const { data: attributesData, error: attributesError } = await supabase
+        .from('product_attributes')
+        .select('*')
+        .in('product_id', productIds);
+
+      if (attributesError) throw attributesError;
+
+      // Map features and attributes to products
       return productsData.map(product => ({
         ...product,
-        features: featuresData?.filter(f => f.product_id === product.id) || []
+        features: featuresData?.filter(f => f.product_id === product.id) || [],
+        attributes: attributesData?.filter(a => a.product_id === product.id) || []
       }));
     },
     enabled: items.length > 0,
   });
 
-  // Get all unique feature keys across all products
+  // Get all unique feature keys and attribute names across all products
   const allFeatureKeys = products
     ? Array.from(new Set(
         products.flatMap(p => p.features?.map((f: any) => f.feature_key) || [])
+      ))
+    : [];
+
+  const allAttributeNames = products
+    ? Array.from(new Set(
+        products.flatMap(p => p.attributes?.map((a: any) => a.attribute_name) || [])
       ))
     : [];
 
@@ -259,28 +274,6 @@ export default function Compare() {
                       ))}
                     </TableRow>
 
-                    {/* Colors */}
-                    <TableRow className="hover:bg-muted/50 bg-[#FCF8F4]/30">
-                      <TableCell className="font-semibold sticky right-0 bg-[#FCF8F4]/30">
-                        رنگ‌های موجود
-                      </TableCell>
-                      {products?.map((product) => (
-                        <TableCell key={product.id} className="text-center">
-                          <div className="flex flex-wrap gap-2 justify-center">
-                            {product.colors && product.colors.length > 0 ? (
-                              product.colors.map((color: string, idx: number) => (
-                                <Badge key={idx} variant="outline" className="text-sm">
-                                  {color}
-                                </Badge>
-                              ))
-                            ) : (
-                              <span className="text-muted-foreground text-sm">-</span>
-                            )}
-                          </div>
-                        </TableCell>
-                      ))}
-                    </TableRow>
-
                     {/* Discount */}
                     {products?.some(p => p.discount_percentage) && (
                       <TableRow className="hover:bg-muted/50">
@@ -300,6 +293,50 @@ export default function Compare() {
                         ))}
                       </TableRow>
                     )}
+
+                    {/* Product Attributes Section Header */}
+                    {allAttributeNames.length > 0 && (
+                      <TableRow className="bg-[#FCF8F4]">
+                        <TableCell 
+                          colSpan={products?.length + 1} 
+                          className="font-bold text-base text-center py-4"
+                        >
+                          ویژگی‌های محصول
+                        </TableCell>
+                      </TableRow>
+                    )}
+
+                    {/* Individual Attributes */}
+                    {allAttributeNames.map((attributeName, idx) => (
+                      <TableRow 
+                        key={attributeName} 
+                        className={`hover:bg-muted/50 ${idx % 2 === 0 ? '' : 'bg-muted/20'}`}
+                      >
+                        <TableCell className="font-semibold sticky right-0 bg-background">
+                          {attributeName}
+                        </TableCell>
+                        {products?.map((product) => {
+                          const attribute = product.attributes?.find(
+                            (a: any) => a.attribute_name === attributeName
+                          );
+                          return (
+                            <TableCell key={product.id} className="text-center">
+                              {attribute && attribute.attribute_values?.length > 0 ? (
+                                <div className="flex flex-wrap gap-2 justify-center">
+                                  {attribute.attribute_values.map((value: string, idx: number) => (
+                                    <Badge key={idx} variant="outline" className="text-sm">
+                                      {value}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
 
                     {/* Features Section Header */}
                     {allFeatureKeys.length > 0 && (
@@ -332,6 +369,50 @@ export default function Compare() {
                                 <div className="flex items-center justify-center gap-2">
                                   <Check className="w-4 h-4 text-green-600" />
                                   <span className="font-medium">{feature.feature_value}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+
+                    {/* Product Attributes Section Header */}
+                    {allAttributeNames.length > 0 && (
+                      <TableRow className="bg-[#FCF8F4]">
+                        <TableCell 
+                          colSpan={products?.length + 1} 
+                          className="font-bold text-base text-center py-4"
+                        >
+                          ویژگی‌های محصول
+                        </TableCell>
+                      </TableRow>
+                    )}
+
+                    {/* Individual Attributes */}
+                    {allAttributeNames.map((attributeName, idx) => (
+                      <TableRow 
+                        key={attributeName} 
+                        className={`hover:bg-muted/50 ${idx % 2 === 0 ? '' : 'bg-muted/20'}`}
+                      >
+                        <TableCell className="font-semibold sticky right-0 bg-background">
+                          {attributeName}
+                        </TableCell>
+                        {products?.map((product) => {
+                          const attribute = product.attributes?.find(
+                            (a: any) => a.attribute_name === attributeName
+                          );
+                          return (
+                            <TableCell key={product.id} className="text-center">
+                              {attribute && attribute.attribute_values?.length > 0 ? (
+                                <div className="flex flex-wrap gap-2 justify-center">
+                                  {attribute.attribute_values.map((value: string, idx: number) => (
+                                    <Badge key={idx} variant="outline" className="text-sm">
+                                      {value}
+                                    </Badge>
+                                  ))}
                                 </div>
                               ) : (
                                 <span className="text-muted-foreground">-</span>

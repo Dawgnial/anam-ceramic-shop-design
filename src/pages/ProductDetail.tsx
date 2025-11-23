@@ -21,7 +21,7 @@ export default function ProductDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState<string>("");
+  const [selectedAttributes, setSelectedAttributes] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [zoomImageIndex, setZoomImageIndex] = useState(0);
@@ -56,10 +56,19 @@ export default function ProductDetail() {
 
       if (pcError) throw pcError;
 
+      // Fetch product attributes
+      const { data: attributesData, error: attrError } = await supabase
+        .from('product_attributes')
+        .select('*')
+        .eq('product_id', productData.id);
+
+      if (attrError) throw attrError;
+
       return {
         ...productData,
         categories: productCategoriesData?.map((pc: any) => pc.categories) || [],
-        category_ids: productCategoriesData?.map((pc: any) => pc.category_id) || []
+        category_ids: productCategoriesData?.map((pc: any) => pc.category_id) || [],
+        attributes: attributesData || []
       };
     },
   });
@@ -100,8 +109,14 @@ export default function ProductDetail() {
   const isInCompare = compareItems.some(item => item.id === product.id);
 
   const handleAddToCart = () => {
-    if (product.colors.length > 0 && !selectedColor) {
-      toast.error('لطفا رنگ مورد نظر را انتخاب کنید');
+    // Check if all required attributes are selected
+    const requiredAttributes = product.attributes?.filter((attr: any) => attr.attribute_values.length > 0) || [];
+    const missingAttributes = requiredAttributes.filter(
+      (attr: any) => !selectedAttributes[attr.attribute_name]
+    );
+
+    if (missingAttributes.length > 0) {
+      toast.error(`لطفا ${missingAttributes[0].attribute_name} را انتخاب کنید`);
       return;
     }
 
@@ -115,7 +130,7 @@ export default function ProductDetail() {
       name: product.name,
       price: product.price,
       image: product.images[0],
-      color: selectedColor,
+      attributes: selectedAttributes,
     });
 
     toast.success('محصول به سبد خرید اضافه شد');
@@ -268,26 +283,33 @@ export default function ProductDetail() {
               </p>
             </div>
 
-            {/* Colors */}
-            {product.colors.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-semibold text-lg">رنگ</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.colors.map((color: string) => (
-                    <Button
-                      key={color}
-                      variant={selectedColor === color ? "default" : "outline"}
-                      onClick={() => setSelectedColor(color)}
-                      style={
-                        selectedColor === color
-                          ? { backgroundColor: '#B3886D' }
-                          : undefined
-                      }
-                    >
-                      {color}
-                    </Button>
-                  ))}
-                </div>
+            {/* Product Attributes */}
+            {product.attributes && product.attributes.length > 0 && product.attributes.some((a: any) => a.attribute_values?.length > 0) && (
+              <div className="space-y-4">
+                {product.attributes.filter((a: any) => a.attribute_values?.length > 0).map((attribute: any) => (
+                  <div key={attribute.id} className="space-y-3">
+                    <h3 className="font-semibold text-lg">{attribute.attribute_name}</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {attribute.attribute_values.map((value: string) => (
+                        <Button
+                          key={value}
+                          variant={selectedAttributes[attribute.attribute_name] === value ? "default" : "outline"}
+                          onClick={() => setSelectedAttributes({
+                            ...selectedAttributes,
+                            [attribute.attribute_name]: value
+                          })}
+                          style={
+                            selectedAttributes[attribute.attribute_name] === value
+                              ? { backgroundColor: '#B3886D' }
+                              : undefined
+                          }
+                        >
+                          {value}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
