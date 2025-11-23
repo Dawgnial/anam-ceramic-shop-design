@@ -1,9 +1,10 @@
-import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare } from "lucide-react";
+import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare, Warehouse } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 const items = [
   { title: "خانه", url: "/", icon: Home },
   { title: "محصولات", url: "/admin/products", icon: Package },
+  { title: "موجودی انبار", url: "/admin/inventory", icon: Warehouse },
   { title: "دسته‌بندی‌ها", url: "/admin/categories", icon: FolderTree },
   { title: "سفارشات", url: "/admin/orders", icon: ShoppingCart },
   { title: "نظرات", url: "/admin/reviews", icon: MessageSquare },

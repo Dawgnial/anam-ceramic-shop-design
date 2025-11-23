@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { LowStockAlert } from "@/components/admin/LowStockAlert";
 
 export default function AdminDashboard() {
   // Fetch basic stats
@@ -145,6 +146,9 @@ export default function AdminDashboard() {
           <h2 className="text-3xl font-bold">داشبورد</h2>
           <p className="text-muted-foreground mt-2">خلاصه‌ای از وضعیت فروشگاه</p>
         </div>
+
+        {/* Low Stock Alert */}
+        <LowStockAlert />
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat) => (

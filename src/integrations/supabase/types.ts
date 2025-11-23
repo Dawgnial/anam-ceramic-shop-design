@@ -158,6 +158,13 @@ export type Database = {
             foreignKeyName: "inventory_movements_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "low_stock_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -269,6 +276,13 @@ export type Database = {
             foreignKeyName: "product_categories_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "low_stock_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_categories_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -304,6 +318,13 @@ export type Database = {
           product_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_features_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "low_stock_products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_features_product_id_fkey"
             columns: ["product_id"]
@@ -356,6 +377,13 @@ export type Database = {
             foreignKeyName: "product_reviews_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
+            referencedRelation: "low_stock_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -379,6 +407,7 @@ export type Database = {
           images: string[] | null
           in_stock: boolean | null
           is_featured: boolean | null
+          low_stock_threshold: number | null
           name: string
           price: number
           slug: string
@@ -395,6 +424,7 @@ export type Database = {
           images?: string[] | null
           in_stock?: boolean | null
           is_featured?: boolean | null
+          low_stock_threshold?: number | null
           name: string
           price: number
           slug: string
@@ -411,6 +441,7 @@ export type Database = {
           images?: string[] | null
           in_stock?: boolean | null
           is_featured?: boolean | null
+          low_stock_threshold?: number | null
           name?: string
           price?: number
           slug?: string
@@ -468,6 +499,36 @@ export type Database = {
       }
     }
     Views: {
+      low_stock_products: {
+        Row: {
+          id: string | null
+          image: string | null
+          low_stock_threshold: number | null
+          name: string | null
+          slug: string | null
+          stock: number | null
+          stock_shortage: number | null
+        }
+        Insert: {
+          id?: string | null
+          image?: never
+          low_stock_threshold?: number | null
+          name?: string | null
+          slug?: string | null
+          stock?: number | null
+          stock_shortage?: never
+        }
+        Update: {
+          id?: string | null
+          image?: never
+          low_stock_threshold?: number | null
+          name?: string | null
+          slug?: string | null
+          stock?: number | null
+          stock_shortage?: never
+        }
+        Relationships: []
+      }
       products_with_ratings: {
         Row: {
           average_rating: number | null
