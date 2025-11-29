@@ -11,8 +11,9 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toPersianNumber } from "@/lib/utils";
-import { Heart, ShoppingCart, Search, Shuffle } from "lucide-react";
+import { Heart, ShoppingCart, Search, Shuffle, Filter } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -31,6 +32,7 @@ const Shop = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   // Fetch products from database
   const { data: products = [], isLoading: loadingProducts } = useQuery({
@@ -168,14 +170,89 @@ const Shop = () => {
     setCurrentPage(1);
   });
 
+  // Sidebar content component for reuse
+  const SidebarContent = () => (
+    <div className="space-y-6">
+      {/* دسته‌بندی‌ها */}
+      <div>
+        <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">دسته بندی ها</h3>
+        <div className="space-y-1 sm:space-y-2">
+          <button
+            onClick={() => {
+              setSelectedCategory(null);
+              setFilterSheetOpen(false);
+            }}
+            className={`block w-full text-right text-xs sm:text-sm py-1 px-2 rounded transition-colors ${
+              selectedCategory === null 
+                ? 'font-bold' 
+                : 'hover:bg-accent'
+            }`}
+            style={selectedCategory === null ? { color: '#B3886D' } : undefined}
+          >
+            همه محصولات ({toPersianNumber(products.length)})
+          </button>
+          {categories.map((category) => {
+            const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
+            return (
+              <button
+                key={category.id}
+                onClick={() => {
+                  setSelectedCategory(category.id);
+                  setFilterSheetOpen(false);
+                }}
+                className={`block w-full text-right text-xs sm:text-sm py-1 px-2 rounded transition-colors ${
+                  selectedCategory === category.id 
+                    ? 'font-bold' 
+                    : 'hover:bg-accent'
+                }`}
+                style={selectedCategory === category.id ? { color: '#B3886D' } : undefined}
+              >
+                {category.name} ({toPersianNumber(count)})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <hr className="border-gray-300" />
+
+      {/* فیلتر بر اساس قیمت */}
+      <div>
+        <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">فیلتر بر اساس قیمت</h3>
+        <div className="space-y-4">
+          <Slider
+            min={minPrice}
+            max={maxPrice}
+            step={10000}
+            value={priceRange}
+            onValueChange={setPriceRange}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs sm:text-sm text-muted-foreground">
+            <span>قیمت: {toPersianNumber(priceRange[0])} تومان</span>
+            <span>— {toPersianNumber(priceRange[1])} تومان</span>
+          </div>
+          <Button 
+            variant="outline" 
+            className="w-full text-sm"
+            style={{ backgroundColor: 'transparent' }}
+            onClick={() => setFilterSheetOpen(false)}
+          >
+            اعمال فیلتر
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   if (loadingProducts || loadingCategories) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
-            <p>در حال بارگذاری...</p>
+            <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
+            <p className="text-sm md:text-base">در حال بارگذاری...</p>
           </div>
         </div>
         <Footer />
@@ -188,99 +265,53 @@ const Shop = () => {
       <Header />
       
       {/* Page Header Banner */}
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-3xl font-bold text-black">فروشگاه</h1>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-black">فروشگاه</h1>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex gap-6">
+      <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           
-          {/* Sidebar - 30% */}
-          <aside className="w-[30%] space-y-6">
-            
-            {/* دسته‌بندی‌ها */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">دسته بندی ها</h3>
-              <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory(null)}
-                  className={`block w-full text-right text-sm py-1 px-2 rounded transition-colors ${
-                    selectedCategory === null 
-                      ? 'font-bold' 
-                      : 'hover:bg-accent'
-                  }`}
-                  style={selectedCategory === null ? { color: '#B3886D' } : undefined}
-                >
-                  همه محصولات ({toPersianNumber(products.length)})
-                </button>
-                {categories.map((category) => {
-                  const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
-                  return (
-                    <button
-                      key={category.id}
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`block w-full text-right text-sm py-1 px-2 rounded transition-colors ${
-                        selectedCategory === category.id 
-                          ? 'font-bold' 
-                          : 'hover:bg-accent'
-                      }`}
-                      style={selectedCategory === category.id ? { color: '#B3886D' } : undefined}
-                    >
-                      {category.name} ({toPersianNumber(count)})
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <hr className="border-gray-300" />
-
-            {/* فیلتر بر اساس قیمت */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">فیلتر بر اساس قیمت</h3>
-              <div className="space-y-4">
-                <Slider
-                  min={minPrice}
-                  max={maxPrice}
-                  step={10000}
-                  value={priceRange}
-                  onValueChange={setPriceRange}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>قیمت: {toPersianNumber(priceRange[0])} تومان</span>
-                  <span>— {toPersianNumber(priceRange[1])} تومان</span>
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  style={{ backgroundColor: 'transparent' }}
-                >
-                  صافی
-                </Button>
-              </div>
-            </div>
-
+          {/* Sidebar - Desktop Only */}
+          <aside className="hidden lg:block w-[30%] space-y-6">
+            <SidebarContent />
           </aside>
 
-          {/* Products Area - 70% */}
-          <main className="w-[70%]">
+          {/* Products Area */}
+          <main className="w-full lg:w-[70%]">
             
             {/* Toolbar */}
-            <div className="flex justify-between items-center mb-6">
-              {/* Breadcrumb - سمت چپ */}
-              <div className="text-sm text-muted-foreground">
-                <Link to="/" className="hover:text-foreground">خانه</Link>
-                <span className="mx-2">/</span>
-                <span>فروشگاه</span>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              {/* Breadcrumb & Mobile Filter Button */}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                {/* Mobile Filter Button */}
+                <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+                  <SheetTrigger asChild className="lg:hidden">
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Filter className="h-4 w-4" />
+                      فیلتر
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[280px] sm:w-[320px] overflow-y-auto">
+                    <div className="pt-6">
+                      <SidebarContent />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+
+                <div className="text-xs sm:text-sm text-muted-foreground">
+                  <Link to="/" className="hover:text-foreground">خانه</Link>
+                  <span className="mx-1 sm:mx-2">/</span>
+                  <span>فروشگاه</span>
+                </div>
               </div>
 
-              {/* Controls - سمت راست */}
-              <div className="flex items-center gap-4">
+              {/* Controls */}
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
                 {/* Items per page selector */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">نمایش:</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <span className="text-xs sm:text-sm hidden sm:inline">نمایش:</span>
                   {[9, 24, 36].map((num) => (
                     <button
                       key={num}
@@ -288,7 +319,7 @@ const Shop = () => {
                         setItemsPerPage(num);
                         setCurrentPage(1);
                       }}
-                      className={`px-3 py-1 text-sm border rounded ${
+                      className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border rounded ${
                         itemsPerPage === num 
                           ? 'bg-primary text-primary-foreground' 
                           : 'bg-background hover:bg-accent'
@@ -301,7 +332,7 @@ const Shop = () => {
 
                 {/* Sort dropdown */}
                 <Select value={sortOrder} onValueChange={setSortOrder}>
-                  <SelectTrigger className="w-[200px]">
+                  <SelectTrigger className="w-[140px] sm:w-[180px] md:w-[200px] text-xs sm:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -317,7 +348,7 @@ const Shop = () => {
 
             {/* Products Grid */}
             <TooltipProvider>
-              <div className="grid grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
                 {displayedProducts.map((product) => (
                   <div 
                     key={product.id} 
@@ -332,17 +363,17 @@ const Shop = () => {
                       />
                       
                       {/* Hover Icons - عمودی */}
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         
                         {/* افزودن به سبد خرید */}
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button 
                               onClick={() => handleAddToCart(product)}
-                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                               style={{ backgroundColor: '#B3886D' }}
                             >
-                              <ShoppingCart className="w-5 h-5 text-white" />
+                              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -358,10 +389,10 @@ const Shop = () => {
                                 setQuickViewProductId(product.id);
                                 setQuickViewOpen(true);
                               }}
-                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                               style={{ backgroundColor: '#B3886D' }}
                             >
-                              <Search className="w-5 h-5 text-white" />
+                              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -374,10 +405,10 @@ const Shop = () => {
                           <TooltipTrigger asChild>
                             <button 
                               onClick={() => handleAddToCompare(product)}
-                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                               style={{ backgroundColor: '#B3886D' }}
                             >
-                              <Shuffle className="w-5 h-5 text-white" />
+                              <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -390,10 +421,10 @@ const Shop = () => {
                           <TooltipTrigger asChild>
                             <button 
                               onClick={() => handleAddToWishlist(product)}
-                              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                               style={{ backgroundColor: '#B3886D' }}
                             >
-                              <Heart className="w-5 h-5 text-white" />
+                              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                             </button>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -404,13 +435,13 @@ const Shop = () => {
                     </div>
 
                     <div 
-                      className="p-4 text-center cursor-pointer"
+                      className="p-2 sm:p-3 md:p-4 text-center cursor-pointer"
                       onClick={() => navigate(`/product/${product.slug}`)}
                     >
-                      <h3 className="font-semibold text-foreground mb-2 hover:text-[#B3886D] transition-colors">
+                      <h3 className="font-semibold text-foreground mb-1 sm:mb-2 hover:text-[#B3886D] transition-colors text-xs sm:text-sm md:text-base line-clamp-2">
                         {product.name}
                       </h3>
-                      <p className="text-lg font-bold" style={{ color: '#B3886D' }}>
+                      <p className="text-sm sm:text-base md:text-lg font-bold" style={{ color: '#B3886D' }}>
                         {toPersianNumber(product.price)} تومان
                       </p>
                     </div>
@@ -422,37 +453,44 @@ const Shop = () => {
             {/* Pagination */}
             {totalPages > 1 && (
               <Pagination>
-                <PaginationContent>
+                <PaginationContent className="flex-wrap justify-center gap-1">
                   <PaginationItem>
                     <PaginationPrevious 
                       onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={`text-xs sm:text-sm ${currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
                     />
                   </PaginationItem>
                   
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
+                    <PaginationItem key={page} className="hidden sm:block">
                       <PaginationLink
                         onClick={() => setCurrentPage(page)}
                         isActive={currentPage === page}
-                        className="cursor-pointer"
+                        className="cursor-pointer text-xs sm:text-sm"
                       >
                         {toPersianNumber(page)}
                       </PaginationLink>
                     </PaginationItem>
                   ))}
+
+                  {/* Mobile: Show current page */}
+                  <PaginationItem className="sm:hidden">
+                    <span className="px-3 py-1 text-xs">
+                      {toPersianNumber(currentPage)} از {toPersianNumber(totalPages)}
+                    </span>
+                  </PaginationItem>
                   
                   <PaginationItem>
                     <PaginationNext 
                       onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={`text-xs sm:text-sm ${currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
                     />
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>
             )}
-
           </main>
+
         </div>
       </div>
 
@@ -462,8 +500,8 @@ const Shop = () => {
         onOpenChange={setQuickViewOpen}
       />
 
-      <BackToTop />
       <Footer />
+      <BackToTop />
     </div>
   );
 };

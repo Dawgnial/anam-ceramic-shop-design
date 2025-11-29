@@ -96,10 +96,10 @@ export const ProductsCarousel = () => {
 
   if (isLoading) {
     return (
-      <section className="h-[725px] bg-background flex items-center">
+      <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
         <div className="container mx-auto px-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
-          <p>در حال بارگذاری محصولات...</p>
+          <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
+          <p className="text-sm md:text-base">در حال بارگذاری محصولات...</p>
         </div>
       </section>
     );
@@ -107,26 +107,26 @@ export const ProductsCarousel = () => {
 
   if (products.length === 0) {
     return (
-      <section className="h-[725px] bg-background flex items-center">
+      <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-muted-foreground">محصولی برای نمایش وجود ندارد</p>
+          <p className="text-muted-foreground text-sm md:text-base">محصولی برای نمایش وجود ندارد</p>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="h-[725px] bg-background flex items-center">
+    <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-2">محصولات ما</h2>
-          <p className="text-muted-foreground">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
+        <div className="text-center mb-6 sm:mb-8 md:mb-12">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2">محصولات ما</h2>
+          <p className="text-muted-foreground text-sm md:text-base">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
         </div>
 
         <div className="relative">
           <div
             ref={scrollRef}
-            className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth cursor-grab active:cursor-grabbing"
+            className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth cursor-grab active:cursor-grabbing pb-4"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
@@ -136,27 +136,27 @@ export const ProductsCarousel = () => {
             {products.map((product) => (
               <Card 
                 key={product.id} 
-                className="min-w-[280px] flex-shrink-0 group relative hover:shadow-lg transition-shadow"
+                className="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] flex-shrink-0 group relative hover:shadow-lg transition-shadow"
               >
                 <CardContent className="p-0 relative">
                   <img
                     src={product.images?.[0] || '/placeholder.svg'}
                     alt={product.name}
-                    className="w-full h-64 object-cover rounded-t-lg cursor-pointer"
+                    className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover rounded-t-lg cursor-pointer"
                     onClick={() => navigate(`/product/${product.slug}`)}
                   />
                   
                   {/* Hover Icons */}
                   <TooltipProvider>
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <button 
                             onClick={() => handleAddToCart(product)}
-                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                             style={{ backgroundColor: '#B3886D' }}
                           >
-                            <ShoppingCart className="w-5 h-5 text-white" />
+                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -171,10 +171,10 @@ export const ProductsCarousel = () => {
                               setQuickViewProductId(product.id);
                               setQuickViewOpen(true);
                             }}
-                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                             style={{ backgroundColor: '#B3886D' }}
                           >
-                            <Search className="w-5 h-5 text-white" />
+                            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -186,10 +186,10 @@ export const ProductsCarousel = () => {
                         <TooltipTrigger asChild>
                           <button 
                             onClick={() => handleAddToCompare(product)}
-                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                             style={{ backgroundColor: '#B3886D' }}
                           >
-                            <Shuffle className="w-5 h-5 text-white" />
+                            <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -201,10 +201,10 @@ export const ProductsCarousel = () => {
                         <TooltipTrigger asChild>
                           <button 
                             onClick={() => handleAddToWishlist(product)}
-                            className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                            className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                             style={{ backgroundColor: '#B3886D' }}
                           >
-                            <Heart className="w-5 h-5 text-white" />
+                            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -214,14 +214,14 @@ export const ProductsCarousel = () => {
                     </div>
                   </TooltipProvider>
                 </CardContent>
-                <CardFooter className="flex flex-col items-start gap-2 p-4">
+                <CardFooter className="flex flex-col items-start gap-1 sm:gap-2 p-3 sm:p-4">
                   <h3 
-                    className="font-semibold text-foreground hover:text-[#B3886D] transition-colors cursor-pointer"
+                    className="font-semibold text-foreground hover:text-[#B3886D] transition-colors cursor-pointer text-sm sm:text-base"
                     onClick={() => navigate(`/product/${product.slug}`)}
                   >
                     {product.name}
                   </h3>
-                  <p className="font-bold" style={{ color: '#B3886D' }}>
+                  <p className="font-bold text-sm sm:text-base" style={{ color: '#B3886D' }}>
                     {toPersianNumber(product.price)} تومان
                   </p>
                 </CardFooter>

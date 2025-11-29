@@ -71,7 +71,7 @@ export const HeroSlider = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full h-[527px] overflow-hidden bg-muted">
+    <div className="relative w-full h-[280px] sm:h-[350px] md:h-[450px] lg:h-[527px] overflow-hidden bg-muted">
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide, index) => (
@@ -86,12 +86,12 @@ export const HeroSlider = () => {
                 className="w-full h-full object-cover"
               />
               <div 
-                className="absolute inset-0 flex flex-col items-center justify-start pt-16 text-center"
+                className="absolute inset-0 flex flex-col items-center justify-start pt-8 sm:pt-12 md:pt-16 text-center px-4"
                 style={{ color: slide.color }}
               >
-                <p className="text-3xl mb-2">{slide.title}</p>
-                <h1 className="text-6xl font-bold mb-4">{slide.subtitle}</h1>
-                <p className="text-2xl">{slide.description}</p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">{slide.title}</p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-2 sm:mb-4">{slide.subtitle}</h1>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{slide.description}</p>
               </div>
             </div>
           ))}
@@ -99,27 +99,27 @@ export const HeroSlider = () => {
       </div>
 
       <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
+        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
         onClick={scrollPrev}
         aria-label="Previous slide"
       >
-        <ChevronLeft className="h-12 w-12" strokeWidth={2} />
+        <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" strokeWidth={2} />
       </button>
 
       <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
+        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
         onClick={scrollNext}
         aria-label="Next slide"
       >
-        <ChevronRight className="h-12 w-12" strokeWidth={2} />
+        <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" strokeWidth={2} />
       </button>
 
       {/* Slide indicators */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
         {slides.map((_, index) => (
           <button
             key={index}
-            className={`w-3 h-3 rounded-full transition-all ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${
               index === selectedIndex ? 'bg-white' : 'bg-white/50'
             }`}
             onClick={() => emblaApi?.scrollTo(index)}

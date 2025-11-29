@@ -1,4 +1,4 @@
-import { Search, Menu, Heart, ChevronDown, User } from "lucide-react";
+import { Search, Menu, Heart, ChevronDown, User, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import compareIcon from "@/assets/compare.png";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
 
 
 export const Header = () => {
@@ -28,6 +29,7 @@ export const Header = () => {
   const [showResults, setShowResults] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories from database
@@ -100,6 +102,14 @@ export const Header = () => {
     return location.pathname === path;
   };
 
+  const navLinks = [
+    { path: "/", label: "صفحه نخست" },
+    { path: "/about", label: "درباره ما" },
+    { path: "/shop", label: "فروشگاه" },
+    { path: "/blog", label: "بلاگ" },
+    { path: "/contact", label: "ارتباط با ما" },
+  ];
+
   return (
     <header className={cn(
       "w-full border-b sticky top-0 bg-background z-50 transition-all duration-300",
@@ -108,30 +118,109 @@ export const Header = () => {
       {/* Top Header */}
       <div className={cn(
         "transition-all duration-300",
-        isScrolled ? "h-[60px]" : "h-[90px]"
+        isScrolled ? "h-[50px] md:h-[60px]" : "h-[60px] md:h-[90px]"
       )}>
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <div className="flex items-center justify-between gap-4 w-full">
+        <div className="container mx-auto px-3 md:px-4 h-full flex items-center">
+          <div className="flex items-center justify-between gap-2 md:gap-4 w-full">
+            {/* Mobile Menu Button */}
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0">
+                <div className="flex flex-col h-full">
+                  <div className="p-4 border-b flex items-center justify-between">
+                    <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                      <img src={logo} alt="آنام" className="h-10 w-auto" />
+                    </Link>
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon">
+                        <X className="h-5 w-5" />
+                      </Button>
+                    </SheetClose>
+                  </div>
+                  
+                  <nav className="flex-1 p-4">
+                    <ul className="space-y-2">
+                      {navLinks.map((link) => (
+                        <li key={link.path}>
+                          <Link 
+                            to={link.path}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className={cn(
+                              "block py-3 px-4 rounded-lg transition-colors",
+                              isActivePage(link.path) 
+                                ? "bg-primary/10 text-primary" 
+                                : "hover:bg-muted"
+                            )}
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {/* Categories in mobile menu */}
+                    {categories && categories.length > 0 && (
+                      <div className="mt-4 pt-4 border-t">
+                        <p className="text-sm font-bold mb-2 px-4">دسته بندی‌ها</p>
+                        <ul className="space-y-1">
+                          {categories.map((category) => (
+                            <li key={category.id}>
+                              <Link
+                                to={`/shop?category=${category.slug}`}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block py-2 px-4 text-sm hover:bg-muted rounded-lg transition-colors"
+                              >
+                                {category.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </nav>
+                  
+                  <div className="p-4 border-t">
+                    {user ? (
+                      <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
+                        <Button className="w-full gap-2">
+                          <User className="h-4 w-4" />
+                          پروفایل
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
+                        <Button className="w-full">ورود / ثبت نام</Button>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+
             {/* Logo - Right */}
             <Link to="/" className="flex-shrink-0 group">
-              <img src={logo} alt="آنام" className="h-16 w-auto transition-opacity hover:opacity-90" />
+              <img src={logo} alt="آنام" className="h-10 md:h-16 w-auto transition-opacity hover:opacity-90" />
             </Link>
 
             {/* Search Bar - Center */}
-            <div className="flex-1 max-w-3xl relative" ref={searchRef}>
+            <div className="flex-1 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-3xl relative" ref={searchRef}>
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="جستجوی محصولات"
+                  placeholder="جستجو..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pr-4 pl-12 h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="w-full pr-3 md:pr-4 pl-10 md:pl-12 h-9 md:h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base"
                 />
                 <Button
                   size="icon"
-                  className="absolute left-0 top-0 h-11 w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
+                  className="absolute left-0 top-0 h-9 md:h-11 w-9 md:w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
                 >
-                  <Search className="h-5 w-5" />
+                  <Search className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </div>
 
@@ -147,11 +236,11 @@ export const Header = () => {
                       <img 
                         src={product.images?.[0] || '/placeholder.svg'} 
                         alt={product.name}
-                        className="w-12 h-12 object-cover rounded"
+                        className="w-10 h-10 md:w-12 md:h-12 object-cover rounded"
                       />
                       <div className="flex-1">
-                        <p className="font-medium">{product.name}</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-medium text-sm md:text-base">{product.name}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {toPersianNumber(product.price)} تومان
                         </p>
                       </div>
@@ -161,8 +250,8 @@ export const Header = () => {
               )}
             </div>
 
-            {/* User Profile/Login - Left */}
-            <div className="flex-shrink-0">
+            {/* User Profile/Login - Left (hidden on mobile) */}
+            <div className="flex-shrink-0 hidden lg:block">
               {user ? (
                 <Link to="/profile">
                   <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
@@ -178,14 +267,37 @@ export const Header = () => {
                 </Link>
               )}
             </div>
+
+            {/* Cart Icons - Always visible */}
+            <div className="flex items-center gap-1 md:gap-3 lg:hidden">
+              <Link to="/wishlist" className="relative">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <Heart className="h-5 w-5" />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                      {toPersianNumber(wishlistItems.length)}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+              
+              <div className="relative">
+                <CartDrawer />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                    {toPersianNumber(cartItems.length)}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Header */}
+      {/* Bottom Header - Hidden on mobile */}
       <div 
         className={cn(
-          "border-t transition-all duration-300",
+          "border-t transition-all duration-300 hidden lg:block",
           isScrolled ? "h-[52px]" : "h-[40px]"
         )} 
         style={{ backgroundColor: '#F9F9F9' }}
@@ -222,61 +334,19 @@ export const Header = () => {
 
             {/* Main Navigation - Center */}
             <nav className="flex items-center gap-3">
-              <Link to="/">
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                    isActivePage("/") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
-                  )}
-                >
-                  صفحه نخست
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                    isActivePage("/about") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
-                  )}
-                >
-                  درباره ما
-                </Button>
-              </Link>
-              <Link to="/shop">
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                    isActivePage("/shop") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
-                  )}
-                >
-                  فروشگاه
-                </Button>
-              </Link>
-              <Link to="/blog">
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                    isActivePage("/blog") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
-                  )}
-                >
-                  بلاگ
-                </Button>
-              </Link>
-              <Link to="/contact">
-                <Button 
-                  variant="ghost" 
-                  className={cn(
-                    "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                    isActivePage("/contact") ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
-                  )}
-                >
-                  ارتباط با ما
-                </Button>
-              </Link>
+              {navLinks.map((link) => (
+                <Link key={link.path} to={link.path}>
+                  <Button 
+                    variant="ghost" 
+                    className={cn(
+                      "text-sm h-9 px-3 transition-all hover:bg-transparent",
+                      isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
+                    )}
+                  >
+                    {link.label}
+                  </Button>
+                </Link>
+              ))}
             </nav>
 
             {/* Cart Icons - Left */}
