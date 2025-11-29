@@ -1,5 +1,4 @@
 import { MessageCircle, Send } from "lucide-react";
-import enamadIcon from "@/assets/enamad_icon.png";
 
 export const Footer = () => {
   return (
@@ -52,15 +51,15 @@ export const Footer = () => {
           {/* Column 4: Enamad Badge */}
           <div className="flex flex-col items-center justify-start">
             <a 
-              href="https://trustseal.enamad.ir/?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" 
+              referrerPolicy="origin" 
               target="_blank" 
-              rel="noopener noreferrer"
-              className="hover:opacity-80 transition-opacity"
+              href="https://trustseal.enamad.ir/?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1"
             >
               <img 
-                src={enamadIcon} 
+                referrerPolicy="origin" 
+                src="https://trustseal.enamad.ir/logo.aspx?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" 
                 alt="نماد اعتماد الکترونیکی" 
-                className="w-24 h-24 object-contain"
+                className="cursor-pointer"
               />
             </a>
           </div>
