@@ -1,6 +1,5 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "./ui/button";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import slider1 from "@/assets/slider1-min.jpg";
@@ -42,10 +41,11 @@ export const HeroSlider = () => {
     { 
       loop: true,
       direction: 'rtl',
-      align: 'start'
     },
     [Autoplay({ delay: 3000, stopOnInteraction: false })]
   );
+
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -55,18 +55,40 @@ export const HeroSlider = () => {
     if (emblaApi) emblaApi.scrollNext();
   }, [emblaApi]);
 
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+
+    emblaApi.on('select', onSelect);
+    onSelect();
+
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
   return (
-    <div className="relative w-full h-[527px] overflow-hidden bg-muted" dir="rtl">
+    <div className="relative w-full h-[527px] overflow-hidden bg-muted">
       <div className="overflow-hidden h-full" ref={emblaRef}>
-        <div className="flex h-full" dir="ltr">
-          {slides.map((slide) => (
-            <div key={slide.id} className="relative flex-[0_0_100%] min-w-0 h-full">
+        <div className="flex h-full">
+          {slides.map((slide, index) => (
+            <div 
+              key={slide.id} 
+              className="relative h-full"
+              style={{ flex: '0 0 100%', minWidth: 0 }}
+            >
               <img
                 src={slide.image}
                 alt={slide.alt}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 flex flex-col items-center justify-start pt-16 text-center" style={{ color: slide.color }}>
+              <div 
+                className="absolute inset-0 flex flex-col items-center justify-start pt-16 text-center"
+                style={{ color: slide.color }}
+              >
                 <p className="text-3xl mb-2">{slide.title}</p>
                 <h1 className="text-6xl font-bold mb-4">{slide.subtitle}</h1>
                 <p className="text-2xl">{slide.description}</p>
@@ -91,6 +113,20 @@ export const HeroSlider = () => {
       >
         <ChevronRight className="h-12 w-12" strokeWidth={2} />
       </button>
+
+      {/* Slide indicators */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            className={`w-3 h-3 rounded-full transition-all ${
+              index === selectedIndex ? 'bg-white' : 'bg-white/50'
+            }`}
+            onClick={() => emblaApi?.scrollTo(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
