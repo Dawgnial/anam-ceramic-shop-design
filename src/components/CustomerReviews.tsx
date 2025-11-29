@@ -40,43 +40,43 @@ export const CustomerReviews = () => {
   }, []);
 
   return (
-    <section className="h-[588px] bg-reviews flex items-center">
+    <section className="py-8 sm:py-12 md:py-16 lg:h-[588px] bg-reviews flex items-center">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-foreground mb-12">نظرات مشتریان</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground mb-6 sm:mb-8 md:mb-12">نظرات مشتریان</h2>
 
-        <div className="max-w-2xl mx-auto overflow-hidden">
-          <Card className="border-none shadow-lg min-h-[280px] flex items-center">
-            <CardContent className="p-8 text-center w-full">
+        <div className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto overflow-hidden">
+          <Card className="border-none shadow-lg min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex items-center">
+            <CardContent className="p-4 sm:p-6 md:p-8 text-center w-full">
               <div
                 className={`transition-transform duration-300 ${
                   isAnimating ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
                 }`}
               >
-                <div className="flex justify-center gap-1 mb-4">
+                <div className="flex justify-center gap-1 mb-3 sm:mb-4">
                   {[...Array(reviews[currentReview].rating)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                    <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-lg text-foreground mb-4 leading-relaxed">
+                <p className="text-sm sm:text-base md:text-lg text-foreground mb-3 sm:mb-4 leading-relaxed">
                   "{reviews[currentReview].text}"
                 </p>
-                <p className="font-bold text-primary">{reviews[currentReview].name}</p>
+                <p className="font-bold text-primary text-sm sm:text-base">{reviews[currentReview].name}</p>
               </div>
             </CardContent>
           </Card>
 
-          <div className="flex justify-center items-center gap-4 mt-6">
+          <div className="flex justify-center items-center gap-3 sm:gap-4 mt-4 sm:mt-6">
             <button
               onClick={() => setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length)}
               className="text-primary hover:opacity-80 transition-opacity"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
             
             {reviews.map((_, index) => (
               <button
                 key={index}
-                className={`w-3 h-3 rounded-full transition-colors ${
+                className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors ${
                   index === currentReview ? "bg-primary" : "bg-muted-foreground/30"
                 }`}
                 onClick={() => setCurrentReview(index)}
@@ -87,7 +87,7 @@ export const CustomerReviews = () => {
               onClick={() => setCurrentReview((prev) => (prev + 1) % reviews.length)}
               className="text-primary hover:opacity-80 transition-opacity"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           </div>
         </div>

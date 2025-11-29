@@ -22,26 +22,26 @@ export const Welcome = () => {
           <img
             src={welcomeImg1}
             alt="Welcome"
-            className="w-full h-[500px] object-cover"
+            className="w-full h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover"
           />
           {/* Text box overlay - border only */}
-          <div className="absolute inset-0 flex items-center justify-center p-8">
+          <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 md:p-8">
             <div 
-              className="border-4 p-12 max-w-2xl text-center"
+              className="border-2 sm:border-4 p-4 sm:p-6 md:p-8 lg:p-12 max-w-[95%] sm:max-w-2xl text-center"
               style={{ borderColor: '#FCE8D9' }}
             >
-              <h2 className="text-3xl text-foreground mb-4">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-foreground mb-2 sm:mb-4">
                 خوش آمدید به فروشگاه آنلاین
               </h2>
-              <h3 className="text-5xl font-bold text-foreground mb-6">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4 md:mb-6">
                 ظروف سرامیک و سفال
               </h3>
-              <p className="text-foreground text-lg leading-relaxed mb-6">
+              <p className="text-foreground text-sm sm:text-base md:text-lg leading-relaxed mb-4 sm:mb-6 hidden sm:block">
                 ما در فروشگاه آنلاین آنام در تلاش هستیم تا ضمن ارائه خدمات فروش، مشاوره و خدمات پس از فروش به شما علاقه مندان رضایت شما را کسب نماییم.
               </p>
               <Button 
                 variant="outline" 
-                className="border-2 text-lg px-8 py-6"
+                className="border-2 text-sm sm:text-base md:text-lg px-4 sm:px-6 md:px-8 py-2 sm:py-4 md:py-6"
                 style={{ borderColor: '#FCE8D9', color: 'inherit' }}
               >
                 اطلاعات بیشتر
@@ -52,14 +52,14 @@ export const Welcome = () => {
 
         {/* Left side - Image */}
         <div
-          className={`transition-transform duration-1000 ${
+          className={`transition-transform duration-1000 hidden md:block ${
             isVisible ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <img
             src={welcomeImg2}
             alt="Welcome"
-            className="w-full h-[500px] object-cover"
+            className="w-full h-[450px] lg:h-[500px] object-cover"
           />
         </div>
       </div>
