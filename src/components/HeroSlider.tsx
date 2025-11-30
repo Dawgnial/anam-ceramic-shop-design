@@ -114,19 +114,6 @@ export const HeroSlider = () => {
         <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" strokeWidth={2} />
       </button>
 
-      {/* Slide indicators */}
-      <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all ${
-              index === selectedIndex ? 'bg-white' : 'bg-white/50'
-            }`}
-            onClick={() => emblaApi?.scrollTo(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
     </div>
   );
 };
