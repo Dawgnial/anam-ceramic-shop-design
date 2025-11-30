@@ -268,8 +268,19 @@ export const Header = () => {
               )}
             </div>
 
-            {/* Cart Icons - Always visible */}
-            <div className="flex items-center gap-1 md:gap-3 lg:hidden">
+            {/* Cart Icons - Always visible on mobile */}
+            <div className="flex items-center gap-1 md:gap-2 lg:hidden">
+              <Link to="/compare" className="relative">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5" />
+                  {compareItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                      {toPersianNumber(compareItems.length)}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
               <Link to="/wishlist" className="relative">
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
                   <Heart className="h-5 w-5" />
