@@ -121,7 +121,11 @@ const AdminShipping = () => {
   });
 
   const handleCostChange = (id: string, value: string) => {
-    const numValue = parseInt(value.replace(/[^0-9]/g, '')) || 0;
+    // Convert Persian digits to English digits first
+    const persianToEnglish = value
+      .replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d).toString())
+      .replace(/[^0-9]/g, '');
+    const numValue = parseInt(persianToEnglish) || 0;
     setEditingCosts(prev => ({ ...prev, [id]: numValue }));
   };
 
