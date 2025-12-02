@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import slider1 from "@/assets/slider1-min.jpg";
@@ -71,7 +70,7 @@ export const HeroSlider = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full h-[280px] sm:h-[350px] md:h-[450px] lg:h-[527px] overflow-hidden bg-muted">
+    <div className="relative w-full h-[300px] sm:h-[380px] md:h-[480px] lg:h-[527px] overflow-hidden bg-muted">
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide, index) => (
@@ -86,32 +85,34 @@ export const HeroSlider = () => {
                 className="w-full h-full object-cover"
               />
               <div 
-                className="absolute inset-0 flex flex-col items-center justify-start pt-8 sm:pt-12 md:pt-16 text-center px-4"
+                className="absolute inset-0 flex flex-col items-center justify-start pt-10 sm:pt-14 md:pt-20 lg:pt-24 text-center px-4"
                 style={{ color: slide.color }}
               >
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">{slide.title}</p>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-2 sm:mb-4">{slide.subtitle}</h1>
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{slide.description}</p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2 font-light">{slide.title}</p>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4">{slide.subtitle}</h1>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light">{slide.description}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Left Arrow (>) */}
       <button
-        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
+        className="absolute left-3 sm:left-6 md:left-8 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-70 transition-opacity text-4xl sm:text-5xl md:text-6xl font-extralight"
         onClick={scrollPrev}
-        aria-label="Previous slide"
+        aria-label="اسلاید قبلی"
       >
-        <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" strokeWidth={2} />
+        &gt;
       </button>
 
+      {/* Right Arrow (<) */}
       <button
-        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-80 transition-opacity"
+        className="absolute right-3 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-70 transition-opacity text-4xl sm:text-5xl md:text-6xl font-extralight"
         onClick={scrollNext}
-        aria-label="Next slide"
+        aria-label="اسلاید بعدی"
       >
-        <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12" strokeWidth={2} />
+        &lt;
       </button>
 
     </div>
