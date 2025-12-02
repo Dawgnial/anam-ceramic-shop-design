@@ -31,7 +31,6 @@ export const Header = () => {
   const [showCategories, setShowCategories] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch categories from database
   const { data: categories } = useQuery({
@@ -103,19 +102,6 @@ export const Header = () => {
     return location.pathname === path;
   };
 
-  const handleCategoryMouseEnter = () => {
-    if (categoryTimeoutRef.current) {
-      clearTimeout(categoryTimeoutRef.current);
-    }
-    setShowCategories(true);
-  };
-
-  const handleCategoryMouseLeave = () => {
-    categoryTimeoutRef.current = setTimeout(() => {
-      setShowCategories(false);
-    }, 150);
-  };
-
   const navLinks = [
     { path: "/", label: "صفحه نخست" },
     { path: "/about", label: "درباره ما" },
@@ -127,7 +113,7 @@ export const Header = () => {
   return (
     <header className={cn(
       "w-full border-b sticky top-0 bg-background z-50 transition-all duration-300",
-      isScrolled && "shadow-sm"
+      isScrolled && "py-0"
     )}>
       {/* Top Header */}
       <div className={cn(
@@ -166,7 +152,7 @@ export const Header = () => {
                             className={cn(
                               "block py-3 px-4 rounded-lg transition-colors",
                               isActivePage(link.path) 
-                                ? "bg-[#B3886D]/10 text-[#B3886D]" 
+                                ? "bg-primary/10 text-primary" 
                                 : "hover:bg-muted"
                             )}
                           >
@@ -200,14 +186,14 @@ export const Header = () => {
                   <div className="p-4 border-t">
                     {user ? (
                       <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full gap-2 bg-[#B3886D] hover:bg-[#B3886D]/90">
+                        <Button className="w-full gap-2">
                           <User className="h-4 w-4" />
                           پروفایل
                         </Button>
                       </Link>
                     ) : (
                       <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full bg-[#B3886D] hover:bg-[#B3886D]/90">ورود / ثبت نام</Button>
+                        <Button className="w-full">ورود / ثبت نام</Button>
                       </Link>
                     )}
                   </div>
@@ -216,23 +202,23 @@ export const Header = () => {
             </Sheet>
 
             {/* Logo - Right */}
-            <Link to="/" className="flex-shrink-0">
-              <img src={logo} alt="آنام" className="h-10 md:h-16 w-auto" />
+            <Link to="/" className="flex-shrink-0 group">
+              <img src={logo} alt="آنام" className="h-10 md:h-16 w-auto transition-opacity hover:opacity-90" />
             </Link>
 
             {/* Search Bar - Center */}
-            <div className="flex-1 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl relative mx-4 lg:mx-8" ref={searchRef}>
+            <div className="flex-1 max-w-xs sm:max-w-md md:max-w-lg lg:max-w-3xl relative" ref={searchRef}>
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="جستجوی محصولات"
+                  placeholder="جستجو..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pr-4 pl-12 h-10 md:h-[46px] bg-[#F5F4F0] border-[#E5E5E5] rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
+                  className="w-full pr-3 md:pr-4 pl-10 md:pl-12 h-9 md:h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base"
                 />
                 <Button
                   size="icon"
-                  className="absolute left-0 top-0 h-10 md:h-[46px] w-10 md:w-12 bg-[#B3886D] hover:bg-[#B3886D]/90 text-white rounded-l-sm rounded-r-none"
+                  className="absolute left-0 top-0 h-9 md:h-11 w-9 md:w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
                 >
                   <Search className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
@@ -240,7 +226,7 @@ export const Header = () => {
 
               {/* Search Results Dropdown */}
               {showResults && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-sm shadow-lg max-h-96 overflow-y-auto z-50">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg max-h-96 overflow-y-auto z-50">
                   {searchResults.map((product) => (
                     <button
                       key={product.id}
@@ -253,8 +239,8 @@ export const Header = () => {
                         className="w-10 h-10 md:w-12 md:h-12 object-cover rounded"
                       />
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="font-medium text-sm md:text-base">{product.name}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {toPersianNumber(product.price)} تومان
                         </p>
                       </div>
@@ -268,14 +254,14 @@ export const Header = () => {
             <div className="flex-shrink-0 hidden lg:block">
               {user ? (
                 <Link to="/profile">
-                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:text-[#B3886D] transition-colors">
+                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
                     <User className="h-4 w-4" />
                     پروفایل
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth">
-                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:text-[#B3886D] transition-colors">
+                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
                     ورود / ثبت نام
                   </Button>
                 </Link>
@@ -285,10 +271,10 @@ export const Header = () => {
             {/* Cart Icons - Always visible on mobile */}
             <div className="flex items-center gap-1 md:gap-2 lg:hidden">
               <Link to="/compare" className="relative">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:text-[#B3886D] transition-colors">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
                   <img src={compareIcon} alt="مقایسه" className="h-5 w-5" />
                   {compareItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                       {toPersianNumber(compareItems.length)}
                     </span>
                   )}
@@ -296,10 +282,10 @@ export const Header = () => {
               </Link>
 
               <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:text-[#B3886D] transition-colors">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
                   <Heart className="h-5 w-5" />
                   {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                       {toPersianNumber(wishlistItems.length)}
                     </span>
                   )}
@@ -309,7 +295,7 @@ export const Header = () => {
               <div className="relative">
                 <CartDrawer />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                     {toPersianNumber(cartItems.length)}
                   </span>
                 )}
@@ -329,52 +315,42 @@ export const Header = () => {
       >
         <div className="container mx-auto px-4 h-full flex items-center">
           <div className="flex items-center justify-between w-full">
-            {/* Category Menu - Right */}
+            {/* Mega Menu - Right */}
             <div 
-              className="relative flex items-center"
-              onMouseEnter={handleCategoryMouseEnter}
-              onMouseLeave={handleCategoryMouseLeave}
+              className="relative flex items-center gap-2"
+              onMouseEnter={() => setShowCategories(true)}
+              onMouseLeave={() => setShowCategories(false)}
             >
-              <button className="flex items-center gap-1.5 h-full py-2 text-sm font-medium text-foreground hover:text-[#B3886D] transition-colors">
-                <span className="menu-opener-icon w-4 h-4 flex flex-col justify-center gap-0.5">
-                  <span className="w-full h-0.5 bg-current"></span>
-                  <span className="w-full h-0.5 bg-current"></span>
-                  <span className="w-full h-0.5 bg-current"></span>
-                </span>
+              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:opacity-80 transition-opacity">
                 دسته بندی محصولات
-              </button>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
 
               {/* Categories Dropdown */}
               {showCategories && categories && categories.length > 0 && (
-                <div 
-                  className="absolute top-full right-0 pt-0"
-                  onMouseEnter={handleCategoryMouseEnter}
-                  onMouseLeave={handleCategoryMouseLeave}
-                >
-                  <div className="bg-background border border-border shadow-lg min-w-[200px]">
-                    {categories.map((category) => (
-                      <Link
-                        key={category.id}
-                        to={`/shop?category=${category.slug}`}
-                        className="block px-4 py-2.5 text-sm hover:bg-muted hover:text-[#B3886D] transition-colors"
-                        onClick={() => setShowCategories(false)}
-                      >
-                        {category.name}
-                      </Link>
-                    ))}
-                  </div>
+                <div className="absolute top-full right-0 bg-background border border-border rounded-md shadow-lg min-w-[200px] z-50">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/shop?category=${category.slug}`}
+                      className="block px-4 py-2 hover:bg-muted transition-colors"
+                      onClick={() => setShowCategories(false)}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
 
             {/* Main Navigation - Center */}
-            <nav className="flex items-center gap-1">
+            <nav className="flex items-center gap-3">
               {navLinks.map((link) => (
                 <Link key={link.path} to={link.path}>
                   <Button 
                     variant="ghost" 
                     className={cn(
-                      "text-[13px] h-9 px-4 transition-colors duration-200 hover:bg-transparent font-medium uppercase",
+                      "text-sm h-9 px-3 transition-all hover:bg-transparent",
                       isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
                     )}
                   >
@@ -386,34 +362,38 @@ export const Header = () => {
 
             {/* Cart Icons - Left */}
             <div className="flex items-center gap-3">
-              <Link to="/compare" className="relative group flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-transparent transition-all">
-                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5 group-hover:opacity-70 transition-opacity" />
-                  <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                    {toPersianNumber(compareItems.length)}
-                  </span>
+              <Link to="/compare" className="relative">
+                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6" />
+                  {compareItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {toPersianNumber(compareItems.length)}
+                    </span>
+                  )}
                 </Button>
-                <span className="text-xs text-muted-foreground group-hover:text-[#B3886D] transition-colors">مقایسه</span>
               </Link>
               
-              <Link to="/wishlist" className="relative group flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-transparent transition-all">
-                  <Heart className="h-5 w-5 group-hover:opacity-70 transition-opacity" />
-                  <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                    {toPersianNumber(wishlistItems.length)}
-                  </span>
+              <Link to="/wishlist" className="relative">
+                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <Heart className="h-6 w-6" />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {toPersianNumber(wishlistItems.length)}
+                    </span>
+                  )}
                 </Button>
-                <span className="text-xs text-muted-foreground group-hover:text-[#B3886D] transition-colors">علاقه مندی</span>
               </Link>
               
-              <div className="flex items-center gap-1 group">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
                 <div className="relative">
                   <CartDrawer />
-                  <span className="absolute -top-1 -right-1 bg-[#B3886D] text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                    {toPersianNumber(cartItems.length)}
-                  </span>
+                  {cartItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {toPersianNumber(cartItems.length)}
+                    </span>
+                  )}
                 </div>
-                <span className="text-xs text-muted-foreground">{toPersianNumber(getTotalPrice())} تومان</span>
               </div>
             </div>
           </div>
