@@ -1,4 +1,4 @@
-import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare, Warehouse } from "lucide-react";
+import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare, Warehouse, Truck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 const items = [
@@ -7,6 +7,7 @@ const items = [
   { title: "موجودی انبار", url: "/admin/inventory", icon: Warehouse },
   { title: "دسته‌بندی‌ها", url: "/admin/categories", icon: FolderTree },
   { title: "سفارشات", url: "/admin/orders", icon: ShoppingCart },
+  { title: "هزینه ارسال", url: "/admin/shipping", icon: Truck },
   { title: "نظرات", url: "/admin/reviews", icon: MessageSquare },
   { title: "کوپن‌های تخفیف", url: "/admin/coupons", icon: Tag },
   { title: "بلاگ", url: "/admin/blog", icon: FileText },

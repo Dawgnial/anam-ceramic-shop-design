@@ -525,6 +525,33 @@ export type Database = {
         }
         Relationships: []
       }
+      shipping_costs: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          province_name: string
+          shipping_cost: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          province_name: string
+          shipping_cost?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          province_name?: string
+          shipping_cost?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
