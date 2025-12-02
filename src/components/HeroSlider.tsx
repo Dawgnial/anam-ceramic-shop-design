@@ -70,51 +70,59 @@ export const HeroSlider = () => {
   }, [emblaApi]);
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[380px] md:h-[480px] lg:h-[527px] overflow-hidden bg-muted">
+    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[480px] lg:h-[527px] overflow-hidden">
       <div className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
-          {slides.map((slide, index) => (
+          {slides.map((slide) => (
             <div 
               key={slide.id} 
-              className="relative h-full"
-              style={{ flex: '0 0 100%', minWidth: 0 }}
+              className="relative h-full flex-[0_0_100%] min-w-0"
             >
               <img
                 src={slide.image}
                 alt={slide.alt}
                 className="w-full h-full object-cover"
               />
+              {/* Text overlay - positioned at top center */}
               <div 
-                className="absolute inset-0 flex flex-col items-center justify-start pt-10 sm:pt-14 md:pt-20 lg:pt-24 text-center px-4"
+                className="absolute inset-0 flex flex-col items-center pt-8 sm:pt-12 md:pt-16 lg:pt-24 text-center px-4"
                 style={{ color: slide.color }}
               >
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2 font-light">{slide.title}</p>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4">{slide.subtitle}</h1>
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light">{slide.description}</p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-[26px] mb-1 sm:mb-2 font-normal tracking-wide">
+                  {slide.title}
+                </p>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[60px] font-extrabold mb-2 sm:mb-3 md:mb-4 leading-tight">
+                  {slide.subtitle}
+                </h1>
+                <p className="text-base sm:text-lg md:text-xl lg:text-[22px] font-medium">
+                  {slide.description}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Left Arrow (>) */}
+      {/* Navigation Arrows - Simple bare arrows */}
       <button
-        className="absolute left-3 sm:left-6 md:left-8 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-70 transition-opacity text-4xl sm:text-5xl md:text-6xl font-extralight"
+        className="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white transition-colors"
         onClick={scrollPrev}
         aria-label="اسلاید قبلی"
       >
-        &gt;
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" fill="currentColor">
+          <path d="M5.204 16L3 13.91 9.236 8 3 2.09 5.204 0l7.339 6.955c.61.578.61 1.512 0 2.09L5.204 16z" fillRule="nonzero" stroke="none" strokeWidth="1"/>
+        </svg>
       </button>
 
-      {/* Right Arrow (<) */}
       <button
-        className="absolute right-3 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 z-10 text-white hover:opacity-70 transition-opacity text-4xl sm:text-5xl md:text-6xl font-extralight"
+        className="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 z-10 text-white/80 hover:text-white transition-colors"
         onClick={scrollNext}
         aria-label="اسلاید بعدی"
       >
-        &lt;
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rotate-180" fill="currentColor">
+          <path d="M5.204 16L3 13.91 9.236 8 3 2.09 5.204 0l7.339 6.955c.61.578.61 1.512 0 2.09L5.204 16z" fillRule="nonzero" stroke="none" strokeWidth="1"/>
+        </svg>
       </button>
-
     </div>
   );
 };

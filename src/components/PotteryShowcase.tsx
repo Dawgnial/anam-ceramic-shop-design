@@ -27,10 +27,10 @@ export const PotteryShowcase = () => {
 
   return (
     <section ref={sectionRef} className="bg-background overflow-hidden">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+      <div className="grid grid-cols-1 md:grid-cols-2">
         {/* Right side - Pottery (سفالی) */}
         <div
-          className={`relative h-[320px] sm:h-[400px] md:h-[480px] lg:h-[555px] transition-all duration-1000 ease-out ${
+          className={`relative h-[350px] sm:h-[420px] md:h-[480px] lg:h-[555px] transition-all duration-1000 ease-out ${
             isVisible ? "translate-x-0 opacity-100" : "translate-x-[100px] opacity-0"
           }`}
         >
@@ -41,13 +41,13 @@ export const PotteryShowcase = () => {
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white px-4 sm:px-6">
-              <p className="text-base sm:text-lg md:text-xl font-normal mb-1 sm:mb-2">فروش ویژه</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-6">ظروف سفالی</h2>
-              <p className="text-xs sm:text-sm md:text-base mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-xs sm:max-w-sm md:max-w-md mx-auto hidden sm:block opacity-90">
+              <p className="text-base sm:text-lg md:text-xl lg:text-[22px] font-medium mb-1 sm:mb-2">فروش ویژه</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[35px] font-bold mb-3 sm:mb-4 md:mb-6">ظروف سفالی</h2>
+              <p className="text-xs sm:text-sm md:text-[15px] mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-xs sm:max-w-sm md:max-w-md mx-auto hidden sm:block opacity-90 font-light">
                 بهترین و با کیفیت ترین ظروف سفالی را با کمترین قیمت در اسرع وقت از فروشگاه آنام تهیه نمایید
               </p>
               <Link to="/shop">
-                <Button className="bg-primary hover:bg-primary/90 text-sm sm:text-base px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-sm">
+                <Button className="bg-[#B3886D] hover:bg-[#B3886D]/90 text-white text-sm sm:text-base px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded-full font-medium">
                   خرید کنید
                 </Button>
               </Link>
@@ -57,7 +57,7 @@ export const PotteryShowcase = () => {
 
         {/* Left side - Ceramic (سرامیکی) */}
         <div
-          className={`relative h-[320px] sm:h-[400px] md:h-[480px] lg:h-[555px] transition-all duration-1000 ease-out ${
+          className={`relative h-[350px] sm:h-[420px] md:h-[480px] lg:h-[555px] transition-all duration-1000 ease-out ${
             isVisible ? "translate-x-0 opacity-100" : "-translate-x-[100px] opacity-0"
           }`}
         >
@@ -68,13 +68,13 @@ export const PotteryShowcase = () => {
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white px-4 sm:px-6">
-              <p className="text-base sm:text-lg md:text-xl font-normal mb-1 sm:mb-2">فروش ویژه</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 md:mb-6">ظروف سرامیکی</h2>
-              <p className="text-xs sm:text-sm md:text-base mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-xs sm:max-w-sm md:max-w-md mx-auto hidden sm:block opacity-90">
+              <p className="text-base sm:text-lg md:text-xl lg:text-[22px] font-medium mb-1 sm:mb-2">فروش ویژه</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[35px] font-bold mb-3 sm:mb-4 md:mb-6">ظروف سرامیکی</h2>
+              <p className="text-xs sm:text-sm md:text-[15px] mb-5 sm:mb-6 md:mb-8 leading-relaxed max-w-xs sm:max-w-sm md:max-w-md mx-auto hidden sm:block opacity-90 font-light">
                 بهترین و با کیفیت ترین ظروف سرامیکی را با کمترین قیمت در اسرع وقت از فروشگاه آنام تهیه نمایید
               </p>
               <Link to="/shop">
-                <Button className="bg-primary hover:bg-primary/90 text-sm sm:text-base px-5 sm:px-6 md:px-8 py-2 sm:py-2.5 rounded-sm">
+                <Button className="bg-[#B3886D] hover:bg-[#B3886D]/90 text-white text-sm sm:text-base px-6 sm:px-8 md:px-10 py-2.5 sm:py-3 rounded-full font-medium">
                   خرید کنید
                 </Button>
               </Link>
