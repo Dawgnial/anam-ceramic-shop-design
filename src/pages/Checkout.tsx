@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -8,11 +9,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toPersianNumber } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+
+interface ShippingCost {
+  id: string;
+  province_name: string;
+  shipping_cost: number;
+  is_active: boolean;
+}
 
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -23,20 +37,36 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
   const [address, setAddress] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
-  const [shippingMethod, setShippingMethod] = useState("standard");
 
-  const shippingCosts = {
-    standard: 50000,
-    express: 100000,
-    free: 0
-  };
+  // Fetch shipping costs from database
+  const { data: shippingCosts, isLoading: shippingLoading } = useQuery({
+    queryKey: ["shipping-costs"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("shipping_costs")
+        .select("*")
+        .eq("is_active", true)
+        .order("province_name");
+
+      if (error) throw error;
+      return data as ShippingCost[];
+    },
+  });
 
   const getShippingCost = () => {
-    if (getTotalPrice() > 1000000) return 0; // Free shipping over 1M
-    return shippingCosts[shippingMethod as keyof typeof shippingCosts];
+    if (!selectedProvince || !shippingCosts) return 0;
+    const province = shippingCosts.find(p => p.id === selectedProvince);
+    return province?.shipping_cost || 0;
+  };
+
+  const getSelectedProvinceName = () => {
+    if (!selectedProvince || !shippingCosts) return "";
+    const province = shippingCosts.find(p => p.id === selectedProvince);
+    return province?.province_name || "";
   };
 
   const getDiscount = () => {
@@ -130,7 +160,7 @@ const Checkout = () => {
       return;
     }
 
-    if (!name.trim() || !phone.trim() || !address.trim()) {
+    if (!name.trim() || !phone.trim() || !selectedProvince || !address.trim()) {
       toast({
         title: "اطلاعات ناقص",
         description: "لطفا تمام فیلدهای الزامی را پر کنید",
@@ -151,12 +181,14 @@ const Checkout = () => {
     setLoading(true);
 
     try {
+      const provinceName = getSelectedProvinceName();
+      
       // Create order
       const { data: order, error: orderError } = await supabase
         .from("orders")
         .insert({
           user_id: user.id,
-          shipping_address: `${name} - ${phone} - ${address}`,
+          shipping_address: `${name} - ${phone} - ${provinceName} - ${address}`,
           total_amount: getFinalTotal(),
           status: "pending"
         })
@@ -261,57 +293,65 @@ const Checkout = () => {
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="09XXXXXXXXX"
+                    placeholder="۰۹XXXXXXXXX"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="address">آدرس *</Label>
+                  <Label htmlFor="province">استان *</Label>
+                  <Select value={selectedProvince} onValueChange={setSelectedProvince}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="استان خود را انتخاب کنید" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shippingLoading ? (
+                        <div className="p-2 text-center">
+                          <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+                        </div>
+                      ) : (
+                        shippingCosts?.map((province) => (
+                          <SelectItem key={province.id} value={province.id}>
+                            {province.province_name}
+                            {province.shipping_cost > 0 && (
+                              <span className="text-muted-foreground mr-2">
+                                ({toPersianNumber(province.shipping_cost)} تومان)
+                              </span>
+                            )}
+                            {province.shipping_cost === 0 && (
+                              <span className="text-green-600 mr-2">(رایگان)</span>
+                            )}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="address">آدرس کامل *</Label>
                   <Textarea
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="آدرس کامل خود را وارد کنید"
-                    rows={4}
+                    placeholder="شهر، خیابان، کوچه، پلاک و واحد"
+                    rows={3}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Shipping Method */}
-            <div className="border rounded-lg p-6 bg-background">
-              <h2 className="text-2xl font-bold mb-6">روش ارسال</h2>
-              <RadioGroup value={shippingMethod} onValueChange={setShippingMethod}>
-                <div className="flex items-center justify-between border-b pb-4 mb-4">
-                  <div className="flex items-center space-x-2 gap-2">
-                    <RadioGroupItem value="standard" id="standard" />
-                    <Label htmlFor="standard" className="cursor-pointer">
-                      ارسال عادی (۳-۷ روز کاری)
-                    </Label>
-                  </div>
-                  <span>{toPersianNumber(shippingCosts.standard)} تومان</span>
+            {/* Shipping Cost Info */}
+            {selectedProvince && (
+              <div className="border rounded-lg p-6 bg-background">
+                <h2 className="text-2xl font-bold mb-4">هزینه ارسال</h2>
+                <div className="flex items-center justify-between">
+                  <span>ارسال به استان {getSelectedProvinceName()}:</span>
+                  {getShippingCost() === 0 ? (
+                    <span className="text-green-600 font-bold text-lg">رایگان</span>
+                  ) : (
+                    <span className="font-bold text-lg">{toPersianNumber(getShippingCost())} تومان</span>
+                  )}
                 </div>
-                <div className="flex items-center justify-between border-b pb-4 mb-4">
-                  <div className="flex items-center space-x-2 gap-2">
-                    <RadioGroupItem value="express" id="express" />
-                    <Label htmlFor="express" className="cursor-pointer">
-                      ارسال سریع (۱-۳ روز کاری)
-                    </Label>
-                  </div>
-                  <span>{toPersianNumber(shippingCosts.express)} تومان</span>
-                </div>
-                {getTotalPrice() > 1000000 && (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2 gap-2">
-                      <RadioGroupItem value="free" id="free" />
-                      <Label htmlFor="free" className="cursor-pointer">
-                        ارسال رایگان (خرید بالای یک میلیون تومان)
-                      </Label>
-                    </div>
-                    <span className="text-green-600 font-bold">رایگان</span>
-                  </div>
-                )}
-              </RadioGroup>
-            </div>
+              </div>
+            )}
 
             {/* Coupon Code */}
             <div className="border rounded-lg p-6 bg-background">
@@ -387,7 +427,9 @@ const Checkout = () => {
                 <div className="flex justify-between">
                   <span>هزینه ارسال:</span>
                   <span>
-                    {getShippingCost() === 0 ? (
+                    {!selectedProvince ? (
+                      <span className="text-muted-foreground">استان را انتخاب کنید</span>
+                    ) : getShippingCost() === 0 ? (
                       <span className="text-green-600 font-bold">رایگان</span>
                     ) : (
                       `${toPersianNumber(getShippingCost())} تومان`
@@ -403,7 +445,7 @@ const Checkout = () => {
 
               <Button
                 onClick={handleSubmitOrder}
-                disabled={loading}
+                disabled={loading || !selectedProvince}
                 className="w-full mt-6 text-white"
                 style={{ backgroundColor: '#B3886D' }}
               >
