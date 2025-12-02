@@ -317,41 +317,43 @@ export const Header = () => {
           <div className="flex items-center justify-between w-full">
             {/* Mega Menu - Right */}
             <div 
-              className="relative flex items-center gap-2"
+              className="relative flex items-center"
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
             >
-              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:opacity-80 transition-opacity">
+              <Button variant="ghost" className="gap-1.5 h-9 text-sm hover:bg-transparent hover:text-[#B3886D] transition-colors font-medium">
                 دسته بندی محصولات
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", showCategories && "rotate-180")} />
               </Button>
 
               {/* Categories Dropdown */}
               {showCategories && categories && categories.length > 0 && (
-                <div className="absolute top-full right-0 bg-background border border-border rounded-md shadow-lg min-w-[200px] z-50">
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      to={`/shop?category=${category.slug}`}
-                      className="block px-4 py-2 hover:bg-muted transition-colors"
-                      onClick={() => setShowCategories(false)}
-                    >
-                      {category.name}
-                    </Link>
-                  ))}
+                <div className="absolute top-full right-0 pt-1">
+                  <div className="bg-background border border-border rounded-sm shadow-lg min-w-[200px]">
+                    {categories.map((category) => (
+                      <Link
+                        key={category.id}
+                        to={`/shop?category=${category.slug}`}
+                        className="block px-4 py-2.5 text-sm hover:bg-muted hover:text-[#B3886D] transition-colors"
+                        onClick={() => setShowCategories(false)}
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
             {/* Main Navigation - Center */}
-            <nav className="flex items-center gap-3">
+            <nav className="flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link key={link.path} to={link.path}>
                   <Button 
                     variant="ghost" 
                     className={cn(
-                      "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                      isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground hover:text-[#B3886D]"
+                      "text-sm h-9 px-4 transition-colors duration-200 hover:bg-transparent font-medium",
+                      isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground/90 hover:text-[#B3886D]"
                     )}
                   >
                     {link.label}
@@ -361,38 +363,34 @@ export const Header = () => {
             </nav>
 
             {/* Cart Icons - Left */}
-            <div className="flex items-center gap-3">
-              <Link to="/compare" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6" />
-                  {compareItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(compareItems.length)}
-                    </span>
-                  )}
+            <div className="flex items-center gap-2">
+              <Link to="/compare" className="relative group">
+                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-transparent transition-all duration-200 group-hover:scale-105">
+                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5 transition-opacity group-hover:opacity-70" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    {toPersianNumber(compareItems.length)}
+                  </span>
                 </Button>
               </Link>
               
-              <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <Heart className="h-6 w-6" />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(wishlistItems.length)}
-                    </span>
-                  )}
+              <Link to="/wishlist" className="relative group">
+                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-transparent transition-all duration-200 group-hover:scale-105">
+                  <Heart className="h-5 w-5 transition-opacity group-hover:opacity-70" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    {toPersianNumber(wishlistItems.length)}
+                  </span>
                 </Button>
               </Link>
               
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
+              <div className="flex items-center gap-1 group">
+                <span className="text-sm font-medium text-foreground/80">{toPersianNumber(getTotalPrice())} تومان</span>
                 <div className="relative">
-                  <CartDrawer />
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(cartItems.length)}
-                    </span>
-                  )}
+                  <div className="transition-all duration-200 group-hover:scale-105">
+                    <CartDrawer />
+                  </div>
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+                    {toPersianNumber(cartItems.length)}
+                  </span>
                 </div>
               </div>
             </div>
