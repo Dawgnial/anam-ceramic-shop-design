@@ -32,25 +32,25 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-10 sm:py-14 md:py-20 lg:min-h-[555px] bg-background flex items-center">
-      <div className="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+    <section className="py-12 sm:py-16 md:py-20 lg:py-[75px] bg-background">
+      <div className="container mx-auto px-4 sm:px-8 md:px-12 lg:px-20">
+        <div className="grid grid-cols-2 md:grid-cols-4">
           {features.map((feature) => (
             <div
               key={feature.id}
-              className="text-center hover:bg-[#F9F3F0] transition-all duration-300 group flex flex-col items-center justify-center py-8 sm:py-10 md:py-12 lg:py-16 px-4 sm:px-6 md:px-8 cursor-default"
+              className="text-center hover:bg-[#F9F3F0] transition-all duration-300 group flex flex-col items-center justify-start py-8 sm:py-10 md:py-12 lg:py-16 px-3 sm:px-4 md:px-6 cursor-default border-l border-transparent first:border-r-0 last:border-l-0"
             >
-              <div className="mb-4 sm:mb-5 md:mb-6 lg:mb-8 flex justify-center">
+              <div className="mb-4 sm:mb-5 md:mb-6 flex justify-center">
                 <img
                   src={feature.image}
                   alt={feature.title}
-                  className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-36 lg:h-36 object-contain transition-transform duration-300 group-hover:scale-105"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
-              <h3 className="text-lg sm:text-xl md:text-2xl lg:text-2xl font-bold mb-2 sm:mb-3 md:mb-4 text-[#B3886D]">
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-[22px] font-bold mb-2 sm:mb-3 text-[#B3886D]">
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed max-w-[200px] md:max-w-[240px]">
+              <p className="text-muted-foreground text-xs sm:text-sm md:text-[15px] leading-relaxed max-w-[180px] sm:max-w-[200px] md:max-w-[220px] font-light">
                 {feature.description}
               </p>
             </div>
