@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter } from "./ui/card";
@@ -61,9 +62,11 @@ export const BlogPosts = () => {
                 <p className="text-muted-foreground text-xs sm:text-sm text-center line-clamp-3">
                   {post.excerpt}
                 </p>
-                <Button variant="outline" className="text-center font-normal text-sm sm:text-base">
-                  بیشتر بخوانید
-                </Button>
+                <Link to={`/blog/${post.slug}`}>
+                  <Button variant="outline" className="text-center font-normal text-sm sm:text-base">
+                    بیشتر بخوانید
+                  </Button>
+                </Link>
               </CardFooter>
             </Card>
           ))}
