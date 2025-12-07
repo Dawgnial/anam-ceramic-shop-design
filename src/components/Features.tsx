@@ -20,7 +20,7 @@ const features = [
     id: 3,
     image: featureImg3,
     title: "چرخ ساخت سرامیک",
-    description: "در تولید برخی ظروف سرامیکی، از چرخ مخصوص ساخت سرامیک استفاده می‌شود و بخش زیادی از مراحل شکل‌دهی روی این چرخ انجام می‌گیرد.",
+    description: "در بسیاری از ظروف سرامیکی، شکل‌دهی اولیه با چرخ مخصوص سرامیک انجام می‌شود.",
   },
   {
     id: 4,
@@ -38,19 +38,19 @@ export const Features = () => {
           {features.map((feature) => (
             <div
               key={feature.id}
-              className="text-center hover:bg-[#F9F3F0] transition-colors group h-full flex flex-col items-center justify-center p-4 sm:p-6 md:px-8"
+              className="text-center hover:bg-[#F9F3F0] transition-colors group h-full flex flex-col items-center justify-start p-4 sm:p-6 md:px-8 pt-8 sm:pt-10 md:pt-12"
             >
-              <div className="mb-3 sm:mb-4 md:mb-6 flex justify-center">
+              <div className="mb-4 sm:mb-5 md:mb-6 flex justify-center items-center">
                 <img
                   src={feature.image}
                   alt={feature.title}
-                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 object-contain"
+                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain"
                 />
               </div>
-              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-1 sm:mb-2 md:mb-3" style={{ color: '#B3886D' }}>
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-extrabold mb-2 sm:mb-3" style={{ color: '#B3886D' }}>
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">{feature.description}</p>
+              <p className="text-xs sm:text-xs md:text-sm leading-relaxed max-w-[200px]" style={{ color: '#222222' }}>{feature.description}</p>
             </div>
           ))}
         </div>
