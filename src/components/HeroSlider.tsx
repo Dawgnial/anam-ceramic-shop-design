@@ -12,7 +12,7 @@ const slides = [
     image: slider1, 
     alt: "سفالگری 1",
     title: "فروش آنلاین",
-    subtitle: "ظروف سفالی و سرامیک",
+    subtitle: "ظروف سرامیکی دست‌ساز",
     description: "تجلی روح زیبای زندگی در گِل",
     color: "#11347A"
   },
@@ -21,7 +21,7 @@ const slides = [
     image: slider2, 
     alt: "سفالگری 2",
     title: "فروش آنلاین",
-    subtitle: "ظروف سفالی و سرامیک",
+    subtitle: "ظروف سرامیکی دست‌ساز",
     description: "هنر نزد ایرانیان است و بس",
     color: "#28405F"
   },
@@ -30,7 +30,7 @@ const slides = [
     image: slider3, 
     alt: "سفالگری 3",
     title: "فروش آنلاین",
-    subtitle: "ظروف سفالی و سرامیک",
+    subtitle: "ظروف سرامیکی دست‌ساز",
     description: "حس زیبایی و اصالت",
     color: "#2D211D"
   },
