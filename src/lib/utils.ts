@@ -9,3 +9,9 @@ export function toPersianNumber(num: number | string): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   return String(num).replace(/\d/g, (digit) => persianDigits[parseInt(digit)]);
 }
+
+export function formatPrice(num: number | string): string {
+  const formatted = Number(num).toLocaleString('en-US');
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  return formatted.replace(/\d/g, (digit) => persianDigits[parseInt(digit)]);
+}

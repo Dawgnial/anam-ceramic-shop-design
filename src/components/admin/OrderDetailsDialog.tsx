@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useState } from "react";
 
 interface OrderDetailsDialogProps {
@@ -168,13 +169,13 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
                   <div className="flex-1 space-y-1">
                     <h4 className="font-medium">{item.product_name}</h4>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>تعداد: {item.quantity.toLocaleString('fa-IR')}</span>
-                      <span>قیمت واحد: {item.price.toLocaleString('fa-IR')} تومان</span>
+                      <span>تعداد: {toPersianNumber(item.quantity)}</span>
+                      <span>قیمت واحد: {formatPrice(item.price)} تومان</span>
                     </div>
                   </div>
                   <div className="text-left">
                     <p className="font-semibold">
-                      {(item.quantity * item.price).toLocaleString('fa-IR')} تومان
+                      {formatPrice(item.quantity * item.price)} تومان
                     </p>
                   </div>
                 </div>

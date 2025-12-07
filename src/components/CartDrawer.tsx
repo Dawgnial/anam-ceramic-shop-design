@@ -1,7 +1,7 @@
 import { ShoppingCart, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import {
   Sheet,
@@ -41,7 +41,7 @@ export const CartDrawer = () => {
                   <div className="flex-1">
                     <h4 className="font-medium text-sm">{item.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {toPersianNumber(item.quantity)} × {toPersianNumber(item.price)} تومان
+                      {formatPrice(item.quantity)} × {formatPrice(item.price)} تومان
                     </p>
                   </div>
                   <Button
@@ -59,7 +59,7 @@ export const CartDrawer = () => {
             <div className="border-t pt-4 space-y-4">
               <div className="flex justify-between text-lg font-bold">
                 <span>مجموع:</span>
-                <span>{toPersianNumber(getTotalPrice())} تومان</span>
+                <span>{formatPrice(getTotalPrice())} تومان</span>
               </div>
               <Button 
                 className="w-full text-white"

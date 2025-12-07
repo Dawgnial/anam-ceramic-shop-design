@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { Heart, ShoppingCart, Search, Shuffle, Filter } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -442,7 +442,7 @@ const Shop = () => {
                         {product.name}
                       </h3>
                       <p className="text-sm sm:text-base md:text-lg font-bold" style={{ color: '#B3886D' }}>
-                        {toPersianNumber(product.price)} تومان
+                        {formatPrice(product.price)} تومان
                       </p>
                     </div>
                   </div>

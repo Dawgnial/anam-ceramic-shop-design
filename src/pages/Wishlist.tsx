@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ShoppingCart, Trash2, ChevronLeft, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 
 export default function Wishlist() {
   const { items, removeFromWishlist } = useWishlist();
@@ -69,7 +70,7 @@ export default function Wishlist() {
           <div>
             <div className="mb-6">
               <h2 className="text-2xl font-bold">
-                {items.length.toLocaleString('fa-IR')} محصول در لیست علاقه‌مندی‌ها
+                {toPersianNumber(items.length)} محصول در لیست علاقه‌مندی‌ها
               </h2>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -97,7 +98,7 @@ export default function Wishlist() {
                     <h3 className="font-semibold text-lg truncate">{item.name}</h3>
                     <div className="flex items-center justify-between">
                       <span className="text-lg font-bold" style={{ color: '#B3886D' }}>
-                        {item.price.toLocaleString('fa-IR')} تومان
+                        {formatPrice(item.price)} تومان
                       </span>
                     </div>
                     <Button

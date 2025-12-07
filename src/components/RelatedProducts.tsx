@@ -153,7 +153,7 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
               
               <div className="flex items-center justify-between">
                 <span className="font-bold" style={{ color: '#B3886D' }}>
-                  {product.price.toLocaleString('fa-IR')} تومان
+                  {product.price.toLocaleString('en-US').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[parseInt(d)])} تومان
                 </span>
               </div>
             </div>
