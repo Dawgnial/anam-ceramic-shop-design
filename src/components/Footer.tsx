@@ -1,16 +1,12 @@
 import { MessageCircle, Send } from "lucide-react";
-
 export const Footer = () => {
-  return (
-    <footer className="bg-footer text-white py-8 sm:py-10 md:py-12 lg:h-[345px] lg:py-0 flex items-center">
+  return <footer className="bg-footer text-white py-8 sm:py-10 md:py-12 lg:h-[345px] lg:py-0 flex items-center">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {/* Column 1: Logo & Description */}
           <div className="col-span-2 md:col-span-1 space-y-3 sm:space-y-4">
             <h3 className="text-xl sm:text-2xl font-bold">آنام</h3>
-            <p className="text-xs sm:text-sm leading-relaxed text-white/90">
-              فروشگاه آنلاین آنام، با سابقه 10 ساله در تولید و عرضه محصولات سفالین آماده فروش ظروف سفالی و سرامیکی به سراسر کشور است.
-            </p>
+            <p className="text-xs sm:text-sm leading-relaxed text-white/90">فروشگاه آنلاین آنام با سابقه ۱۰ ساله در تولید و عرضه محصولات سرامیکی، آماده فروش انواع ظروف سرامیکی به سراسر کشور است.</p>
             <div className="flex gap-3 pt-2">
               <a href="https://t.me/anam_zrof" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                 <Send className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -50,21 +46,11 @@ export const Footer = () => {
 
           {/* Column 4: Enamad Badge */}
           <div className="flex flex-col items-center justify-start col-span-2 md:col-span-1">
-            <a 
-              referrerPolicy="origin" 
-              target="_blank" 
-              href="https://trustseal.enamad.ir/?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1"
-            >
-              <img 
-                referrerPolicy="origin" 
-                src="https://trustseal.enamad.ir/logo.aspx?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" 
-                alt="نماد اعتماد الکترونیکی" 
-                className="cursor-pointer"
-              />
+            <a referrerPolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1">
+              <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" alt="نماد اعتماد الکترونیکی" className="cursor-pointer" />
             </a>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
