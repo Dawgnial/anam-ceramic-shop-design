@@ -263,7 +263,7 @@ export default function ProductDetail() {
             {/* Price & Stock */}
             <div className="flex items-center gap-4">
               <div className="text-3xl font-bold" style={{ color: '#B3886D' }}>
-                {product.price.toLocaleString('fa-IR')} تومان
+                {product.price.toLocaleString('en-US').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[parseInt(d)])} تومان
               </div>
               <Badge variant={product.stock > 0 ? "default" : "destructive"}>
                 {product.stock > 0 

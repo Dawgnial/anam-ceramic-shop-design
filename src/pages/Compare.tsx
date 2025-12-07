@@ -230,7 +230,7 @@ export default function Compare() {
                         <TableCell key={product.id} className="text-center">
                           <div className="space-y-1">
                             <span className="text-2xl font-bold block" style={{ color: '#B3886D' }}>
-                              {product.price.toLocaleString('fa-IR')}
+                              {product.price.toLocaleString('en-US').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[parseInt(d)])}
                             </span>
                             <span className="text-sm text-muted-foreground">تومان</span>
                           </div>

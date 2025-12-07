@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -404,7 +404,7 @@ const Checkout = () => {
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
                       <p className="text-muted-foreground">
-                        {toPersianNumber(item.quantity)} × {toPersianNumber(item.price)}
+                        {toPersianNumber(item.quantity)} × {formatPrice(item.price)}
                       </p>
                     </div>
                   </div>
@@ -414,13 +414,13 @@ const Checkout = () => {
               <div className="space-y-3 border-t pt-4">
                 <div className="flex justify-between">
                   <span>جمع کل محصولات:</span>
-                  <span>{toPersianNumber(getTotalPrice())} تومان</span>
+                  <span>{formatPrice(getTotalPrice())} تومان</span>
                 </div>
                 
                 {appliedCoupon && (
                   <div className="flex justify-between text-green-600">
                     <span>تخفیف:</span>
-                    <span>-{toPersianNumber(getDiscount())} تومان</span>
+                    <span>-{formatPrice(getDiscount())} تومان</span>
                   </div>
                 )}
                 
@@ -432,14 +432,14 @@ const Checkout = () => {
                     ) : getShippingCost() === 0 ? (
                       <span className="text-green-600 font-bold">رایگان</span>
                     ) : (
-                      `${toPersianNumber(getShippingCost())} تومان`
+                      `${formatPrice(getShippingCost())} تومان`
                     )}
                   </span>
                 </div>
                 
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
                   <span>مبلغ قابل پرداخت:</span>
-                  <span>{toPersianNumber(getFinalTotal())} تومان</span>
+                  <span>{formatPrice(getFinalTotal())} تومان</span>
                 </div>
               </div>
 

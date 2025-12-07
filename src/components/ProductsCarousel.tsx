@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuickViewDialog } from "./QuickViewDialog";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -193,7 +193,7 @@ export const ProductsCarousel = () => {
                   <p className="font-bold text-sm sm:text-base" style={{
                 color: '#B3886D'
               }}>
-                    {toPersianNumber(product.price)} تومان
+                    {formatPrice(product.price)} تومان
                   </p>
                 </CardFooter>
               </Card>)}

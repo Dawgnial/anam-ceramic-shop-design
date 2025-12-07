@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut } from "lucide-react";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 
 type Order = {
   id: string;
@@ -455,7 +455,7 @@ const Profile = () => {
                                 <div className="flex-1">
                                   <p className="font-medium text-sm">{item.product_name}</p>
                                   <p className="text-xs text-muted-foreground">
-                                    تعداد: {toPersianNumber(item.quantity)} × {toPersianNumber(item.price)} تومان
+                                    تعداد: {toPersianNumber(item.quantity)} × {formatPrice(item.price)} تومان
                                   </p>
                                 </div>
                               </div>
@@ -466,7 +466,7 @@ const Profile = () => {
                           <div className="flex items-center justify-between pt-4 border-t">
                             <span className="text-sm font-medium">مجموع:</span>
                             <span className="text-lg font-bold" style={{ color: '#896A59' }}>
-                              {toPersianNumber(order.total_amount)} تومان
+                              {formatPrice(order.total_amount)} تومان
                             </span>
                           </div>
                         </div>

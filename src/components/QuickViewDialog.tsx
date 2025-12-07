@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -147,7 +147,7 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
 
               <div className="flex items-center gap-4">
                 <p className="text-3xl font-bold" style={{ color: '#B3886D' }}>
-                  {toPersianNumber(product.price)} تومان
+                  {formatPrice(product.price)} تومان
                 </p>
                 {product.discount_percentage && (
                   <Badge variant="destructive">

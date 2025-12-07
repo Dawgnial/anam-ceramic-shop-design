@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
@@ -47,7 +47,7 @@ const Cart = () => {
                   <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded" />
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-muted-foreground">{toPersianNumber(item.price)} تومان</p>
+                    <p className="text-muted-foreground">{formatPrice(item.price)} تومان</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
@@ -84,7 +84,7 @@ const Cart = () => {
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
                     <span>جمع کل:</span>
-                    <span className="font-bold">{toPersianNumber(getTotalPrice())} تومان</span>
+                    <span className="font-bold">{formatPrice(getTotalPrice())} تومان</span>
                   </div>
                 </div>
                 <Button 

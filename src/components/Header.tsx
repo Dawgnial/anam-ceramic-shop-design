@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.png";
-import { toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -241,7 +241,7 @@ export const Header = () => {
                       <div className="flex-1">
                         <p className="font-medium text-sm md:text-base">{product.name}</p>
                         <p className="text-xs md:text-sm text-muted-foreground">
-                          {toPersianNumber(product.price)} تومان
+                          {formatPrice(product.price)} تومان
                         </p>
                       </div>
                     </button>
@@ -385,7 +385,7 @@ export const Header = () => {
               </Link>
               
               <div className="flex items-center gap-1">
-                <span className="text-sm font-medium">{toPersianNumber(getTotalPrice())} تومان</span>
+                <span className="text-sm font-medium">{formatPrice(getTotalPrice())} تومان</span>
                 <div className="relative">
                   <CartDrawer />
                   {cartItems.length > 0 && (
