@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import welcomeImg1 from "@/assets/welcome-img1-new.jpg";
-import welcomeImg2 from "@/assets/welcome-img2-new.jpg";
+import welcomeImg1 from "@/assets/welcome-img2-new.jpg";
+import welcomeImg2 from "@/assets/welcome-img1-new.jpg";
 export const Welcome = () => {
   const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
