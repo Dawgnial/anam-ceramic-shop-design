@@ -49,7 +49,7 @@ export const BlogPosts = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {posts.map(post => (
-            <Card key={post.id} className="overflow-hidden">
+            <Card key={post.id} className="overflow-hidden flex flex-col h-full">
               <CardContent className="p-0">
                 <img 
                   src={post.image_url || '/placeholder.svg'} 
@@ -57,12 +57,14 @@ export const BlogPosts = () => {
                   className="w-full h-36 sm:h-40 md:h-48 object-cover" 
                 />
               </CardContent>
-              <CardFooter className="gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 flex-col flex items-center justify-center">
-                <h3 className="font-bold text-base sm:text-lg text-foreground text-center">{post.title}</h3>
-                <p className="text-muted-foreground text-xs sm:text-sm text-center line-clamp-3">
-                  {post.excerpt}
-                </p>
-                <Link to={`/blog/${post.slug}`}>
+              <CardFooter className="gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 flex-col flex items-center justify-between flex-1">
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <h3 className="font-bold text-base sm:text-lg text-foreground text-center">{post.title}</h3>
+                  <p className="text-muted-foreground text-xs sm:text-sm text-center line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                </div>
+                <Link to={`/blog/${post.slug}`} className="mt-auto">
                   <Button variant="outline" className="text-center font-normal text-sm sm:text-base">
                     بیشتر بخوانید
                   </Button>
