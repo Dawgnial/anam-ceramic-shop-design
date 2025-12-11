@@ -11,12 +11,18 @@ import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { AdminFloatingButton } from "@/components/AdminFloatingButton";
 import { useAuth } from "@/contexts/AuthContext";
+import StructuredData from "@/components/seo/StructuredData";
+import WebsiteSchema from "@/components/seo/WebsiteSchema";
+import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
 
 const Index = () => {
   const { isAdmin } = useAuth();
   
   return (
     <div className="min-h-screen">
+      <StructuredData type="Organization" />
+      <WebsiteSchema />
+      <LocalBusinessSchema />
       <Header />
       <HeroSlider />
       <Features />

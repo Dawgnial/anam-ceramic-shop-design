@@ -18,6 +18,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
+import StructuredData from "@/components/seo/StructuredData";
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -260,8 +261,14 @@ const Shop = () => {
     );
   }
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'فروشگاه', url: 'https://anamzoroof.ir/shop' },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
       {/* Page Header Banner */}

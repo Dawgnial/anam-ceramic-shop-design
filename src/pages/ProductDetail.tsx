@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { ProductReviews } from "@/components/ProductReviews";
 import { RelatedProducts } from "@/components/RelatedProducts";
 import { ProductFeatures } from "@/components/ProductFeatures";
+import StructuredData from "@/components/seo/StructuredData";
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -174,8 +175,32 @@ export default function ProductDetail() {
     setZoomImageIndex((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
   };
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'فروشگاه', url: 'https://anamzoroof.ir/shop' },
+    ...(product.categories && product.categories.length > 0 
+      ? [{ name: product.categories[0].name, url: `https://anamzoroof.ir/shop?category=${product.categories[0].slug}` }]
+      : []),
+    { name: product.name, url: `https://anamzoroof.ir/product/${product.slug}` },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Structured Data for SEO */}
+      <StructuredData
+        type="Product"
+        product={{
+          name: product.name,
+          description: product.description || product.name,
+          image: product.images?.[0] || 'https://anamzoroof.ir/logo.png',
+          price: product.price,
+          currency: 'IRR',
+          availability: product.stock > 0 ? 'InStock' : 'OutOfStock',
+          sku: product.id,
+        }}
+      />
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
+      
       <Header />
 
       {/* Breadcrumb */}
