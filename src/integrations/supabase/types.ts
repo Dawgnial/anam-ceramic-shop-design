@@ -158,13 +158,6 @@ export type Database = {
             foreignKeyName: "inventory_movements_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "low_stock_products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "inventory_movements_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -320,13 +313,6 @@ export type Database = {
             foreignKeyName: "product_attributes_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "low_stock_products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_attributes_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -370,13 +356,6 @@ export type Database = {
             foreignKeyName: "product_categories_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "low_stock_products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "product_categories_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
@@ -412,13 +391,6 @@ export type Database = {
           product_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "product_features_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "low_stock_products"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "product_features_product_id_fkey"
             columns: ["product_id"]
@@ -467,13 +439,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "product_reviews_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "low_stock_products"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "product_reviews_product_id_fkey"
             columns: ["product_id"]
@@ -627,24 +592,6 @@ export type Database = {
           stock: number | null
           stock_shortage: number | null
         }
-        Insert: {
-          id?: string | null
-          image?: never
-          low_stock_threshold?: number | null
-          name?: string | null
-          slug?: string | null
-          stock?: number | null
-          stock_shortage?: never
-        }
-        Update: {
-          id?: string | null
-          image?: never
-          low_stock_threshold?: number | null
-          name?: string | null
-          slug?: string | null
-          stock?: number | null
-          stock_shortage?: never
-        }
         Relationships: []
       }
       products_with_ratings: {
@@ -675,6 +622,18 @@ export type Database = {
       }
     }
     Functions: {
+      get_low_stock_products: {
+        Args: never
+        Returns: {
+          id: string
+          image: string
+          low_stock_threshold: number
+          name: string
+          slug: string
+          stock: number
+          stock_shortage: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
