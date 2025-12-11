@@ -20,6 +20,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useState } from "react";
+import { Download } from "lucide-react";
+import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 
 interface OrderDetailsDialogProps {
   order: any;
@@ -78,10 +80,23 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>جزئیات سفارش</DialogTitle>
-          <DialogDescription>
-            مشاهده اطلاعات کامل سفارش و تغییر وضعیت
-          </DialogDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <DialogTitle>جزئیات سفارش</DialogTitle>
+              <DialogDescription>
+                مشاهده اطلاعات کامل سفارش و تغییر وضعیت
+              </DialogDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => generateInvoicePDF(order)}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              دانلود فاکتور
+            </Button>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">

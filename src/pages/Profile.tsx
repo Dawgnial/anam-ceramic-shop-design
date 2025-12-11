@@ -9,8 +9,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut } from "lucide-react";
+import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut, Download } from "lucide-react";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
+import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 
 type Order = {
   id: string;
@@ -469,12 +470,36 @@ const Profile = () => {
                             ))}
                           </div>
 
-                          {/* Order Total */}
+                          {/* Order Total and Actions */}
                           <div className="flex items-center justify-between pt-4 border-t flex-row-reverse">
-                            <span className="text-sm font-medium">مجموع:</span>
-                            <span className="text-lg font-bold" style={{ color: '#896A59' }}>
-                              {formatPrice(order.total_amount)} تومان
-                            </span>
+                            <div className="flex items-center gap-4 flex-row-reverse">
+                              <span className="text-sm font-medium">مجموع:</span>
+                              <span className="text-lg font-bold" style={{ color: '#896A59' }}>
+                                {formatPrice(order.total_amount)} تومان
+                              </span>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => generateInvoicePDF({
+                                id: order.id,
+                                created_at: order.created_at,
+                                status: order.status,
+                                total_amount: order.total_amount,
+                                shipping_address: order.shipping_address,
+                                profiles: { phone: phone },
+                                order_items: order.items.map(item => ({
+                                  product_name: item.product_name,
+                                  quantity: item.quantity,
+                                  price: item.price,
+                                  product_image: item.product_image || undefined
+                                }))
+                              })}
+                              className="flex items-center gap-2"
+                            >
+                              <Download className="h-4 w-4" />
+                              دانلود فاکتور
+                            </Button>
                           </div>
                         </div>
                       ))}
