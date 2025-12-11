@@ -92,11 +92,11 @@ const BlogPost = () => {
           </p>
 
           {/* Post Content */}
-          <div className="prose prose-lg max-w-none text-foreground leading-8">
-            {post.content?.split('\n').map((paragraph, index) => (
-              <p key={index} className="mb-4">{paragraph}</p>
-            ))}
-          </div>
+          <div 
+            className="prose prose-lg max-w-none text-foreground leading-8 blog-content"
+            dir="rtl"
+            dangerouslySetInnerHTML={{ __html: post.content || '' }}
+          />
 
           {/* Back Link */}
           <div className="mt-12 pt-8 border-t">
