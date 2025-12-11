@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CompareProvider } from "./contexts/CompareContext";
@@ -38,51 +39,53 @@ const queryClient = new QueryClient();
 // Providers wrapped: Auth > Compare > Wishlist > Cart
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <AuthProvider>
-        <CompareProvider>
-          <WishlistProvider>
-            <CartProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/shop" element={<Shop />} />
-              <Route path="/product/:slug" element={<ProductDetail />} />
-                  <Route path="/about" element={<AboutUs />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/compare" element={<Compare />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<BlogPost />} />
-                  <Route path="/auth" element={<Auth />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/products" element={<AdminProducts />} />
-              <Route path="/admin/categories" element={<AdminCategories />} />
-              <Route path="/admin/orders" element={<AdminOrders />} />
-              <Route path="/admin/customers" element={<AdminCustomers />} />
-              <Route path="/admin/blog" element={<AdminBlog />} />
-              <Route path="/admin/coupons" element={<AdminCoupons />} />
-              <Route path="/admin/reviews" element={<AdminReviews />} />
-              <Route path="/admin/inventory" element={<AdminInventory />} />
-              <Route path="/admin/shipping" element={<AdminShipping />} />
-                  <Route path="/store-rules" element={<StoreRules />} />
-                  <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/payment/callback" element={<PaymentCallback />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </TooltipProvider>
-            </CartProvider>
-          </WishlistProvider>
-        </CompareProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <CompareProvider>
+            <WishlistProvider>
+              <CartProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route path="/product/:slug" element={<ProductDetail />} />
+                    <Route path="/about" element={<AboutUs />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/compare" element={<Compare />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:slug" element={<BlogPost />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/products" element={<AdminProducts />} />
+                    <Route path="/admin/categories" element={<AdminCategories />} />
+                    <Route path="/admin/orders" element={<AdminOrders />} />
+                    <Route path="/admin/customers" element={<AdminCustomers />} />
+                    <Route path="/admin/blog" element={<AdminBlog />} />
+                    <Route path="/admin/coupons" element={<AdminCoupons />} />
+                    <Route path="/admin/reviews" element={<AdminReviews />} />
+                    <Route path="/admin/inventory" element={<AdminInventory />} />
+                    <Route path="/admin/shipping" element={<AdminShipping />} />
+                    <Route path="/store-rules" element={<StoreRules />} />
+                    <Route path="/contact" element={<ContactUs />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/payment/callback" element={<PaymentCallback />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </TooltipProvider>
+              </CartProvider>
+            </WishlistProvider>
+          </CompareProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

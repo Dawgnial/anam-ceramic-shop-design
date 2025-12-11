@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import StructuredData from "@/components/seo/StructuredData";
 
 const Blog = () => {
   const { data: posts = [], isLoading } = useQuery({
@@ -21,8 +22,14 @@ const Blog = () => {
     },
   });
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'بلاگ', url: 'https://anamzoroof.ir/blog' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
       {/* Hero Banner */}
