@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { LazyImage } from "./ui/lazy-image";
 import potteryImg from "@/assets/pottery-img-min.jpg";
 import ceramicImg from "@/assets/ceramic-img-min.jpg";
 export const PotteryShowcase = () => {
@@ -11,7 +12,7 @@ export const PotteryShowcase = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {/* Right side - Pottery */}
         <div className={`relative h-[280px] sm:h-[350px] md:h-[450px] lg:h-[555px] transition-transform duration-1000 ${isVisible ? "translate-x-0" : "translate-x-full"}`}>
-          <img src={potteryImg} alt="ظروف سفالی" className="w-full h-full object-cover" />
+          <LazyImage src={potteryImg} alt="ظروف سفالی" className="h-full" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white px-4 sm:px-6">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">فروش ویژه</h2>
@@ -28,7 +29,7 @@ export const PotteryShowcase = () => {
 
         {/* Left side - Ceramic */}
         <div className={`relative h-[280px] sm:h-[350px] md:h-[450px] lg:h-[555px] transition-transform duration-1000 ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
-          <img src={ceramicImg} alt="ظروف سرامیکی" className="w-full h-full object-cover" />
+          <LazyImage src={ceramicImg} alt="ظروف سرامیکی" className="h-full" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white px-4 sm:px-6">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2 text-sidebar-primary">فروش ویژه</h2>

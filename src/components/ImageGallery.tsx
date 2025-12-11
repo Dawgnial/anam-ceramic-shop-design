@@ -1,3 +1,4 @@
+import { LazyImage } from "@/components/ui/lazy-image";
 import carouselImg1 from "@/assets/carousel-img1.jpg";
 import carouselImg2 from "@/assets/carousel-img2.jpg";
 import carouselImg3 from "@/assets/carousel-img3.jpg";
@@ -23,13 +24,12 @@ export const ImageGallery = () => {
     <section className="w-full">
       <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-8">
         {galleryImages.map((image, index) => (
-          <div key={index} className="aspect-square">
-            <img
-              src={image}
-              alt={`گالری ${index + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <LazyImage
+            key={index}
+            src={image}
+            alt={`گالری ${index + 1}`}
+            aspectRatio="square"
+          />
         ))}
       </div>
     </section>
