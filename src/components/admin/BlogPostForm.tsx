@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "./ImageUpload";
+import { RichTextEditor } from "./RichTextEditor";
 import { useState } from "react";
 
 const blogPostSchema = z.object({
@@ -99,10 +100,10 @@ export function BlogPostForm({
             <FormItem>
               <FormLabel>محتوای کامل پست</FormLabel>
               <FormControl>
-                <Textarea
+                <RichTextEditor
+                  content={field.value}
+                  onChange={field.onChange}
                   placeholder="محتوای کامل پست را وارد کنید..."
-                  rows={12}
-                  {...field}
                 />
               </FormControl>
               <FormMessage />
