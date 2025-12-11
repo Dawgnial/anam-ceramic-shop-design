@@ -245,6 +245,51 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_payments: {
+        Row: {
+          amount: number
+          authority: string | null
+          coupon_id: string | null
+          created_at: string
+          id: string
+          items: Json
+          order_id: string | null
+          ref_id: string | null
+          shipping_address: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          authority?: string | null
+          coupon_id?: string | null
+          created_at?: string
+          id?: string
+          items: Json
+          order_id?: string | null
+          ref_id?: string | null
+          shipping_address: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          authority?: string | null
+          coupon_id?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          order_id?: string | null
+          ref_id?: string | null
+          shipping_address?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       product_attributes: {
         Row: {
           attribute_name: string

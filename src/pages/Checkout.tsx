@@ -149,11 +149,11 @@ const Checkout = () => {
     }
   };
 
-  const handleSubmitOrder = async () => {
+  const handleOnlinePayment = async () => {
     if (!user) {
       toast({
         title: "لطفا وارد شوید",
-        description: "برای ثبت سفارش ابتدا وارد حساب کاربری خود شوید",
+        description: "برای پرداخت آنلاین ابتدا وارد حساب کاربری خود شوید",
         variant: "destructive"
       });
       navigate("/auth");
@@ -182,58 +182,58 @@ const Checkout = () => {
 
     try {
       const provinceName = getSelectedProvinceName();
+      const finalAmount = getFinalTotal();
       
-      // Create order
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          shipping_address: `${name} - ${phone} - ${provinceName} - ${address}`,
-          total_amount: getFinalTotal(),
-          status: "pending"
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create order items
+      // Prepare order data
       const orderItems = items.map(item => ({
-        order_id: order.id,
         product_name: item.name,
         product_image: item.image,
         quantity: item.quantity,
         price: item.price
       }));
 
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
-
-      // Update coupon usage if applied
-      if (appliedCoupon) {
-        await supabase
-          .from("coupons")
-          .update({ used_count: (appliedCoupon.used_count || 0) + 1 })
-          .eq("id", appliedCoupon.id);
-      }
-
-      // Clear cart
-      clearCart();
-
-      toast({
-        title: "سفارش ثبت شد",
-        description: "سفارش شما با موفقیت ثبت شد"
+      // Call zarinpal-request edge function
+      const { data, error } = await supabase.functions.invoke("zarinpal-request", {
+        body: {
+          amount: finalAmount,
+          description: `خرید از فروشگاه آنام - ${items.length} محصول`,
+          mobile: phone,
+          callback_url: `${window.location.origin}/payment/callback`,
+          order_data: {
+            user_id: user.id,
+            shipping_address: `${name} - ${phone} - ${provinceName} - ${address}`,
+            items: orderItems,
+            coupon_id: appliedCoupon?.id || null
+          }
+        }
       });
 
-      navigate("/profile");
+      if (error) {
+        console.error("Payment request error:", error);
+        toast({
+          title: "خطا",
+          description: "خطا در اتصال به درگاه پرداخت",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data.success && data.payment_url) {
+        // Redirect to ZarinPal payment page
+        window.location.href = data.payment_url;
+      } else {
+        console.error("Payment request failed:", data);
+        toast({
+          title: "خطا",
+          description: data.error || "خطا در ایجاد درخواست پرداخت",
+          variant: "destructive"
+        });
+      }
     } catch (error) {
-      console.error("Error creating order:", error);
+      console.error("Error initiating payment:", error);
       toast({
         title: "خطا",
-        description: "خطا در ثبت سفارش. لطفا دوباره تلاش کنید",
+        description: "خطا در اتصال به درگاه پرداخت. لطفا دوباره تلاش کنید",
         variant: "destructive"
       });
     } finally {
@@ -444,7 +444,7 @@ const Checkout = () => {
               </div>
 
               <Button
-                onClick={handleSubmitOrder}
+                onClick={handleOnlinePayment}
                 disabled={loading || !selectedProvince}
                 className="w-full mt-6 text-white"
                 style={{ backgroundColor: '#B3886D' }}
@@ -452,10 +452,10 @@ const Checkout = () => {
                 {loading ? (
                   <>
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                    در حال ثبت سفارش...
+                    در حال اتصال به درگاه پرداخت...
                   </>
                 ) : (
-                  "تکمیل خرید"
+                  "پرداخت آنلاین"
                 )}
               </Button>
             </div>
