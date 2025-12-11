@@ -15,7 +15,6 @@ interface PaymentRequest {
   mobile: string;
   callback_url: string;
   order_data: {
-    user_id: string;
     shipping_address: string;
     items: Array<{
       product_name: string;
@@ -34,9 +33,50 @@ serve(async (req) => {
   }
 
   try {
+    // Extract and validate JWT token
+    const authHeader = req.headers.get("authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.error("Missing or invalid authorization header");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - missing authentication token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    
+    // Create Supabase client to verify token and get user
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    
+    // Use anon key client to verify the user's token
+    const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    });
+    
+    // Get the authenticated user from the token
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    
+    if (authError || !user) {
+      console.error("Invalid token or user not found:", authError);
+      return new Response(
+        JSON.stringify({ error: "Unauthorized - invalid authentication token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Use the authenticated user's ID - NOT from request body
+    const authenticatedUserId = user.id;
+    console.log("Authenticated user ID:", authenticatedUserId);
+
     const { amount, description, mobile, callback_url, order_data }: PaymentRequest = await req.json();
 
-    console.log("Payment request received:", { amount, description, mobile });
+    console.log("Payment request received:", { amount, description, mobile, userId: authenticatedUserId });
 
     // Validate required fields
     if (!amount || !callback_url || !order_data) {
@@ -46,16 +86,14 @@ serve(async (req) => {
       );
     }
 
-    // Create Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    // Create Supabase client with service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Store pending order data temporarily
+    // Store pending order data using the authenticated user's ID
     const { data: pendingOrder, error: pendingError } = await supabase
       .from("pending_payments")
       .insert({
-        user_id: order_data.user_id,
+        user_id: authenticatedUserId, // Use authenticated user ID, not from request
         amount: amount,
         shipping_address: order_data.shipping_address,
         items: order_data.items,
