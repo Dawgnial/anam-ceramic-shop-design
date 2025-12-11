@@ -38,7 +38,7 @@ export const Footer = () => {
             <ul className="space-y-1 sm:space-y-2">
               <li><a href="/faq" className="text-xs sm:text-sm hover:text-primary transition-colors">پرسش های متداول</a></li>
               <li><a href="/buying-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای خرید</a></li>
-              <li><a href="/shipping" className="text-xs sm:text-sm hover:text-primary transition-colors">شیوه ارسال</a></li>
+              <li><a href="/shipping-method" className="text-xs sm:text-sm hover:text-primary transition-colors">شیوه ارسال</a></li>
               <li><a href="/size-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای اندازه ها</a></li>
               <li><a href="/returns" className="text-xs sm:text-sm hover:text-primary transition-colors">بازگشت کالا</a></li>
             </ul>
