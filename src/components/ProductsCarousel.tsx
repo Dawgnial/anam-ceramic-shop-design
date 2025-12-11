@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter } from "./ui/card";
-import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuickViewDialog } from "./QuickViewDialog";
+import { LazyImage } from "./ui/lazy-image";
+import { ProductGridSkeleton } from "./ui/product-card-skeleton";
 import { formatPrice } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -94,14 +95,17 @@ export const ProductsCarousel = () => {
     toast.success('محصول به مقایسه اضافه شد');
   };
   if (isLoading) {
-    return <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
-        <div className="container mx-auto px-4 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 mx-auto mb-4" style={{
-          borderColor: '#B3886D'
-        }}></div>
-          <p className="text-sm md:text-base">در حال بارگذاری محصولات...</p>
+    return (
+      <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-6 sm:mb-8 md:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2">محصولات ما</h2>
+            <p className="text-muted-foreground text-sm md:text-base">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
+          </div>
+          <ProductGridSkeleton count={4} />
         </div>
-      </section>;
+      </section>
+    );
   }
   if (products.length === 0) {
     return <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
@@ -124,7 +128,12 @@ export const ProductsCarousel = () => {
         }} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave}>
             {products.map(product => <Card key={product.id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] flex-shrink-0 group relative hover:shadow-lg transition-shadow">
                 <CardContent className="p-0 relative">
-                  <img src={product.images?.[0] || '/placeholder.svg'} alt={product.name} className="w-full h-40 sm:h-48 md:h-56 lg:h-64 object-cover rounded-t-lg cursor-pointer" onClick={() => navigate(`/product/${product.slug}`)} />
+                  <LazyImage 
+                    src={product.images?.[0] || '/placeholder.svg'} 
+                    alt={product.name} 
+                    className="h-40 sm:h-48 md:h-56 lg:h-64 rounded-t-lg cursor-pointer" 
+                    onClick={() => navigate(`/product/${product.slug}`)} 
+                  />
                   
                   {/* Hover Icons */}
                   <TooltipProvider>

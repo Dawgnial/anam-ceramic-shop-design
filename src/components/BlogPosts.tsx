@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
+import { LazyImage } from "./ui/lazy-image";
+import { BlogGridSkeleton } from "./ui/blog-card-skeleton";
 
 export const BlogPosts = () => {
   // Fetch published blog posts from database
@@ -24,9 +26,9 @@ export const BlogPosts = () => {
   if (isLoading) {
     return (
       <section className="py-8 sm:py-12 md:py-16 lg:h-[716px] bg-background flex items-center">
-        <div className="container mx-auto px-4 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 md:h-12 md:w-12 border-b-2 mx-auto mb-4" style={{ borderColor: '#B3886D' }}></div>
-          <p className="text-sm md:text-base">در حال بارگذاری پست‌ها...</p>
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
+          <BlogGridSkeleton count={3} />
         </div>
       </section>
     );
@@ -51,10 +53,10 @@ export const BlogPosts = () => {
           {posts.map(post => (
             <Card key={post.id} className="overflow-hidden flex flex-col h-full">
               <CardContent className="p-0">
-                <img 
+                <LazyImage 
                   src={post.image_url || '/placeholder.svg'} 
                   alt={post.title} 
-                  className="w-full h-36 sm:h-40 md:h-48 object-cover" 
+                  className="h-36 sm:h-40 md:h-48" 
                 />
               </CardContent>
               <CardFooter className="gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 flex-col flex items-center justify-between flex-1">
