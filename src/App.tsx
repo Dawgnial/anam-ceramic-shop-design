@@ -33,6 +33,11 @@ import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
 import PaymentCallback from "./pages/PaymentCallback";
+import FAQ from "./pages/FAQ";
+import BuyingGuide from "./pages/BuyingGuide";
+import ShippingMethod from "./pages/ShippingMethod";
+import SizeGuide from "./pages/SizeGuide";
+import Returns from "./pages/Returns";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +80,11 @@ const App = () => (
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/payment/callback" element={<PaymentCallback />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/buying-guide" element={<BuyingGuide />} />
+                    <Route path="/shipping-method" element={<ShippingMethod />} />
+                    <Route path="/size-guide" element={<SizeGuide />} />
+                    <Route path="/returns" element={<Returns />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
