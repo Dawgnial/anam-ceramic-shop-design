@@ -31,6 +31,7 @@ import AdminShipping from "./pages/admin/AdminShipping";
 import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
+import PaymentCallback from "./pages/PaymentCallback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -71,6 +72,7 @@ const App = () => (
                   <Route path="/store-rules" element={<StoreRules />} />
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/payment/callback" element={<PaymentCallback />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
