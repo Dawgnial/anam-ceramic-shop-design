@@ -244,29 +244,30 @@ const Profile = () => {
             {/* Profile Tab */}
             <TabsContent value="profile" className="space-y-6">
               {/* Profile Info Card */}
-              <Card className="border-2" style={{ borderColor: '#B3886D' }}>
-                <CardHeader className="border-b" style={{ borderColor: '#F9F3F0' }}>
-                  <CardTitle className="text-2xl flex items-center gap-2" style={{ color: '#896A59' }}>
-                    <User className="w-6 h-6" />
+              <Card className="border-2 text-right" style={{ borderColor: '#B3886D' }}>
+                <CardHeader className="border-b text-right" style={{ borderColor: '#F9F3F0' }}>
+                  <CardTitle className="text-2xl flex items-center justify-end gap-2" style={{ color: '#896A59' }}>
                     اطلاعات کاربری
+                    <User className="w-6 h-6" />
                   </CardTitle>
-                  <CardDescription>مشاهده و ویرایش اطلاعات حساب کاربری</CardDescription>
+                  <CardDescription className="text-right">مشاهده و ویرایش اطلاعات حساب کاربری</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-sm font-medium" style={{ color: '#896A59' }}>
-                        <Phone className="w-4 h-4" />
+                    <div className="space-y-2 text-right">
+                      <label className="flex items-center justify-end gap-2 text-sm font-medium" style={{ color: '#896A59' }}>
                         شماره موبایل
+                        <Phone className="w-4 h-4" />
                       </label>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-row-reverse">
                         <Input
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           disabled={!isEditing}
-                          className="flex-1"
+                          className="flex-1 text-right"
+                          dir="ltr"
                         />
                         <div className="w-16 flex items-center justify-center border rounded-md bg-muted">
                           +۹۸
@@ -274,20 +275,20 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="flex items-center gap-2 text-sm font-medium" style={{ color: '#896A59' }}>
-                        <Calendar className="w-4 h-4" />
+                    <div className="space-y-2 text-right">
+                      <label className="flex items-center justify-end gap-2 text-sm font-medium" style={{ color: '#896A59' }}>
                         تاریخ عضویت
+                        <Calendar className="w-4 h-4" />
                       </label>
                       <Input
                         value={createdAt}
                         disabled
-                        className="bg-muted"
+                        className="bg-muted text-right"
                       />
                     </div>
                   </div>
 
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex gap-3 pt-4 justify-end">
                     {!isEditing ? (
                       <Button
                         onClick={() => setIsEditing(true)}
@@ -299,13 +300,6 @@ const Profile = () => {
                     ) : (
                       <>
                         <Button
-                          onClick={handleUpdateProfile}
-                          style={{ backgroundColor: '#B3886D' }}
-                          className="text-white"
-                        >
-                          ذخیره تغییرات
-                        </Button>
-                        <Button
                           onClick={() => {
                             setIsEditing(false);
                             loadProfile();
@@ -314,6 +308,13 @@ const Profile = () => {
                         >
                           انصراف
                         </Button>
+                        <Button
+                          onClick={handleUpdateProfile}
+                          style={{ backgroundColor: '#B3886D' }}
+                          className="text-white"
+                        >
+                          ذخیره تغییرات
+                        </Button>
                       </>
                     )}
                   </div>
@@ -321,18 +322,18 @@ const Profile = () => {
               </Card>
 
               {/* Change Password Card */}
-              <Card className="border-2" style={{ borderColor: '#B3886D' }}>
-                <CardHeader className="border-b" style={{ borderColor: '#F9F3F0' }}>
-                  <CardTitle className="text-2xl flex items-center gap-2" style={{ color: '#896A59' }}>
-                    <Lock className="w-6 h-6" />
+              <Card className="border-2 text-right" style={{ borderColor: '#B3886D' }}>
+                <CardHeader className="border-b text-right" style={{ borderColor: '#F9F3F0' }}>
+                  <CardTitle className="text-2xl flex items-center justify-end gap-2" style={{ color: '#896A59' }}>
                     تغییر رمز عبور
+                    <Lock className="w-6 h-6" />
                   </CardTitle>
-                  <CardDescription>برای امنیت حساب خود، رمز عبور قوی انتخاب کنید</CardDescription>
+                  <CardDescription className="text-right">برای امنیت حساب خود، رمز عبور قوی انتخاب کنید</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
                   
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#896A59' }}>
+                  <div className="space-y-2 text-right">
+                    <label className="text-sm font-medium block text-right" style={{ color: '#896A59' }}>
                       رمز عبور جدید <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -340,11 +341,13 @@ const Profile = () => {
                       placeholder="حداقل ۶ کاراکتر"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
+                      className="text-right"
+                      dir="ltr"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#896A59' }}>
+                  <div className="space-y-2 text-right">
+                    <label className="text-sm font-medium block text-right" style={{ color: '#896A59' }}>
                       تکرار رمز عبور جدید <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -352,37 +355,41 @@ const Profile = () => {
                       placeholder="رمز عبور جدید را دوباره وارد کنید"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="text-right"
+                      dir="ltr"
                     />
                   </div>
 
-                  <Button
-                    onClick={handleChangePassword}
-                    disabled={!newPassword || !confirmPassword}
-                    style={{ backgroundColor: '#B3886D' }}
-                    className="text-white"
-                  >
-                    تغییر رمز عبور
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleChangePassword}
+                      disabled={!newPassword || !confirmPassword}
+                      style={{ backgroundColor: '#B3886D' }}
+                      className="text-white"
+                    >
+                      تغییر رمز عبور
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 
               {/* Logout Card */}
-              <Card className="border-2" style={{ borderColor: '#B3886D' }}>
-                <CardHeader className="border-b" style={{ borderColor: '#F9F3F0' }}>
-                  <CardTitle className="text-2xl flex items-center gap-2" style={{ color: '#896A59' }}>
-                    <LogOut className="w-6 h-6" />
+              <Card className="border-2 text-right" style={{ borderColor: '#B3886D' }}>
+                <CardHeader className="border-b text-right" style={{ borderColor: '#F9F3F0' }}>
+                  <CardTitle className="text-2xl flex items-center justify-end gap-2" style={{ color: '#896A59' }}>
                     خروج از حساب کاربری
+                    <LogOut className="w-6 h-6" />
                   </CardTitle>
-                  <CardDescription>خروج از حساب کاربری و بازگشت به صفحه اصلی</CardDescription>
+                  <CardDescription className="text-right">خروج از حساب کاربری و بازگشت به صفحه اصلی</CardDescription>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-6 flex justify-end">
                   <Button
                     onClick={signOut}
                     variant="destructive"
                     className="w-full md:w-auto"
                   >
-                    <LogOut className="w-4 h-4 ml-2" />
                     خروج از حساب
+                    <LogOut className="w-4 h-4 mr-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -390,13 +397,13 @@ const Profile = () => {
 
             {/* Orders History Tab */}
             <TabsContent value="orders">
-              <Card className="border-2" style={{ borderColor: '#B3886D' }}>
-                <CardHeader className="border-b" style={{ borderColor: '#F9F3F0' }}>
-                  <CardTitle className="text-2xl flex items-center gap-2" style={{ color: '#896A59' }}>
-                    <Package className="w-6 h-6" />
+              <Card className="border-2 text-right" style={{ borderColor: '#B3886D' }}>
+                <CardHeader className="border-b text-right" style={{ borderColor: '#F9F3F0' }}>
+                  <CardTitle className="text-2xl flex items-center justify-end gap-2" style={{ color: '#896A59' }}>
                     تاریخچه سفارشات
+                    <Package className="w-6 h-6" />
                   </CardTitle>
-                  <CardDescription>لیست سفارشات و وضعیت آنها</CardDescription>
+                  <CardDescription className="text-right">لیست سفارشات و وضعیت آنها</CardDescription>
                 </CardHeader>
                 <CardContent className="p-6">
                   {ordersLoading ? (
@@ -421,11 +428,11 @@ const Profile = () => {
                       {orders.map((order) => (
                         <div
                           key={order.id}
-                          className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border rounded-lg p-4 hover:shadow-md transition-shadow text-right"
                           style={{ borderColor: '#B3886D' }}
                         >
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
+                          <div className="flex items-start justify-between mb-4 flex-row-reverse">
+                            <div className="text-right">
                               <p className="text-sm text-muted-foreground mb-1">
                                 شماره سفارش: <span className="font-mono">{order.id.slice(0, 8)}</span>
                               </p>
@@ -444,7 +451,7 @@ const Profile = () => {
                           {/* Order Items */}
                           <div className="space-y-2 mb-4">
                             {order.items.map((item) => (
-                              <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded">
+                              <div key={item.id} className="flex items-center gap-3 p-2 bg-muted/50 rounded flex-row-reverse">
                                 {item.product_image && (
                                   <img
                                     src={item.product_image}
@@ -452,7 +459,7 @@ const Profile = () => {
                                     className="w-12 h-12 object-cover rounded"
                                   />
                                 )}
-                                <div className="flex-1">
+                                <div className="flex-1 text-right">
                                   <p className="font-medium text-sm">{item.product_name}</p>
                                   <p className="text-xs text-muted-foreground">
                                     تعداد: {toPersianNumber(item.quantity)} × {formatPrice(item.price)} تومان
@@ -463,7 +470,7 @@ const Profile = () => {
                           </div>
 
                           {/* Order Total */}
-                          <div className="flex items-center justify-between pt-4 border-t">
+                          <div className="flex items-center justify-between pt-4 border-t flex-row-reverse">
                             <span className="text-sm font-medium">مجموع:</span>
                             <span className="text-lg font-bold" style={{ color: '#896A59' }}>
                               {formatPrice(order.total_amount)} تومان
