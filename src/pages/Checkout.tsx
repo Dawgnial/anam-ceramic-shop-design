@@ -193,6 +193,7 @@ const Checkout = () => {
       }));
 
       // Call zarinpal-request edge function
+      // Note: user_id is extracted from JWT token server-side for security
       const { data, error } = await supabase.functions.invoke("zarinpal-request", {
         body: {
           amount: finalAmount,
@@ -200,7 +201,6 @@ const Checkout = () => {
           mobile: phone,
           callback_url: `${window.location.origin}/payment/callback`,
           order_data: {
-            user_id: user.id,
             shipping_address: `${name} - ${phone} - ${provinceName} - ${address}`,
             items: orderItems,
             coupon_id: appliedCoupon?.id || null
