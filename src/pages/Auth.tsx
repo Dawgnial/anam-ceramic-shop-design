@@ -7,11 +7,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+// Validation schemas
+const phoneSchema = z.string().regex(/^09\d{9}$/, 'شماره موبایل باید با 09 شروع شود و 11 رقم باشد');
+const passwordSchema = z.string().min(8, 'رمز عبور باید حداقل ۸ کاراکتر باشد');
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
   const [captcha, setCaptcha] = useState({ num1: 0, num2: 0, answer: 0, operation: 'add' as 'add' | 'subtract' });
   const [userAnswer, setUserAnswer] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -36,6 +43,26 @@ const Auth = () => {
     setCaptcha({ num1, num2, answer, operation });
   };
 
+  const validatePhone = (value: string) => {
+    const result = phoneSchema.safeParse(value);
+    if (!result.success) {
+      setPhoneError(result.error.errors[0].message);
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
+
+  const validatePassword = (value: string) => {
+    const result = passwordSchema.safeParse(value);
+    if (!result.success) {
+      setPasswordError(result.error.errors[0].message);
+      return false;
+    }
+    setPasswordError("");
+    return true;
+  };
+
   const handleSubmit = async () => {
     // Validate captcha
     if (parseInt(userAnswer) !== captcha.answer) {
@@ -49,10 +76,14 @@ const Auth = () => {
       return;
     }
 
-    if (!phone || !password) {
+    // Validate phone and password
+    const isPhoneValid = validatePhone(phone);
+    const isPasswordValid = validatePassword(password);
+
+    if (!isPhoneValid || !isPasswordValid) {
       toast({
         title: "خطا",
-        description: "لطفا تمام فیلدها را پر کنید",
+        description: "لطفا خطاهای فرم را برطرف کنید",
         variant: "destructive",
       });
       return;
@@ -115,13 +146,18 @@ const Auth = () => {
                     type="tel" 
                     placeholder="09123456789"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="flex-1"
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      if (phoneError) validatePhone(e.target.value);
+                    }}
+                    onBlur={() => validatePhone(phone)}
+                    className={`flex-1 ${phoneError ? 'border-red-500' : ''}`}
                   />
                   <div className="w-16 flex items-center justify-center border rounded-md bg-muted">
                     +۹۸
                   </div>
                 </div>
+                {phoneError && <p className="text-red-500 text-xs">{phoneError}</p>}
               </div>
 
               <div className="space-y-2">
@@ -130,10 +166,16 @@ const Auth = () => {
                 </label>
                 <Input 
                   type="password" 
-                  placeholder="رمز عبور خود را وارد کنید"
+                  placeholder="رمز عبور خود را وارد کنید (حداقل ۸ کاراکتر)"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordError) validatePassword(e.target.value);
+                  }}
+                  onBlur={() => validatePassword(password)}
+                  className={passwordError ? 'border-red-500' : ''}
                 />
+                {passwordError && <p className="text-red-500 text-xs">{passwordError}</p>}
               </div>
 
               <div className="space-y-2">
