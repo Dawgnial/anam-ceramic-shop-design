@@ -36,8 +36,7 @@ export const PotteryShowcase = () => {
               </p>
               <Button 
                 onClick={handleShopNavigate}
-                variant="outline" 
-                className="border-foreground text-foreground hover:bg-foreground hover:text-background text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-2.5 rounded-none"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-2.5 rounded-none"
               >
                 خرید کنید
               </Button>
@@ -61,8 +60,7 @@ export const PotteryShowcase = () => {
               </p>
               <Button 
                 onClick={handleShopNavigate}
-                variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-foreground text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-2.5 rounded-none"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm sm:text-base px-6 sm:px-8 py-2 sm:py-2.5 rounded-none"
               >
                 خرید کنید
               </Button>
