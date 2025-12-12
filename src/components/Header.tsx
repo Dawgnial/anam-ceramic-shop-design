@@ -112,9 +112,9 @@ export const Header = () => {
     { path: "/contact", label: "ارتباط با ما" },
   ];
 
-  // Badge component for consistent styling
+  // Badge component for consistent styling - positioned inside the icon container
   const IconBadge = ({ count }: { count: number }) => (
-    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-medium">
+    <span className="absolute -top-1 right-0 bg-primary text-primary-foreground text-[9px] rounded-full h-4 w-4 flex items-center justify-center font-medium">
       {toPersianNumber(count)}
     </span>
   );
@@ -278,21 +278,21 @@ export const Header = () => {
             </div>
 
             {/* Cart Icons - Always visible on mobile */}
-            <div className="flex items-center gap-1 md:gap-2 lg:hidden">
-              <Link to="/compare" className="relative p-1 hover:opacity-80 transition-all group">
-                <img src={compareIcon} alt="مقایسه" className="h-6 w-6 transition-all group-hover:opacity-70" style={{ filter: 'var(--icon-filter)' }} />
-                <IconBadge count={compareItems.length} />
-              </Link>
+            <div className="flex items-center gap-2 lg:hidden">
+              <div className="relative">
+                <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-5 w-5" />} />
+                <IconBadge count={cartItems.length} />
+              </div>
 
-              <Link to="/wishlist" className="relative p-1 hover:opacity-80 transition-all group">
-                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-6 w-6 transition-all group-hover:opacity-70" />
+              <Link to="/wishlist" className="relative hover:opacity-80 transition-all group">
+                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-5 w-5 transition-all group-hover:opacity-70" />
                 <IconBadge count={wishlistItems.length} />
               </Link>
               
-              <div className="relative p-1">
-                <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-6 w-6" />} />
-                <IconBadge count={cartItems.length} />
-              </div>
+              <Link to="/compare" className="relative hover:opacity-80 transition-all group">
+                <img src={compareIcon} alt="مقایسه" className="h-5 w-5 transition-all group-hover:opacity-70" />
+                <IconBadge count={compareItems.length} />
+              </Link>
             </div>
           </div>
         </div>
@@ -353,28 +353,28 @@ export const Header = () => {
               ))}
             </nav>
 
-            {/* Cart Icons - Left (matches example: compare, heart, cart with price) */}
-            <div className="flex items-center gap-4">
-              {/* Compare Icon */}
-              <Link to="/compare" className="relative p-1 hover:opacity-80 transition-all group">
-                <img src={compareIcon} alt="مقایسه" className="h-7 w-7 transition-all group-hover:opacity-70" />
-                <IconBadge count={compareItems.length} />
-              </Link>
-              
-              {/* Wishlist Icon */}
-              <Link to="/wishlist" className="relative p-1 hover:opacity-80 transition-all group">
-                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-7 w-7 transition-all group-hover:opacity-70" />
-                <IconBadge count={wishlistItems.length} />
-              </Link>
-              
-              {/* Cart: Price on left, Icon on right */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium hover:text-[#B3886D] transition-colors">{formatPrice(getTotalPrice())} تومان</span>
-                <div className="relative p-1">
-                  <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-7 w-7" />} />
+            {/* Cart Icons - Left (matches example: cart with price, heart, compare) */}
+            <div className="flex items-center gap-3">
+              {/* Cart: Icon on left, Price on right (RTL so visually: price left, icon right) */}
+              <div className="flex items-center gap-1.5 flex-row-reverse">
+                <div className="relative">
+                  <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-5 w-5" />} />
                   <IconBadge count={cartItems.length} />
                 </div>
+                <span className="text-sm font-medium hover:text-[#B3886D] transition-colors">{formatPrice(getTotalPrice())} تومان</span>
               </div>
+              
+              {/* Wishlist Icon */}
+              <Link to="/wishlist" className="relative hover:opacity-80 transition-all group">
+                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-5 w-5 transition-all group-hover:opacity-70" />
+                <IconBadge count={wishlistItems.length} />
+              </Link>
+
+              {/* Compare Icon */}
+              <Link to="/compare" className="relative hover:opacity-80 transition-all group">
+                <img src={compareIcon} alt="مقایسه" className="h-5 w-5 transition-all group-hover:opacity-70" />
+                <IconBadge count={compareItems.length} />
+              </Link>
             </div>
           </div>
         </div>
