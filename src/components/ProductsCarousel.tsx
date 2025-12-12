@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardFooter } from "./ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuickViewDialog } from "./QuickViewDialog";
 import { LazyImage } from "./ui/lazy-image";
@@ -126,86 +125,93 @@ export const ProductsCarousel = () => {
           scrollbarWidth: "none",
           msOverflowStyle: "none"
         }} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave}>
-            {products.map(product => <Card key={product.id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] flex-shrink-0 group relative hover:shadow-lg transition-shadow">
-                <CardContent className="p-0 relative">
+            {products.map(product => (
+              <div key={product.id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] flex-shrink-0 group">
+                {/* Card Image Container */}
+                <div className="relative overflow-hidden bg-muted/30">
                   <LazyImage 
                     src={product.images?.[0] || '/placeholder.svg'} 
                     alt={product.name} 
-                    className="h-40 sm:h-48 md:h-56 lg:h-64 rounded-t-lg cursor-pointer" 
+                    className="h-48 sm:h-56 md:h-64 lg:h-80 cursor-pointer transition-transform duration-300 group-hover:scale-105" 
                     onClick={() => navigate(`/product/${product.slug}`)} 
                   />
                   
-                  {/* Hover Icons */}
+                  {/* Dark Overlay on Hover */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Action Icons - Left Side */}
                   <TooltipProvider>
-                    <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute right-3 sm:right-4 top-4 flex flex-col gap-2 sm:gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button onClick={() => handleAddToCart(product)} className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors" style={{
-                        backgroundColor: '#B3886D'
-                      }}>
-                            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <button 
+                            onClick={() => handleAddToCompare(product)} 
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-white/90 hover:bg-white rounded-none flex items-center justify-center transition-colors shadow-sm"
+                          >
+                            <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>
-                          <p>افزودن به سبد خرید</p>
-                        </TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => {
-                        setQuickViewProductId(product.id);
-                        setQuickViewOpen(true);
-                      }} className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors" style={{
-                        backgroundColor: '#B3886D'
-                      }}>
-                            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>نمایش سریع</p>
-                        </TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button onClick={() => handleAddToCompare(product)} className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors" style={{
-                        backgroundColor: '#B3886D'
-                      }}>
-                            <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent side="left">
                           <p>افزودن به مقایسه</p>
                         </TooltipContent>
                       </Tooltip>
 
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <button onClick={() => handleAddToWishlist(product)} className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors" style={{
-                        backgroundColor: '#B3886D'
-                      }}>
-                            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                          <button 
+                            onClick={() => {
+                              setQuickViewProductId(product.id);
+                              setQuickViewOpen(true);
+                            }} 
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-white/90 hover:bg-white rounded-none flex items-center justify-center transition-colors shadow-sm"
+                          >
+                            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>
+                        <TooltipContent side="left">
+                          <p>نمایش سریع</p>
+                        </TooltipContent>
+                      </Tooltip>
+
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            onClick={() => handleAddToWishlist(product)} 
+                            className="w-9 h-9 sm:w-10 sm:h-10 bg-white/90 hover:bg-white rounded-none flex items-center justify-center transition-colors shadow-sm"
+                          >
+                            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">
                           <p>افزودن به علاقه مندی</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
                   </TooltipProvider>
-                </CardContent>
-                <CardFooter className="gap-1 sm:gap-2 p-3 sm:p-4 flex-col flex items-center justify-center">
-                  <h3 className="font-semibold text-foreground hover:text-[#B3886D] transition-colors cursor-pointer text-sm sm:text-base" onClick={() => navigate(`/product/${product.slug}`)}>
+
+                  {/* Add to Cart Button - Bottom Center */}
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-white text-foreground px-4 sm:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 whitespace-nowrap border border-border/50"
+                  >
+                    افزودن به سبد خرید
+                  </button>
+                </div>
+
+                {/* Product Info - Below Image */}
+                <div className="text-center pt-4 pb-2">
+                  <h3 
+                    className="font-semibold text-foreground hover:text-primary transition-colors cursor-pointer text-sm sm:text-base mb-1"
+                    onClick={() => navigate(`/product/${product.slug}`)}
+                  >
                     {product.name}
                   </h3>
-                  <p className="font-bold text-sm sm:text-base" style={{
-                color: '#B3886D'
-              }}>
+                  <p className="font-bold text-sm sm:text-base text-primary">
                     {formatPrice(product.price)} تومان
                   </p>
-                </CardFooter>
-              </Card>)}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
