@@ -1,4 +1,4 @@
-import { Search, Menu, Heart, ChevronDown, User, X } from "lucide-react";
+import { Search, Menu, ChevronDown, User, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CartDrawer } from "./CartDrawer";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import compareIcon from "@/assets/compare.png";
+import compareIcon from "@/assets/compare-2.png";
+import cartIcon from "@/assets/cart.png";
+import heartIcon from "@/assets/heart.png";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
@@ -110,6 +112,13 @@ export const Header = () => {
     { path: "/contact", label: "ارتباط با ما" },
   ];
 
+  // Badge component for consistent styling
+  const IconBadge = ({ count }: { count: number }) => (
+    <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] rounded-full h-5 w-5 flex items-center justify-center font-medium">
+      {toPersianNumber(count)}
+    </span>
+  );
+
   return (
     <header className={cn(
       "w-full border-b sticky top-0 bg-background z-50 transition-all duration-300",
@@ -125,7 +134,7 @@ export const Header = () => {
             {/* Mobile Menu Button */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild className="lg:hidden">
-                <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Button variant="ghost" size="icon" className="h-9 w-9 hover:bg-transparent hover:text-[#B3886D] transition-colors">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
@@ -136,7 +145,7 @@ export const Header = () => {
                       <img src={logo} alt="آنام" className="h-10 w-auto" />
                     </Link>
                     <SheetClose asChild>
-                      <Button variant="ghost" size="icon">
+                      <Button variant="ghost" size="icon" className="hover:bg-transparent hover:text-[#B3886D]">
                         <X className="h-5 w-5" />
                       </Button>
                     </SheetClose>
@@ -152,8 +161,8 @@ export const Header = () => {
                             className={cn(
                               "block py-3 px-4 rounded-lg transition-colors",
                               isActivePage(link.path) 
-                                ? "bg-primary/10 text-primary" 
-                                : "hover:bg-muted"
+                                ? "bg-primary/10 text-[#B3886D]" 
+                                : "hover:bg-muted hover:text-[#B3886D]"
                             )}
                           >
                             {link.label}
@@ -172,7 +181,7 @@ export const Header = () => {
                               <Link
                                 to={`/shop?category=${category.slug}`}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block py-2 px-4 text-sm hover:bg-muted rounded-lg transition-colors"
+                                className="block py-2 px-4 text-sm hover:bg-muted hover:text-[#B3886D] rounded-lg transition-colors"
                               >
                                 {category.name}
                               </Link>
@@ -186,14 +195,14 @@ export const Header = () => {
                   <div className="p-4 border-t">
                     {user ? (
                       <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full gap-2">
+                        <Button className="w-full gap-2 hover:bg-[#B3886D]">
                           <User className="h-4 w-4" />
                           پروفایل
                         </Button>
                       </Link>
                     ) : (
                       <Link to="/auth" onClick={() => setMobileMenuOpen(false)}>
-                        <Button className="w-full">ورود / ثبت نام</Button>
+                        <Button className="w-full hover:bg-[#B3886D]">ورود / ثبت نام</Button>
                       </Link>
                     )}
                   </div>
@@ -211,14 +220,14 @@ export const Header = () => {
               <div className="relative">
                 <Input
                   type="text"
-                  placeholder="جستجو..."
+                  placeholder="جستجوی محصولات"
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
                   className="w-full pr-3 md:pr-4 pl-10 md:pl-12 h-9 md:h-11 bg-background border-border rounded-sm focus-visible:ring-0 focus-visible:ring-offset-0 text-sm md:text-base"
                 />
                 <Button
                   size="icon"
-                  className="absolute left-0 top-0 h-9 md:h-11 w-9 md:w-11 bg-search-icon hover:bg-search-icon/90 text-white rounded-l-sm rounded-r-none"
+                  className="absolute left-0 top-0 h-9 md:h-11 w-9 md:w-11 bg-search-icon hover:bg-[#B3886D] text-white rounded-l-sm rounded-r-none transition-colors"
                 >
                   <Search className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
@@ -231,7 +240,7 @@ export const Header = () => {
                     <button
                       key={product.id}
                       onClick={() => handleProductClick(product.slug)}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-muted transition-colors text-right"
+                      className="w-full flex items-center gap-3 p-3 hover:bg-muted hover:text-[#B3886D] transition-colors text-right"
                     >
                       <img 
                         src={product.images?.[0] || '/placeholder.svg'} 
@@ -254,14 +263,14 @@ export const Header = () => {
             <div className="flex-shrink-0 hidden lg:block">
               {user ? (
                 <Link to="/profile">
-                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:text-[#B3886D] transition-colors">
                     <User className="h-4 w-4" />
                     پروفایل
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth">
-                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:opacity-80 transition-opacity">
+                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:text-[#B3886D] transition-colors">
                     ورود / ثبت نام
                   </Button>
                 </Link>
@@ -270,35 +279,19 @@ export const Header = () => {
 
             {/* Cart Icons - Always visible on mobile */}
             <div className="flex items-center gap-1 md:gap-2 lg:hidden">
-              <Link to="/compare" className="relative">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5" />
-                  {compareItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
-                      {toPersianNumber(compareItems.length)}
-                    </span>
-                  )}
-                </Button>
+              <Link to="/compare" className="relative p-1 hover:opacity-80 transition-all group">
+                <img src={compareIcon} alt="مقایسه" className="h-6 w-6 transition-all group-hover:opacity-70" style={{ filter: 'var(--icon-filter)' }} />
+                <IconBadge count={compareItems.length} />
               </Link>
 
-              <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <Heart className="h-5 w-5" />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
-                      {toPersianNumber(wishlistItems.length)}
-                    </span>
-                  )}
-                </Button>
+              <Link to="/wishlist" className="relative p-1 hover:opacity-80 transition-all group">
+                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-6 w-6 transition-all group-hover:opacity-70" />
+                <IconBadge count={wishlistItems.length} />
               </Link>
               
-              <div className="relative">
-                <CartDrawer />
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
-                    {toPersianNumber(cartItems.length)}
-                  </span>
-                )}
+              <div className="relative p-1">
+                <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-6 w-6" />} />
+                <IconBadge count={cartItems.length} />
               </div>
             </div>
           </div>
@@ -321,7 +314,7 @@ export const Header = () => {
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
             >
-              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:opacity-80 transition-opacity">
+              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:text-[#B3886D] transition-colors">
                 دسته بندی محصولات
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -333,7 +326,7 @@ export const Header = () => {
                     <Link
                       key={category.id}
                       to={`/shop?category=${category.slug}`}
-                      className="block px-4 py-2 hover:bg-muted transition-colors"
+                      className="block px-4 py-2 hover:bg-muted hover:text-[#B3886D] transition-colors"
                       onClick={() => setShowCategories(false)}
                     >
                       {category.name}
@@ -360,39 +353,26 @@ export const Header = () => {
               ))}
             </nav>
 
-            {/* Cart Icons - Left */}
-            <div className="flex items-center gap-3">
-              <Link to="/compare" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6" />
-                  {compareItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(compareItems.length)}
-                    </span>
-                  )}
-                </Button>
+            {/* Cart Icons - Left (matches example: compare, heart, cart with price) */}
+            <div className="flex items-center gap-4">
+              {/* Compare Icon */}
+              <Link to="/compare" className="relative p-1 hover:opacity-80 transition-all group">
+                <img src={compareIcon} alt="مقایسه" className="h-7 w-7 transition-all group-hover:opacity-70" />
+                <IconBadge count={compareItems.length} />
               </Link>
               
-              <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-80 transition-opacity">
-                  <Heart className="h-6 w-6" />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(wishlistItems.length)}
-                    </span>
-                  )}
-                </Button>
+              {/* Wishlist Icon */}
+              <Link to="/wishlist" className="relative p-1 hover:opacity-80 transition-all group">
+                <img src={heartIcon} alt="علاقه‌مندی‌ها" className="h-7 w-7 transition-all group-hover:opacity-70" />
+                <IconBadge count={wishlistItems.length} />
               </Link>
               
-              <div className="flex items-center gap-1">
-                <span className="text-sm font-medium">{formatPrice(getTotalPrice())} تومان</span>
-                <div className="relative">
-                  <CartDrawer />
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(cartItems.length)}
-                    </span>
-                  )}
+              {/* Cart: Price on left, Icon on right */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium hover:text-[#B3886D] transition-colors">{formatPrice(getTotalPrice())} تومان</span>
+                <div className="relative p-1">
+                  <CartDrawer customIcon={<img src={cartIcon} alt="سبد خرید" className="h-7 w-7" />} />
+                  <IconBadge count={cartItems.length} />
                 </div>
               </div>
             </div>
