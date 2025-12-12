@@ -42,7 +42,7 @@ export const CustomerReviews = () => {
   return (
     <section className="py-8 sm:py-12 md:py-16 lg:h-[588px] bg-reviews flex items-center">
       <div className="container mx-auto px-4">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground mb-6 sm:mb-8 md:mb-12">نظرات مشتریان</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-center text-foreground mb-6 sm:mb-8 md:mb-12">نظرات مشتریان</h2>
 
         <div className="max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl mx-auto overflow-hidden">
           <Card className="border-none shadow-lg min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex items-center">

@@ -27,7 +27,7 @@ export const BlogPosts = () => {
     return (
       <section className="py-8 sm:py-12 md:py-16 lg:h-[716px] bg-background flex items-center">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
           <BlogGridSkeleton count={3} />
         </div>
       </section>
@@ -47,7 +47,7 @@ export const BlogPosts = () => {
   return (
     <section className="py-8 sm:py-12 md:py-16 lg:h-[716px] bg-background flex items-center">
       <div className="container mx-auto px-4">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {posts.map(post => (

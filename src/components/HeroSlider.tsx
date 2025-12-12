@@ -90,7 +90,7 @@ export const HeroSlider = () => {
                 style={{ color: slide.color }}
               >
                 <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl mb-1 sm:mb-2">{slide.title}</p>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-2 sm:mb-4">{slide.subtitle}</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black mb-2 sm:mb-4">{slide.subtitle}</h1>
                 <p className="text-base sm:text-lg md:text-xl lg:text-2xl">{slide.description}</p>
               </div>
             </div>

@@ -98,7 +98,7 @@ export const ProductsCarousel = () => {
       <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-6 sm:mb-8 md:mb-12">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2">محصولات ما</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground mb-2">محصولات ما</h2>
             <p className="text-muted-foreground text-sm md:text-base">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
           </div>
           <ProductGridSkeleton count={4} />
@@ -116,7 +116,7 @@ export const ProductsCarousel = () => {
   return <section className="py-8 sm:py-12 md:py-16 lg:h-[725px] bg-background flex items-center">
       <div className="container mx-auto px-4">
         <div className="text-center mb-6 sm:mb-8 md:mb-12">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-2">محصولات ما</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground mb-2">محصولات ما</h2>
           <p className="text-muted-foreground text-sm md:text-base">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
         </div>
 
