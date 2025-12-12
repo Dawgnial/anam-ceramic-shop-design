@@ -10,13 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { ReactNode } from "react";
 
-interface CartDrawerProps {
-  customIcon?: ReactNode;
-}
-
-export const CartDrawer = ({ customIcon }: CartDrawerProps) => {
+export const CartDrawer = () => {
   const { items, removeFromCart, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
@@ -24,7 +19,7 @@ export const CartDrawer = ({ customIcon }: CartDrawerProps) => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-70 transition-opacity">
-          {customIcon || <ShoppingCart className="h-6 w-6" />}
+          <ShoppingCart className="h-6 w-6" />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[400px]">
