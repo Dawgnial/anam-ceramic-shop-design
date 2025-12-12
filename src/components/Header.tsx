@@ -385,7 +385,6 @@ export const Header = () => {
               </Link>
               
               <div className="flex items-center gap-1">
-                <span className="text-sm font-medium">{formatPrice(getTotalPrice())} تومان</span>
                 <div className="relative">
                   <CartDrawer />
                   {cartItems.length > 0 && (
@@ -394,6 +393,7 @@ export const Header = () => {
                     </span>
                   )}
                 </div>
+                <span className="text-sm font-medium">{formatPrice(getTotalPrice())} تومان</span>
               </div>
             </div>
           </div>
