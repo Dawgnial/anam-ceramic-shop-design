@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
+import { HelpCircle, MessageCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -11,36 +12,32 @@ import {
 const FAQ = () => {
   const faqs = [
     {
-      question: "زمان ارسال سفارش چقدر است؟",
-      answer: "برای شهر مشهد ارسال سفارشات بین ۱ تا ۳ ساعت از طریق اسنپ انجام می‌شود. برای سایر شهرها، ارسال سفارشات بین ۱ تا ۷ روز کاری انجام می‌شود."
+      question: "آیا تمام محصولات شما سرامیکی هستند؟",
+      answer: "بله. تمامی محصولات فروشگاه آنام کاملاً سرامیکی بوده و با کیفیت بالا تولید و لعاب‌کاری شده‌اند."
     },
     {
-      question: "هزینه ارسال چگونه محاسبه می‌شود؟",
-      answer: "هزینه ارسال بر اساس استان مقصد محاسبه می‌شود. شما می‌توانید در صفحه تسویه حساب، استان خود را انتخاب کنید و هزینه ارسال به صورت خودکار محاسبه خواهد شد."
+      question: "آیا امکان مشاهده‌ی تصاویر واقعی محصول وجود دارد؟",
+      answer: "بله، تمام عکس‌ها واقعی هستند و از نمونه‌های موجود در انبار گرفته شده‌اند. رنگ و بافت محصول با عکس‌ها تطابق دارد."
     },
     {
-      question: "آیا امکان بازگشت کالا وجود دارد؟",
-      answer: "بله، در صورتی که کالا دارای عیب یا آسیب باشد، می‌توانید ظرف ۷ روز از تاریخ دریافت، درخواست بازگشت کالا را ثبت کنید. لطفاً قبل از باز کردن بسته‌بندی، از سالم بودن کالا اطمینان حاصل کنید."
+      question: "ارسال سفارش چقدر طول می‌کشد؟",
+      answer: "سفارش‌ها معمولا بین ۲۴ تا ۷۲ ساعت پردازش و ارسال می‌شوند. زمان تحویل بسته به شهر شما متفاوت است."
     },
     {
-      question: "روش‌های پرداخت چیست؟",
-      answer: "پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود. شما می‌توانید با کارت‌های عضو شبکه شتاب پرداخت خود را انجام دهید."
+      question: "آیا امکان پرداخت آنلاین امن وجود دارد؟",
+      answer: "بله، پرداخت از طریق درگاه امن زرین‌پال انجام می‌شود و کاملاً امن و تاییدشده است."
     },
     {
-      question: "آیا محصولات گارانتی دارند؟",
-      answer: "محصولات ما دست‌ساز و با کیفیت بالا هستند. در صورت وجود هرگونه عیب فنی در محصول، تا ۷ روز پس از دریافت امکان تعویض وجود دارد."
-    },
-    {
-      question: "چگونه می‌توانم سفارش خود را پیگیری کنم؟",
-      answer: "پس از ثبت سفارش و پرداخت، می‌توانید از طریق پروفایل کاربری خود وضعیت سفارش را مشاهده کنید. همچنین پس از ارسال، کد رهگیری برای شما ارسال خواهد شد."
+      question: "آیا می‌توان سفارش را لغو یا مرجوع کرد؟",
+      answer: "تا قبل از ارسال، امکان لغو سفارش وجود دارد. برای مرجوعی، محصول باید استفاده‌نشده و سالم باشد."
     },
     {
       question: "آیا امکان خرید عمده وجود دارد؟",
-      answer: "بله، برای خرید عمده با ما از طریق صفحه تماس با ما ارتباط برقرار کنید تا شرایط ویژه برای شما ارائه شود."
+      answer: "بله، برای خرید عمده یا سفارش‌های اختصاصی می‌توانید از طریق تلگرام یا ایتا با ما در تماس باشید."
     },
     {
-      question: "محصولات قابل شستشو در ماشین ظرفشویی هستند؟",
-      answer: "برخی از محصولات سرامیکی قابل شستشو در ماشین ظرفشویی هستند، اما توصیه می‌شود برای حفظ کیفیت و ماندگاری طرح‌ها، محصولات را با دست بشویید."
+      question: "قیمت‌ها ثابت هستند یا ممکن است تغییر کنند؟",
+      answer: "قیمت‌ها بر اساس هزینه تولید و مواد اولیه به‌روز می‌شوند، اما سعی می‌کنیم قیمت نهایی برای مشتری کاملاً منصفانه باشد."
     }
   ];
 
@@ -55,23 +52,71 @@ const FAQ = () => {
 
       {/* Content */}
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-12">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto space-y-8">
+          
+          {/* Intro */}
+          <div className="text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <HelpCircle className="w-8 h-8 text-primary" />
+            </div>
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+              پاسخ سوالات رایج مشتریان را در این صفحه بخوانید. اگر پاسخ سوال خود را پیدا نکردید، از طریق پشتیبانی با ما در ارتباط باشید.
+            </p>
+          </div>
+
+          {/* FAQ Accordion */}
           <Accordion type="single" collapsible className="w-full space-y-3">
             {faqs.map((faq, index) => (
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
-                className="border border-border rounded-lg px-4 bg-card"
+                className="border border-border rounded-xl px-5 bg-card hover:shadow-md transition-shadow"
               >
-                <AccordionTrigger className="text-right text-base sm:text-lg font-medium hover:no-underline">
-                  {faq.question}
+                <AccordionTrigger className="text-right text-base sm:text-lg font-medium hover:no-underline py-5">
+                  <span className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary font-bold text-sm">
+                      {index + 1}
+                    </span>
+                    {faq.question}
+                  </span>
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm sm:text-base leading-relaxed text-justify">
+                <AccordionContent className="text-muted-foreground text-sm sm:text-base leading-relaxed text-justify pb-5 pr-11">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
+
+          {/* Contact Support */}
+          <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl p-6 flex flex-col sm:flex-row items-center gap-4 border border-primary/20">
+            <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <MessageCircle className="w-7 h-7 text-primary" />
+            </div>
+            <div className="text-center sm:text-right flex-1">
+              <h4 className="font-bold text-foreground mb-2 text-lg">سوال دیگری دارید؟</h4>
+              <p className="text-muted-foreground text-sm sm:text-base">
+                از طریق تلگرام یا ایتا با پشتیبانی تماس بگیرید. ساعات پاسخ‌گویی: هر روز ۹ تا ۱۸
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <a 
+                href="https://t.me/Maso681" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+              >
+                تلگرام
+              </a>
+              <a 
+                href="https://eitaa.com/anam_zrof" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="px-5 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors font-medium text-sm"
+              >
+                ایتا
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 

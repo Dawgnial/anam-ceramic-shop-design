@@ -1,29 +1,79 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
-import { ShoppingCart, CreditCard, Truck, CheckCircle } from "lucide-react";
+import { Search, ShoppingCart, CreditCard, Truck, Package, MapPin, RotateCcw, Headphones } from "lucide-react";
 
 const BuyingGuide = () => {
   const steps = [
     {
-      icon: ShoppingCart,
+      icon: Search,
+      number: "۱",
       title: "انتخاب محصول",
-      description: "محصول مورد نظر خود را از فروشگاه انتخاب کنید و به سبد خرید اضافه نمایید. می‌توانید تعداد محصولات را تغییر دهید یا محصولات دیگر را نیز اضافه کنید."
+      items: [
+        "از دسته‌بندی‌ها یا جستجو استفاده کنید.",
+        "داخل صفحه هر محصول، توضیحات، ابعاد، تصاویر و موجودی نمایش داده می‌شود.",
+        "محصول مورد نظر را به سبد خرید اضافه کنید."
+      ]
+    },
+    {
+      icon: ShoppingCart,
+      number: "۲",
+      title: "ثبت سفارش",
+      items: [
+        "وارد سبد خرید شوید و کالاها را بررسی کنید.",
+        "روی «تسویه حساب» بزنید.",
+        "اطلاعات نام، شماره تماس، آدرس و کدپستی را وارد کنید.",
+        "در صورت نیاز، توضیحات خود را در بخش «یادداشت سفارش» ثبت کنید."
+      ]
     },
     {
       icon: CreditCard,
-      title: "تکمیل اطلاعات و پرداخت",
-      description: "اطلاعات ارسال شامل نام، آدرس و شماره تماس را وارد کنید. سپس از طریق درگاه امن زرین‌پال پرداخت را انجام دهید."
+      number: "۳",
+      title: "روش‌های پرداخت",
+      items: [
+        "پرداخت آنلاین از طریق درگاه امن زرین‌پال",
+        "پشتیبانی از کارت‌های عضو شتاب",
+        "پس از پرداخت، فاکتور به‌صورت فایل قابل دانلود در حساب کاربری/صفحه سفارش شما قرار می‌گیرد (پیامکی ارسال نمی‌شود).",
+        "ممکن است پیامک از طرف شرکت پستی برای اطلاع‌رسانی ارسال شود."
+      ]
     },
     {
       icon: Truck,
+      number: "۴",
       title: "ارسال سفارش",
-      description: "پس از تایید پرداخت، سفارش شما آماده‌سازی و ارسال می‌شود. کد رهگیری برای پیگیری مرسوله به شما ارسال خواهد شد."
+      items: [
+        "ارسال به سراسر کشور با پست یا تیپاکس",
+        "بسته‌بندی امن مخصوص محصولات سفالی و سرامیکی",
+        "زمان تحویل: معمولاً ۲ تا ۵ روز کاری بسته به مقصد"
+      ]
     },
     {
-      icon: CheckCircle,
-      title: "دریافت سفارش",
-      description: "سفارش خود را در آدرس تعیین شده دریافت کنید. لطفاً قبل از تحویل گرفتن، بسته‌بندی را بررسی نمایید."
+      icon: MapPin,
+      number: "۵",
+      title: "پیگیری سفارش",
+      items: [
+        "کد رهگیری پست/تیپاکس برای شما در صفحه سفارش قرار می‌گیرد.",
+        "از طریق بخش «پیگیری سفارش» نیز قابل مشاهده است."
+      ]
+    },
+    {
+      icon: RotateCcw,
+      number: "۶",
+      title: "تعویض و مرجوعی",
+      items: [
+        "در صورت آسیب‌دیدگی محصول در حمل‌ونقل، تا ۲۴ ساعت پس از تحویل عکس ارسال کنید تا تعویض یا بازگشت وجه انجام شود.",
+        "محصولات سفارشی قابل مرجوعی نیستند."
+      ]
+    },
+    {
+      icon: Headphones,
+      number: "۷",
+      title: "پشتیبانی",
+      items: [
+        "پشتیبانی از طریق تلگرام و ایتا",
+        "لینک‌های پشتیبانی در صفحه تماس با ما قرار دارد.",
+        "ساعات پاسخ‌گویی: هر روز ۹ تا ۱۸"
+      ]
     }
   ];
 
@@ -39,40 +89,72 @@ const BuyingGuide = () => {
       {/* Content */}
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          <p className="text-foreground text-center mb-8 sm:mb-12 text-base sm:text-lg">
-            خرید از فروشگاه آنام بسیار ساده است. با دنبال کردن مراحل زیر می‌توانید به راحتی سفارش خود را ثبت کنید.
-          </p>
+          {/* Intro */}
+          <div className="text-center space-y-4 mb-10">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <ShoppingCart className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">راهنمای خرید از فروشگاه آنام</h2>
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
+              با دنبال کردن مراحل زیر می‌توانید به راحتی سفارش خود را ثبت و پیگیری کنید.
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {/* Steps */}
+          <div className="space-y-6">
             {steps.map((step, index) => (
               <div 
                 key={index}
-                className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow"
+                className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-all hover:border-primary/30"
               >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <step.icon className="w-6 h-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <step.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm">
+                      {step.number}
+                    </div>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                    {index + 1}
+                  <div className="flex-1">
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                    <ul className="space-y-2">
+                      {step.items.map((item, itemIndex) => (
+                        <li key={itemIndex} className="flex items-start gap-2 text-muted-foreground text-sm sm:text-base">
+                          <span className="text-primary mt-1.5">•</span>
+                          <span className="text-justify">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-foreground mb-3">{step.title}</h3>
-                <p className="text-muted-foreground text-sm sm:text-base leading-relaxed text-justify">
-                  {step.description}
-                </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-8 sm:mt-12 bg-accent/50 rounded-xl p-6">
-            <h3 className="text-lg font-bold text-foreground mb-4">نکات مهم:</h3>
-            <ul className="space-y-2 text-muted-foreground text-sm sm:text-base">
-              <li>• قبل از تکمیل خرید، اطلاعات سفارش خود را بررسی کنید.</li>
-              <li>• آدرس و شماره تماس را به صورت دقیق وارد نمایید.</li>
-              <li>• در صورت بروز هرگونه مشکل، با پشتیبانی تماس بگیرید.</li>
-              <li>• فاکتور خرید را تا زمان دریافت کالا نزد خود نگه دارید.</li>
-            </ul>
+          {/* Quick Links */}
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a 
+              href="/shop" 
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-xl p-4 hover:bg-primary/90 transition-colors font-medium"
+            >
+              <Package className="w-5 h-5" />
+              مشاهده محصولات
+            </a>
+            <a 
+              href="/shipping-method" 
+              className="flex items-center justify-center gap-2 bg-secondary text-secondary-foreground rounded-xl p-4 hover:bg-secondary/80 transition-colors font-medium"
+            >
+              <Truck className="w-5 h-5" />
+              شیوه ارسال
+            </a>
+            <a 
+              href="/returns" 
+              className="flex items-center justify-center gap-2 bg-accent text-accent-foreground rounded-xl p-4 hover:bg-accent/80 transition-colors font-medium"
+            >
+              <RotateCcw className="w-5 h-5" />
+              بازگشت کالا
+            </a>
           </div>
         </div>
       </div>

@@ -1,39 +1,9 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
-import { Ruler, Info } from "lucide-react";
+import { Ruler, Info, HelpCircle, MessageCircle, ArrowUp, Circle } from "lucide-react";
 
 const SizeGuide = () => {
-  const sizeCategories = [
-    {
-      title: "فنجان و ماگ",
-      items: [
-        { name: "فنجان اسپرسو", height: "۵-۶", diameter: "۵-۶", capacity: "۶۰-۹۰" },
-        { name: "فنجان چای", height: "۶-۸", diameter: "۷-۹", capacity: "۱۵۰-۲۰۰" },
-        { name: "ماگ متوسط", height: "۹-۱۰", diameter: "۸-۹", capacity: "۲۵۰-۳۰۰" },
-        { name: "ماگ بزرگ", height: "۱۰-۱۲", diameter: "۹-۱۰", capacity: "۳۵۰-۴۵۰" },
-      ]
-    },
-    {
-      title: "بشقاب",
-      items: [
-        { name: "بشقاب دسر", height: "۲-۳", diameter: "۱۵-۱۸", capacity: "-" },
-        { name: "بشقاب غذاخوری", height: "۲-۳", diameter: "۲۴-۲۸", capacity: "-" },
-        { name: "بشقاب سرو", height: "۳-۴", diameter: "۳۰-۳۵", capacity: "-" },
-        { name: "دیس بزرگ", height: "۴-۵", diameter: "۳۵-۴۵", capacity: "-" },
-      ]
-    },
-    {
-      title: "کاسه",
-      items: [
-        { name: "کاسه کوچک", height: "۵-۷", diameter: "۱۰-۱۲", capacity: "۲۰۰-۳۰۰" },
-        { name: "کاسه سوپ", height: "۷-۹", diameter: "۱۴-۱۶", capacity: "۴۰۰-۵۰۰" },
-        { name: "کاسه سالاد", height: "۸-۱۰", diameter: "۱۸-۲۲", capacity: "۸۰۰-۱۰۰۰" },
-        { name: "کاسه بزرگ سرو", height: "۱۰-۱۲", diameter: "۲۵-۳۰", capacity: "۱۵۰۰-۲۰۰۰" },
-      ]
-    }
-  ];
-
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -45,59 +15,141 @@ const SizeGuide = () => {
 
       {/* Content */}
       <div className="flex-1 container mx-auto px-4 py-8 sm:py-12">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-8">
           
           {/* Intro */}
           <div className="text-center space-y-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
               <Ruler className="w-8 h-8 text-primary" />
             </div>
-            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto">
-              برای انتخاب بهتر محصولات، اندازه‌های استاندارد ظروف سرامیکی را در جدول زیر مشاهده کنید. تمام اندازه‌ها تقریبی هستند و ممکن است بسته به طراحی محصول کمی متفاوت باشند.
+            <p className="text-muted-foreground text-base sm:text-lg max-w-2xl mx-auto text-justify">
+              در این صفحه می‌توانید ابعاد دقیق محصولات آنام را مشاهده کنید تا هنگام سفارش، انتخابی مطمئن و درست داشته باشید.
+              تمام اندازه‌ها با دقت بالا ثبت شده‌اند، اما به دلیل فرایند تولید دستی سفال و سرامیک ممکن است بین ۳ تا ۵ میلی‌متر اختلاف جزئی وجود داشته باشد.
             </p>
           </div>
 
-          {/* Size Tables */}
-          {sizeCategories.map((category, catIndex) => (
-            <div key={catIndex} className="bg-card border border-border rounded-xl overflow-hidden">
-              <div className="bg-primary/10 px-6 py-4">
-                <h3 className="text-lg font-bold text-foreground">{category.title}</h3>
+          {/* Why Size Difference */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <Info className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="font-bold text-amber-800 mb-2 text-lg">چرا اختلاف اندازه طبیعی است؟</h3>
+                <p className="text-amber-700 text-sm sm:text-base leading-relaxed text-justify">
+                  محصولات آنام، تولید دستی هستند و فرایندهایی مثل فرم‌دهی، خشک شدن و پخت در کوره باعث تغییرات بسیار جزئی در ابعاد می‌شود.
+                  این موارد کاملاً طبیعی و قابل قبول در استاندارد تولید سفال و سرامیک است.
+                </p>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-accent/50">
-                    <tr>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">نوع محصول</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">ارتفاع (سانتی‌متر)</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">قطر (سانتی‌متر)</th>
-                      <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">ظرفیت (میلی‌لیتر)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {category.items.map((item, itemIndex) => (
-                      <tr key={itemIndex} className="border-t border-border hover:bg-accent/30 transition-colors">
-                        <td className="px-4 py-3 text-right text-foreground">{item.name}</td>
-                        <td className="px-4 py-3 text-center text-muted-foreground">{item.height}</td>
-                        <td className="px-4 py-3 text-center text-muted-foreground">{item.diameter}</td>
-                        <td className="px-4 py-3 text-center text-muted-foreground">{item.capacity}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
-
-          {/* Note */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 flex gap-4">
-            <Info className="w-6 h-6 text-amber-600 flex-shrink-0 mt-1" />
-            <div>
-              <h4 className="font-bold text-amber-800 mb-2">توجه:</h4>
-              <p className="text-amber-700 text-sm sm:text-base leading-relaxed">
-                از آنجا که محصولات ما دست‌ساز هستند، ممکن است اندازه‌های واقعی با جدول فوق تفاوت جزئی داشته باشند. برای اطلاع از اندازه دقیق هر محصول، به صفحه جزئیات آن محصول مراجعه کنید.
-              </p>
             </div>
           </div>
+
+          {/* Measurement Standards */}
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h3 className="text-lg font-bold text-foreground mb-6">استاندارد اندازه‌گیری محصولات</h3>
+            <p className="text-muted-foreground mb-6">برای یک‌دست بودن اطلاعات، همه اندازه‌ها بر اساس موارد زیر ثبت می‌شوند:</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <Circle className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-bold text-foreground mb-2">قطر (Ø)</h4>
+                <p className="text-muted-foreground text-sm">اندازه‌ی دهانهٔ ظرف در پهن‌ترین بخش.</p>
+              </div>
+
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <ArrowUp className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-bold text-foreground mb-2">ارتفاع (H)</h4>
+                <p className="text-muted-foreground text-sm">فاصلهٔ کف ظرف تا لبهٔ بالایی.</p>
+              </div>
+
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+                  <Ruler className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-bold text-foreground mb-2">حجم (در صورت نیاز)</h4>
+                <p className="text-muted-foreground text-sm">فقط برای ظروف مایع یا آجیل/پاستا و... حجم بر اساس ظرفیت واقعی اندازه‌گیری شده است.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* How to Measure */}
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h3 className="text-lg font-bold text-foreground mb-4">نحوه اندازه‌گیری توسط کاربر</h3>
+            <p className="text-muted-foreground mb-4">اگر می‌خواهید اندازهٔ ظرفی مشابه را با محصول آنام مقایسه کنید:</p>
+            
+            <div className="space-y-3">
+              {[
+                "قطر را از لبه خارجی تا لبه خارجی اندازه بگیرید.",
+                "ارتفاع را بدون در نظر گرفتن درب (در صورت وجود) اندازه بگیرید.",
+                "برای حجم، ظرف را تا لبه پُر کرده و مقدار آب را اندازه بگیرید."
+              ].map((item, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    {index + 1}
+                  </div>
+                  <p className="text-muted-foreground pt-0.5">{item}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Important Tips */}
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-primary" />
+              نکات مهم هنگام انتخاب اندازه
+            </h3>
+            
+            <ul className="space-y-3">
+              {[
+                "ابعاد محصولات داخل صفحه هر محصول درج شده‌اند.",
+                "تصاویر ممکن است نسبت به اندازه واقعی بزرگ‌تر یا کوچک‌تر دیده شوند—ملاک نهایی اعداد هستند.",
+                "اگر بین دو سایز شک دارید، همیشه سایز بزرگ‌تر انتخاب منطقی‌تری است.",
+                "برای ست‌های چندتایی، ابعاد هر قطعه جداگانه نوشته شده است."
+              ].map((item, index) => (
+                <li key={index} className="flex items-start gap-2 text-muted-foreground">
+                  <span className="text-primary font-bold mt-0.5">•</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Support */}
+          <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl p-6 border border-primary/20">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                <MessageCircle className="w-7 h-7 text-primary" />
+              </div>
+              <div className="text-center sm:text-right flex-1">
+                <h4 className="font-bold text-foreground mb-2 text-lg">در صورت نیاز به کمک بیشتر</h4>
+                <p className="text-muted-foreground text-sm sm:text-base">
+                  برای انتخاب اندازه مناسب می‌توانید از طریق تلگرام یا ایتا با پشتیبانی تماس بگیرید و ابعاد مورد نظر را بپرسید. تصاویر واقعی و اندازه دقیق برایتان ارسال می‌شود.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <a 
+                  href="https://t.me/Maso681" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium text-sm"
+                >
+                  تلگرام
+                </a>
+                <a 
+                  href="https://eitaa.com/anam_zrof" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors font-medium text-sm"
+                >
+                  ایتا
+                </a>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
