@@ -75,25 +75,33 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
   const handleAddToWishlist = () => {
     if (!product) return;
     
-    toggleWishlist({
+    const added = toggleWishlist({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images?.[0] || '/placeholder.svg',
     });
-    toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+    if (added) {
+      toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+    } else {
+      toast.info('محصول از علاقه‌مندی‌ها حذف شد');
+    }
   };
 
   const handleAddToCompare = () => {
     if (!product) return;
     
-    toggleCompare({
+    const added = toggleCompare({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images?.[0] || '/placeholder.svg',
     });
-    toast.success('محصول به مقایسه اضافه شد');
+    if (added) {
+      toast.success('محصول به مقایسه اضافه شد');
+    } else {
+      toast.info('محصول از مقایسه حذف شد');
+    }
   };
 
   if (!product && !isLoading) return null;

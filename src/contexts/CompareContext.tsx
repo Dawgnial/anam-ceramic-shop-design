@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 
 export interface CompareItem {
   id: string;
@@ -9,10 +9,11 @@ export interface CompareItem {
 
 interface CompareContextType {
   items: CompareItem[];
-  addToCompare: (item: CompareItem) => void;
+  addToCompare: (item: CompareItem) => boolean;
   removeFromCompare: (id: string) => void;
-  toggleCompare: (item: CompareItem) => void;
+  toggleCompare: (item: CompareItem) => boolean;
   clearCompare: () => void;
+  isInCompare: (id: string) => boolean;
 }
 
 const CompareContext = createContext<CompareContextType | undefined>(undefined);
@@ -20,32 +21,36 @@ const CompareContext = createContext<CompareContextType | undefined>(undefined);
 export const CompareProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CompareItem[]>([]);
 
-  const addToCompare = (item: CompareItem) => {
-    setItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id);
-      if (existingItem) {
-        return prevItems;
-      }
-      return [...prevItems, item];
-    });
-  };
+  const isInCompare = useCallback((id: string) => {
+    return items.some(item => item.id === id);
+  }, [items]);
 
-  const removeFromCompare = (id: string) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== id));
-  };
-
-  const toggleCompare = (item: CompareItem) => {
-    const existingItem = items.find(i => i.id === item.id);
-    if (existingItem) {
-      removeFromCompare(item.id);
-    } else {
-      addToCompare(item);
+  const addToCompare = useCallback((item: CompareItem): boolean => {
+    if (items.some(i => i.id === item.id)) {
+      return false;
     }
-  };
+    setItems(prevItems => [...prevItems, item]);
+    return true;
+  }, [items]);
 
-  const clearCompare = () => {
+  const removeFromCompare = useCallback((id: string) => {
+    setItems(prevItems => prevItems.filter(item => item.id !== id));
+  }, []);
+
+  const toggleCompare = useCallback((item: CompareItem): boolean => {
+    const exists = items.some(i => i.id === item.id);
+    if (exists) {
+      setItems(prevItems => prevItems.filter(i => i.id !== item.id));
+      return false;
+    } else {
+      setItems(prevItems => [...prevItems, item]);
+      return true;
+    }
+  }, [items]);
+
+  const clearCompare = useCallback(() => {
     setItems([]);
-  };
+  }, []);
 
   return (
     <CompareContext.Provider
@@ -55,6 +60,7 @@ export const CompareProvider = ({ children }: { children: ReactNode }) => {
         removeFromCompare,
         toggleCompare,
         clearCompare,
+        isInCompare,
       }}
     >
       {children}
