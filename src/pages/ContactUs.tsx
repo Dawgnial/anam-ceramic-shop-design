@@ -159,7 +159,7 @@ const ContactUs = () => {
         {/* Map Section */}
         <div className="w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2" style={{ borderColor: '#B3886D', height: '350px' }}>
           <iframe
-            src="https://neshan.org/maps/places/sb1xyZ_JGVkK#c36.273-59.574-15z-0p"
+            src="https://neshan.org/maps/@36.27299907378206,59.57397220348286,15z,0p"
             width="100%"
             height="100%"
             style={{ border: 0 }}
