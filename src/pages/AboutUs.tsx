@@ -11,7 +11,7 @@ const AboutUs = () => {
       
       {/* Hero Banner */}
       <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">درباره ما</h1>
+        <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold">درباره ما</h1>
       </div>
 
       {/* Content Section */}
@@ -19,8 +19,8 @@ const AboutUs = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
           {/* Text Content - Left Side */}
           <div className="space-y-4 sm:space-y-6 order-2 md:order-1">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">فروشگاه آنلاین آنام</h2>
-            <p className="text-foreground leading-relaxed text-sm sm:text-base md:text-lg text-justify">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground">فروشگاه آنلاین آنام</h2>
+            <p className="leading-relaxed text-xs sm:text-sm md:text-base" style={{ color: '#A9A9A9' }}>
               فروشگاه اینترنتی آنام به عنوان فروشگاه تخصصی در زمینه سفال، سرامیک و صنایع دستی از ابتدای سال ۱۳۹۰ فعالیت خود را آغاز کرد. ما در فروشگاه آنلاین آنام در تلاش هستیم تا ضمن ارائه خدمات فروش، مشاوره و خدمات پس از فروش به شما علاقه مندان و با حمایت از تولیدات با کیفیت در این حوزه رضایت شما را کسب نماییم و اعلام مینماییم آماده فروش ظروف سفالی و سرامیکی به سراسر کشور هستیم.
             </p>
           </div>
