@@ -6,12 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ZARINPAL_MERCHANT_ID = "00873a04-6ad1-4af4-9a0f-2f26909a0132";
 const ZARINPAL_VERIFY_URL = "https://api.zarinpal.com/pg/v4/payment/verify.json";
 
 interface VerifyRequest {
   authority: string;
   pending_id: string;
+  token: string;
+}
+
+// Constant-time string comparison to prevent timing attacks
+function secureCompare(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 serve(async (req) => {
@@ -21,13 +33,23 @@ serve(async (req) => {
   }
 
   try {
-    const { authority, pending_id }: VerifyRequest = await req.json();
-
-    console.log("Verify request received:", { authority, pending_id });
-
-    if (!authority || !pending_id) {
+    // Get merchant ID from environment variable
+    const merchantId = Deno.env.get("ZARINPAL_MERCHANT_ID");
+    if (!merchantId) {
+      console.error("ZARINPAL_MERCHANT_ID not configured");
       return new Response(
-        JSON.stringify({ error: "Missing authority or pending_id" }),
+        JSON.stringify({ error: "Payment configuration error" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { authority, pending_id, token }: VerifyRequest = await req.json();
+
+    console.log("Verify request received:", { authority, pending_id, hasToken: !!token });
+
+    if (!authority || !pending_id || !token) {
+      return new Response(
+        JSON.stringify({ error: "Missing authority, pending_id, or verification token" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -52,6 +74,16 @@ serve(async (req) => {
       );
     }
 
+    // SECURITY: Verify the token matches the one stored in the database
+    // This prevents attackers from guessing pending_id values
+    if (!pendingPayment.verification_token || !secureCompare(token, pendingPayment.verification_token)) {
+      console.error("Invalid verification token");
+      return new Response(
+        JSON.stringify({ error: "Invalid verification token" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Already processed?
     if (pendingPayment.status === "completed") {
       return new Response(
@@ -72,7 +104,7 @@ serve(async (req) => {
         "Accept": "application/json",
       },
       body: JSON.stringify({
-        merchant_id: ZARINPAL_MERCHANT_ID,
+        merchant_id: merchantId,
         amount: pendingPayment.amount,
         authority: authority,
       }),
@@ -144,13 +176,14 @@ serve(async (req) => {
         }
       }
 
-      // Update pending payment status
+      // Update pending payment status and clear the verification token
       await supabase
         .from("pending_payments")
         .update({ 
           status: "completed", 
           order_id: order.id,
-          ref_id: refId.toString()
+          ref_id: refId.toString(),
+          verification_token: null // Clear token after successful verification
         })
         .eq("id", pending_id);
 
@@ -166,7 +199,7 @@ serve(async (req) => {
       // Payment failed
       await supabase
         .from("pending_payments")
-        .update({ status: "failed" })
+        .update({ status: "failed", verification_token: null })
         .eq("id", pending_id);
 
       return new Response(

@@ -23,8 +23,9 @@ const PaymentCallback = () => {
       const authority = searchParams.get("Authority");
       const paymentStatus = searchParams.get("Status");
       const pendingId = searchParams.get("pending_id");
+      const verificationToken = searchParams.get("token");
 
-      console.log("Payment callback params:", { authority, paymentStatus, pendingId });
+      console.log("Payment callback params:", { authority, paymentStatus, pendingId, hasToken: !!verificationToken });
 
       if (paymentStatus !== "OK") {
         setStatus("failed");
@@ -32,7 +33,7 @@ const PaymentCallback = () => {
         return;
       }
 
-      if (!authority || !pendingId) {
+      if (!authority || !pendingId || !verificationToken) {
         setStatus("failed");
         setErrorMessage("اطلاعات پرداخت نامعتبر است");
         return;
@@ -40,7 +41,7 @@ const PaymentCallback = () => {
 
       try {
         const { data, error } = await supabase.functions.invoke("zarinpal-verify", {
-          body: { authority, pending_id: pendingId },
+          body: { authority, pending_id: pendingId, token: verificationToken },
         });
 
         console.log("Verify response:", data, error);
