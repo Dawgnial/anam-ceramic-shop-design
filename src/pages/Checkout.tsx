@@ -135,9 +135,22 @@ const Checkout = () => {
       }
 
       setAppliedCoupon(data);
+      
+      // Calculate discount with the new coupon data
+      const subtotal = getTotalPrice();
+      let discountAmount = 0;
+      if (data.discount_type === "percentage") {
+        discountAmount = (subtotal * data.discount_value) / 100;
+        if (data.max_discount) {
+          discountAmount = Math.min(discountAmount, data.max_discount);
+        }
+      } else {
+        discountAmount = data.discount_value;
+      }
+      
       toast({
         title: "کد تخفیف اعمال شد",
-        description: `تخفیف شما: ${toPersianNumber(getDiscount())} تومان`
+        description: `تخفیف شما: ${toPersianNumber(discountAmount)} تومان`
       });
     } catch (error) {
       console.error("Error applying coupon:", error);
@@ -169,6 +182,17 @@ const Checkout = () => {
       return;
     }
 
+    // Validate phone number
+    const phoneRegex = /^09\d{9}$/;
+    if (!phoneRegex.test(phone.replace(/[۰-۹]/g, (d) => '0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)]))) {
+      toast({
+        title: "شماره تماس نامعتبر",
+        description: "شماره موبایل باید با 09 شروع شود و 11 رقم باشد",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (items.length === 0) {
       toast({
         title: "سبد خرید خالی",
@@ -184,8 +208,9 @@ const Checkout = () => {
       const provinceName = getSelectedProvinceName();
       const finalAmount = getFinalTotal();
       
-      // Prepare order data
+      // Prepare order data with product_id for inventory management
       const orderItems = items.map(item => ({
+        product_id: item.id,
         product_name: item.name,
         product_image: item.image,
         quantity: item.quantity,

@@ -136,8 +136,9 @@ serve(async (req) => {
         );
       }
 
-      // Create order items
+      // Create order items and update inventory
       const items = pendingPayment.items as Array<{
+        product_id?: string;
         product_name: string;
         product_image: string;
         quantity: number;
@@ -158,6 +159,39 @@ serve(async (req) => {
 
       if (itemsError) {
         console.error("Error creating order items:", itemsError);
+      }
+
+      // Update product stock for each item
+      for (const item of items) {
+        if (item.product_id) {
+          // Get current stock
+          const { data: product, error: productError } = await supabase
+            .from("products")
+            .select("stock")
+            .eq("id", item.product_id)
+            .single();
+          
+          if (!productError && product) {
+            const newStock = Math.max(0, (product.stock || 0) - item.quantity);
+            
+            // Update stock
+            await supabase
+              .from("products")
+              .update({ stock: newStock })
+              .eq("id", item.product_id);
+            
+            // Log inventory movement
+            await supabase
+              .from("inventory_movements")
+              .insert({
+                product_id: item.product_id,
+                quantity: -item.quantity,
+                movement_type: "sale",
+                reference_id: order.id,
+                notes: `فروش از سفارش ${order.id.slice(0, 8)}`
+              });
+          }
+        }
       }
 
       // Update coupon usage if applicable
