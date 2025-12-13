@@ -6,8 +6,14 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ZARINPAL_MERCHANT_ID = "00873a04-6ad1-4af4-9a0f-2f26909a0132";
 const ZARINPAL_REQUEST_URL = "https://api.zarinpal.com/pg/v4/payment/request.json";
+
+// Generate a secure random verification token
+function generateVerificationToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 interface PaymentRequest {
   amount: number;
@@ -33,6 +39,16 @@ serve(async (req) => {
   }
 
   try {
+    // Get merchant ID from environment variable
+    const merchantId = Deno.env.get("ZARINPAL_MERCHANT_ID");
+    if (!merchantId) {
+      console.error("ZARINPAL_MERCHANT_ID not configured");
+      return new Response(
+        JSON.stringify({ error: "Payment configuration error" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Extract and validate JWT token
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -89,6 +105,9 @@ serve(async (req) => {
     // Create Supabase client with service role for database operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Generate a secure verification token for callback validation
+    const verificationToken = generateVerificationToken();
+
     // Store pending order data using the authenticated user's ID
     const { data: pendingOrder, error: pendingError } = await supabase
       .from("pending_payments")
@@ -98,7 +117,8 @@ serve(async (req) => {
         shipping_address: order_data.shipping_address,
         items: order_data.items,
         coupon_id: order_data.coupon_id || null,
-        status: "pending"
+        status: "pending",
+        verification_token: verificationToken
       })
       .select()
       .single();
@@ -119,10 +139,10 @@ serve(async (req) => {
         "Accept": "application/json",
       },
       body: JSON.stringify({
-        merchant_id: ZARINPAL_MERCHANT_ID,
+        merchant_id: merchantId,
         amount: amount,
         description: description || "خرید از فروشگاه آنام",
-        callback_url: `${callback_url}?pending_id=${pendingOrder.id}`,
+        callback_url: `${callback_url}?pending_id=${pendingOrder.id}&token=${verificationToken}`,
         metadata: {
           mobile: mobile,
           order_id: pendingOrder.id,

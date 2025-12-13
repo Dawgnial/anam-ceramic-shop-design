@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import DOMPurify from "dompurify";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -53,6 +54,12 @@ const BlogPost = () => {
     );
   }
 
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizedContent = DOMPurify.sanitize(post.content || '', {
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'pre', 'code', 'span', 'div'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'style', 'target', 'rel'],
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -91,11 +98,11 @@ const BlogPost = () => {
             {new Date(post.created_at || '').toLocaleDateString('fa-IR')}
           </p>
 
-          {/* Post Content */}
+          {/* Post Content - Sanitized */}
           <div 
             className="prose prose-lg max-w-none text-foreground leading-8 blog-content"
             dir="rtl"
-            dangerouslySetInnerHTML={{ __html: post.content || '' }}
+            dangerouslySetInnerHTML={{ __html: sanitizedContent }}
           />
 
           {/* Back Link */}
