@@ -1,14 +1,10 @@
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  
-  # Don't rewrite files or directories
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  
-  # Rewrite everything else to index.html to allow html5 state links
-  RewriteRule ^ index.html [QSA,L]
-</IfModule>
+# Enable RewriteEngine
+RewriteEngine On
 
-# Handle 404 errors
-ErrorDocument 404 /index.html
+# If an existing asset or directory is requested go to it as it is
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# If the requested resource doesn't exist, use index.html
+RewriteRule ^ /index.html [L]
