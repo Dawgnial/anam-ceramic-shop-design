@@ -281,7 +281,7 @@ const Shop = () => {
       
       {/* Page Header Banner */}
       <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-black">فروشگاه</h1>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black">فروشگاه</h1>
       </div>
 
       {/* Main Content */}
@@ -363,7 +363,13 @@ const Shop = () => {
 
             {/* Products Grid */}
             <TooltipProvider>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+              <div className={`grid gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 ${
+                itemsPerPage === 9 
+                  ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4' 
+                  : itemsPerPage === 24 
+                    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5' 
+                    : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
+              }`}>
                 {displayedProducts.map((product) => (
                   <div 
                     key={product.id} 

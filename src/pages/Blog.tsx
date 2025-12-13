@@ -33,8 +33,8 @@ const Blog = () => {
       <Header />
       
       {/* Hero Banner */}
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-4xl font-bold">بلاگ</h1>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold">بلاگ</h1>
       </div>
 
       {/* Content */}

@@ -61,7 +61,7 @@ const ContactUs = () => {
       
       {/* Banner */}
       <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">ارتباط با ما</h1>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-black">ارتباط با ما</h1>
       </div>
 
       {/* Main Content */}
