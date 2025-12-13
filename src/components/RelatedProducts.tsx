@@ -64,13 +64,17 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
   };
 
   const handleAddToWishlist = (product: any) => {
-    toggleWishlist({
+    const added = toggleWishlist({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images?.[0] || '/placeholder.svg',
     });
-    toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+    if (added) {
+      toast.success('محصول به علاقه‌مندی‌ها اضافه شد');
+    } else {
+      toast.info('محصول از علاقه‌مندی‌ها حذف شد');
+    }
   };
 
   const handleAddToCompare = (product: any) => {
@@ -79,13 +83,17 @@ export function RelatedProducts({ categoryId, currentProductId }: RelatedProduct
       return;
     }
 
-    toggleCompare({
+    const added = toggleCompare({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.images?.[0] || '/placeholder.svg',
     });
-    toast.success('محصول به لیست مقایسه اضافه شد');
+    if (added) {
+      toast.success('محصول به لیست مقایسه اضافه شد');
+    } else {
+      toast.info('محصول از لیست مقایسه حذف شد');
+    }
   };
 
   return (
