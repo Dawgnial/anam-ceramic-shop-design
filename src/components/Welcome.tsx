@@ -25,7 +25,7 @@ export const Welcome = () => {
           {/* Text box overlay - rectangular border extending to left image */}
           <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 md:p-8">
             <div 
-              className="border-2 sm:border-4 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-20"
+              className="border-2 sm:border-4 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30"
               style={{
                 borderColor: '#FCE8D9',
                 width: 'calc(100% + 120px)',
