@@ -272,7 +272,7 @@ export const Header = () => {
             <div className="flex items-center gap-1 md:gap-2 lg:hidden">
               <Link to="/compare" className="relative group">
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent transition-colors">
-                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5 group-hover:opacity-60 transition-opacity" />
+                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5 group-hover:brightness-75 group-hover:sepia group-hover:hue-rotate-[340deg] group-hover:saturate-150 transition-all" />
                   {compareItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                       {toPersianNumber(compareItems.length)}
@@ -364,7 +364,7 @@ export const Header = () => {
             <div className="flex items-center gap-3">
               <Link to="/compare" className="relative group">
                 <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent transition-colors">
-                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6 group-hover:opacity-60 transition-opacity" />
+                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6 group-hover:brightness-75 group-hover:sepia group-hover:hue-rotate-[340deg] group-hover:saturate-150 transition-all" />
                   {compareItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {toPersianNumber(compareItems.length)}
