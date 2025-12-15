@@ -16,7 +16,7 @@ export const Welcome = () => {
     <section className="bg-background overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0 items-center relative">
         {/* Right side - Image with text overlay */}
-        <div className={`relative transition-transform duration-1000 ${isVisible ? "translate-x-0" : "translate-x-full"}`}>
+        <div className={`relative z-20 transition-transform duration-1000 ${isVisible ? "translate-x-0" : "translate-x-full"}`}>
           <img 
             src={welcomeImg1} 
             alt="Welcome" 
@@ -67,7 +67,7 @@ export const Welcome = () => {
         </div>
 
         {/* Left side - Image */}
-        <div className={`transition-transform duration-1000 hidden md:block ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
+        <div className={`relative z-10 transition-transform duration-1000 hidden md:block ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
           <img 
             src={welcomeImg2} 
             alt="Welcome" 
