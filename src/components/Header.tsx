@@ -254,14 +254,14 @@ export const Header = () => {
             <div className="flex-shrink-0 hidden lg:block">
               {user ? (
                 <Link to="/profile">
-                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:text-[#F9F3F0] transition-colors">
+                  <Button variant="ghost" className="gap-2 text-foreground hover:bg-transparent hover:text-[#FBF7F3] transition-colors">
                     <User className="h-4 w-4" />
                     پروفایل
                   </Button>
                 </Link>
               ) : (
                 <Link to="/auth">
-                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:text-[#F9F3F0] transition-colors">
+                  <Button variant="ghost" className="text-foreground hover:bg-transparent hover:text-[#FBF7F3] transition-colors">
                     ورود / ثبت نام
                   </Button>
                 </Link>
@@ -282,7 +282,7 @@ export const Header = () => {
               </Link>
 
               <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:text-[#F9F3F0] transition-colors">
+                <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:text-[#FBF7F3] transition-colors">
                   <Heart className="h-5 w-5" />
                   {wishlistItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
@@ -321,7 +321,7 @@ export const Header = () => {
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
             >
-              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:text-[#F9F3F0] transition-colors">
+              <Button variant="ghost" className="gap-2 h-9 text-sm hover:bg-transparent hover:text-[#FBF7F3] transition-colors">
                 دسته بندی محصولات
                 <ChevronDown className="h-4 w-4" />
               </Button>
@@ -351,7 +351,7 @@ export const Header = () => {
                     variant="ghost" 
                     className={cn(
                       "text-sm h-9 px-3 transition-all hover:bg-transparent",
-                      isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground hover:text-[#F9F3F0]"
+                      isActivePage(link.path) ? "text-[#B3886D]" : "text-foreground hover:text-[#FBF7F3]"
                     )}
                   >
                     {link.label}
@@ -374,7 +374,7 @@ export const Header = () => {
               </Link>
               
               <Link to="/wishlist" className="relative">
-                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:text-[#F9F3F0] transition-colors">
+                <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:text-[#FBF7F3] transition-colors">
                   <Heart className="h-6 w-6" />
                   {wishlistItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -384,7 +384,7 @@ export const Header = () => {
                 </Button>
               </Link>
               
-              <div className="flex items-center gap-1 hover:text-[#F9F3F0] transition-colors">
+              <div className="flex items-center gap-1 hover:text-[#FBF7F3] transition-colors">
                 <div className="relative">
                   <CartDrawer />
                   {cartItems.length > 0 && (
