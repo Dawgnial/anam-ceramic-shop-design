@@ -42,7 +42,7 @@ export const ProductsCarousel = () => {
         error
       } = await supabase.from('products').select('*').eq('is_featured', true).order('created_at', {
         ascending: false
-      }).limit(8);
+      }).limit(4);
       if (error) throw error;
       return data;
     }
@@ -128,13 +128,9 @@ export const ProductsCarousel = () => {
           <p className="text-muted-foreground text-sm md:text-base">ما ظروف منحصر به فرد را با عشق و علاقه می‌سازیم</p>
         </div>
 
-        <div className="relative">
-          <div ref={scrollRef} className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto scrollbar-hide scroll-smooth cursor-grab active:cursor-grabbing pb-4" style={{
-          scrollbarWidth: "none",
-          msOverflowStyle: "none"
-        }} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave}>
-            {products.map(product => (
-              <div key={product.id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[240px] lg:min-w-[280px] flex-shrink-0 group">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {products.slice(0, 4).map(product => (
+              <div key={product.id} className="group border border-border/60 hover:border-primary/50 transition-colors duration-300 bg-card">
                 {/* Card Image Container */}
                 <div className="relative overflow-hidden bg-muted/30">
                   <LazyImage 
@@ -220,7 +216,6 @@ export const ProductsCarousel = () => {
                 </div>
               </div>
             ))}
-          </div>
         </div>
 
         <QuickViewDialog productId={quickViewProductId} open={quickViewOpen} onOpenChange={setQuickViewOpen} />
