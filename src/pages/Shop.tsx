@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
-import { Heart, ShoppingCart, Search, Shuffle, Filter } from "lucide-react";
+import { Heart, ShoppingCart, Search, Shuffle, Filter, X, RotateCcw, Check, ChevronDown, ChevronUp, Grid3X3, LayoutGrid } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -179,80 +179,261 @@ const Shop = () => {
     setCurrentPage(1);
   });
 
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  
+  // Active filters count
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedCategory) count++;
+    if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) count++;
+    return count;
+  }, [selectedCategory, priceRange, minPrice, maxPrice]);
+
+  // Reset all filters
+  const resetFilters = () => {
+    setSelectedCategory(null);
+    setPriceRange([minPrice, maxPrice]);
+    setSortOrder("default");
+    setCurrentPage(1);
+  };
+
   // Sidebar content component for reuse
-  const SidebarContent = () => (
-    <div className="space-y-6">
-      {/* دسته‌بندی‌ها */}
-      <div>
-        <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">دسته بندی ها</h3>
-        <div className="space-y-1 sm:space-y-2">
-          <button
-            onClick={() => {
-              setSelectedCategory(null);
-              setFilterSheetOpen(false);
-            }}
-            className={`block w-full text-right text-xs sm:text-sm py-1 px-2 rounded transition-colors ${
-              selectedCategory === null 
-                ? 'font-bold' 
-                : 'hover:bg-accent'
-            }`}
-            style={selectedCategory === null ? { color: '#B3886D' } : undefined}
-          >
-            همه محصولات ({toPersianNumber(products.length)})
-          </button>
-          {categories.map((category) => {
-            const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
-            return (
-              <button
-                key={category.id}
-                onClick={() => {
-                  setSelectedCategory(category.id);
-                  setFilterSheetOpen(false);
-                }}
-                className={`block w-full text-right text-xs sm:text-sm py-1 px-2 rounded transition-colors ${
-                  selectedCategory === category.id 
-                    ? 'font-bold' 
-                    : 'hover:bg-accent'
-                }`}
-                style={selectedCategory === category.id ? { color: '#B3886D' } : undefined}
+  const SidebarContent = () => {
+    const displayedCategories = showAllCategories ? categories : categories.slice(0, 5);
+    
+    return (
+      <div className="space-y-6">
+        {/* Active Filters Summary */}
+        {activeFiltersCount > 0 && (
+          <div className="bg-primary/5 border border-primary/20 rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-primary">
+                {toPersianNumber(activeFiltersCount)} فیلتر فعال
+              </span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={resetFilters}
+                className="h-8 text-xs gap-1 text-muted-foreground hover:text-destructive"
               >
-                {category.name} ({toPersianNumber(count)})
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <hr className="border-gray-300" />
-
-      {/* فیلتر بر اساس قیمت */}
-      <div>
-        <h3 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">فیلتر بر اساس قیمت</h3>
-        <div className="space-y-4">
-          <Slider
-            min={minPrice}
-            max={maxPrice}
-            step={10000}
-            value={priceRange}
-            onValueChange={setPriceRange}
-            className="w-full"
-          />
-          <div className="flex justify-between text-xs sm:text-sm text-muted-foreground">
-            <span>قیمت: {toPersianNumber(priceRange[0])} تومان</span>
-            <span>— {toPersianNumber(priceRange[1])} تومان</span>
+                <RotateCcw className="h-3 w-3" />
+                پاک کردن همه
+              </Button>
+            </div>
+            
+            {/* Active filter tags */}
+            <div className="flex flex-wrap gap-2">
+              {selectedCategory && (
+                <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  {categories.find(c => c.id === selectedCategory)?.name}
+                  <button onClick={() => setSelectedCategory(null)} className="hover:text-destructive">
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+              {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
+                <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])} تومان
+                  <button onClick={() => setPriceRange([minPrice, maxPrice])} className="hover:text-destructive">
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+            </div>
           </div>
-          <Button 
-            variant="outline" 
-            className="w-full text-sm"
-            style={{ backgroundColor: 'transparent' }}
-            onClick={() => setFilterSheetOpen(false)}
-          >
-            اعمال فیلتر
-          </Button>
+        )}
+
+        {/* دسته‌بندی‌ها */}
+        <div className="bg-card border border-border rounded-xl p-4">
+          <h3 className="text-base font-black mb-4 flex items-center gap-2">
+            <LayoutGrid className="h-4 w-4 text-primary" />
+            دسته‌بندی‌ها
+          </h3>
+          
+          <div className="space-y-1">
+            {/* همه محصولات */}
+            <button
+              onClick={() => {
+                setSelectedCategory(null);
+                setFilterSheetOpen(false);
+              }}
+              className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
+                selectedCategory === null 
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'hover:bg-accent'
+              }`}
+            >
+              <span className="text-sm font-medium">همه محصولات</span>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                  selectedCategory === null 
+                    ? 'bg-primary-foreground/20 text-primary-foreground' 
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  {toPersianNumber(products.length)}
+                </span>
+                {selectedCategory === null && <Check className="h-4 w-4" />}
+              </div>
+            </button>
+            
+            {/* Categories list */}
+            {displayedCategories.map((category) => {
+              const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
+              const isSelected = selectedCategory === category.id;
+              
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    setSelectedCategory(category.id);
+                    setFilterSheetOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-all ${
+                    isSelected 
+                      ? 'bg-primary text-primary-foreground shadow-sm' 
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  <span className="text-sm font-medium">{category.name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      isSelected 
+                        ? 'bg-primary-foreground/20 text-primary-foreground' 
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {toPersianNumber(count)}
+                    </span>
+                    {isSelected && <Check className="h-4 w-4" />}
+                  </div>
+                </button>
+              );
+            })}
+            
+            {/* Show more/less button */}
+            {categories.length > 5 && (
+              <button
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                className="w-full flex items-center justify-center gap-1 p-2 text-sm text-primary hover:underline mt-2"
+              >
+                {showAllCategories ? (
+                  <>
+                    <ChevronUp className="h-4 w-4" />
+                    نمایش کمتر
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4" />
+                    نمایش همه ({toPersianNumber(categories.length)})
+                  </>
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* فیلتر بر اساس قیمت */}
+        <div className="bg-card border border-border rounded-xl p-4">
+          <h3 className="text-base font-black mb-4 flex items-center gap-2">
+            <span className="text-primary">💰</span>
+            محدوده قیمت
+          </h3>
+          
+          <div className="space-y-5">
+            {/* Price inputs */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">از</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formatPrice(priceRange[0])}
+                    readOnly
+                    className="w-full text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 text-center"
+                  />
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">ت</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">تا</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={formatPrice(priceRange[1])}
+                    readOnly
+                    className="w-full text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 text-center"
+                  />
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">ت</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Slider */}
+            <div className="px-1">
+              <Slider
+                min={minPrice}
+                max={maxPrice}
+                step={10000}
+                value={priceRange}
+                onValueChange={setPriceRange}
+                className="w-full"
+              />
+            </div>
+            
+            {/* Quick price filters */}
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setPriceRange([minPrice, 500000])}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  priceRange[1] === 500000 
+                    ? 'bg-primary text-primary-foreground border-primary' 
+                    : 'border-border hover:border-primary hover:text-primary'
+                }`}
+              >
+                زیر ۵۰۰ هزار
+              </button>
+              <button
+                onClick={() => setPriceRange([500000, 1000000])}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  priceRange[0] === 500000 && priceRange[1] === 1000000
+                    ? 'bg-primary text-primary-foreground border-primary' 
+                    : 'border-border hover:border-primary hover:text-primary'
+                }`}
+              >
+                ۵۰۰ تا ۱ میلیون
+              </button>
+              <button
+                onClick={() => setPriceRange([1000000, maxPrice])}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                  priceRange[0] === 1000000 
+                    ? 'bg-primary text-primary-foreground border-primary' 
+                    : 'border-border hover:border-primary hover:text-primary'
+                }`}
+              >
+                بالای ۱ میلیون
+              </button>
+            </div>
+            
+            {/* Apply button for mobile */}
+            <Button 
+              className="w-full lg:hidden"
+              style={{ backgroundColor: '#B3886D' }}
+              onClick={() => setFilterSheetOpen(false)}
+            >
+              اعمال فیلتر
+            </Button>
+          </div>
+        </div>
+
+        {/* Products count info */}
+        <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+          <p className="text-2xl font-black text-primary mb-1">
+            {toPersianNumber(filteredAndSortedProducts.length)}
+          </p>
+          <p className="text-sm text-muted-foreground">محصول یافت شد</p>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (loadingProducts || loadingCategories) {
     return (
@@ -297,67 +478,100 @@ const Shop = () => {
           <main className="w-full lg:w-[70%]">
             
             {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              {/* Breadcrumb & Mobile Filter Button */}
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                {/* Mobile Filter Button */}
-                <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
-                  <SheetTrigger asChild className="lg:hidden">
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Filter className="h-4 w-4" />
-                      فیلتر
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent side="right" className="w-[280px] sm:w-[320px] overflow-y-auto">
-                    <div className="pt-6">
-                      <SidebarContent />
-                    </div>
-                  </SheetContent>
-                </Sheet>
+            <div className="bg-card border border-border rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
+                {/* Right side - Filter & Breadcrumb */}
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Mobile Filter Button */}
+                  <Sheet open={filterSheetOpen} onOpenChange={setFilterSheetOpen}>
+                    <SheetTrigger asChild className="lg:hidden">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="gap-2 relative"
+                        style={{ borderColor: activeFiltersCount > 0 ? '#B3886D' : undefined }}
+                      >
+                        <Filter className="h-4 w-4" />
+                        فیلترها
+                        {activeFiltersCount > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[10px] rounded-full h-5 w-5 flex items-center justify-center">
+                            {toPersianNumber(activeFiltersCount)}
+                          </span>
+                        )}
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent side="right" className="w-[300px] sm:w-[350px] overflow-y-auto p-0">
+                      <div className="sticky top-0 bg-background border-b p-4 flex items-center justify-between">
+                        <h3 className="font-black text-lg">فیلترها</h3>
+                        {activeFiltersCount > 0 && (
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={resetFilters}
+                            className="text-xs gap-1 text-muted-foreground"
+                          >
+                            <RotateCcw className="h-3 w-3" />
+                            پاک کردن
+                          </Button>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <SidebarContent />
+                      </div>
+                    </SheetContent>
+                  </Sheet>
 
-                <div className="text-xs sm:text-sm text-muted-foreground">
-                  <Link to="/" className="hover:text-foreground">خانه</Link>
-                  <span className="mx-1 sm:mx-2">/</span>
-                  <span>فروشگاه</span>
+                  {/* Breadcrumb */}
+                  <div className="text-xs sm:text-sm text-muted-foreground">
+                    <Link to="/" className="hover:text-primary transition-colors">خانه</Link>
+                    <span className="mx-1 sm:mx-2">/</span>
+                    <span className="text-foreground font-medium">فروشگاه</span>
+                  </div>
+                  
+                  {/* Results count - desktop */}
+                  <div className="hidden md:flex items-center text-xs text-muted-foreground border-r pr-3 mr-1">
+                    <span className="text-primary font-bold ml-1">{toPersianNumber(filteredAndSortedProducts.length)}</span>
+                    محصول
+                  </div>
                 </div>
-              </div>
 
-              {/* Controls */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                {/* Items per page selector */}
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <span className="text-xs sm:text-sm hidden sm:inline">نمایش:</span>
-                  {[9, 24, 36].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => {
-                        setItemsPerPage(num);
-                        setCurrentPage(1);
-                      }}
-                      className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border rounded ${
-                        itemsPerPage === num 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-background hover:bg-accent'
-                      }`}
-                    >
-                      {toPersianNumber(num)}
-                    </button>
-                  ))}
+                {/* Left side - Controls */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                  {/* Items per page selector */}
+                  <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+                    <span className="text-xs text-muted-foreground px-2 hidden sm:inline">نمایش:</span>
+                    {[9, 24, 36].map((num) => (
+                      <button
+                        key={num}
+                        onClick={() => {
+                          setItemsPerPage(num);
+                          setCurrentPage(1);
+                        }}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                          itemsPerPage === num 
+                            ? 'bg-primary text-primary-foreground shadow-sm' 
+                            : 'hover:bg-background'
+                        }`}
+                      >
+                        {toPersianNumber(num)}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Sort dropdown */}
+                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                    <SelectTrigger className="w-[130px] sm:w-[160px] text-xs sm:text-sm bg-muted/50 border-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="default">پیش‌فرض</SelectItem>
+                      <SelectItem value="price-asc">ارزان‌ترین</SelectItem>
+                      <SelectItem value="price-desc">گران‌ترین</SelectItem>
+                      <SelectItem value="name-asc">نام: الف - ی</SelectItem>
+                      <SelectItem value="name-desc">نام: ی - الف</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-
-                {/* Sort dropdown */}
-                <Select value={sortOrder} onValueChange={setSortOrder}>
-                  <SelectTrigger className="w-[140px] sm:w-[180px] md:w-[200px] text-xs sm:text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">مرتب سازی پیش فرض</SelectItem>
-                    <SelectItem value="price-asc">قیمت: کم به زیاد</SelectItem>
-                    <SelectItem value="price-desc">قیمت: زیاد به کم</SelectItem>
-                    <SelectItem value="name-asc">نام: الف - ی</SelectItem>
-                    <SelectItem value="name-desc">نام: ی - الف</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
 
