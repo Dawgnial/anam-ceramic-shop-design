@@ -124,9 +124,8 @@ const Auth = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      {/* Hero Banner */}
       <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-4xl font-bold">حساب کاربری من</h1>
+        <h1 className="text-black text-4xl font-black">حساب کاربری من</h1>
       </div>
 
       {/* Content */}
@@ -135,7 +134,7 @@ const Auth = () => {
           {/* Login/Register Section - Left */}
           <div className="border-l border-gray-300 pl-8">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-center">{isSignUp ? "ثبت نام" : "ورود"}</h2>
+              <h2 className="text-3xl font-black text-center">{isSignUp ? "ثبت نام" : "ورود"}</h2>
               
               <div className="space-y-2">
                 <label className="block text-sm font-medium">
@@ -235,7 +234,7 @@ const Auth = () => {
           {/* Register Info Section - Right */}
           <div className="pr-8">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold text-center">ثبت نام</h2>
+              <h2 className="text-3xl font-black text-center">ثبت نام</h2>
               
               <p className="text-center text-muted-foreground leading-relaxed">
                 ثبت نام در این سایت به شما امکان می دهد تا به وضعیت سفارش و تاریخ سفارش خود دسترسی پیدا کنید. فقط فیلدهای زیر را پر کنید ، و بدون هیچ وقت حساب جدیدی را برای شما ایجاد خواهیم کرد. ما فقط از شما اطلاعات لازم را می خواهیم تا سریع تر و آسان تر روند خرید را انجام دهید.

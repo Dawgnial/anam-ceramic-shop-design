@@ -10,7 +10,7 @@ const SizeGuide = () => {
       
       {/* Hero Banner */}
       <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">راهنمای اندازه‌ها</h1>
+        <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-black">راهنمای اندازه‌ها</h1>
       </div>
 
       {/* Content */}
