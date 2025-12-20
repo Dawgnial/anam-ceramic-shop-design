@@ -294,9 +294,9 @@ export const Header = () => {
               
               <div className="relative">
                 <CartDrawer />
-                {cartItems.length > 0 && (
+                {cartItems.reduce((total, item) => total + item.quantity, 0) > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
-                    {toPersianNumber(cartItems.length)}
+                    {toPersianNumber(cartItems.reduce((total, item) => total + item.quantity, 0))}
                   </span>
                 )}
               </div>
@@ -387,9 +387,9 @@ export const Header = () => {
               <div className="flex items-center gap-1 hover:text-[#B3886D] transition-colors">
                 <div className="relative">
                   <CartDrawer />
-                  {cartItems.length > 0 && (
+                  {cartItems.reduce((total, item) => total + item.quantity, 0) > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {toPersianNumber(cartItems.length)}
+                      {toPersianNumber(cartItems.reduce((total, item) => total + item.quantity, 0))}
                     </span>
                   )}
                 </div>
