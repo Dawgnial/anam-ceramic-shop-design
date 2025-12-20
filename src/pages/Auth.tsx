@@ -153,8 +153,8 @@ const Auth = () => {
                     onBlur={() => validatePhone(phone)}
                     className={`flex-1 ${phoneError ? 'border-red-500' : ''}`}
                   />
-                  <div className="w-16 flex items-center justify-center border rounded-md bg-muted">
-                    +۹۸
+                  <div className="w-16 flex items-center justify-center border rounded-md bg-muted" dir="ltr">
+                    +98
                   </div>
                 </div>
                 {phoneError && <p className="text-red-500 text-xs">{phoneError}</p>}
@@ -182,8 +182,8 @@ const Auth = () => {
                 <label className="block text-sm font-medium">
                   لطفا پاسخ را به عدد انگلیسی وارد کنید:
                 </label>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold">
+                <div className="flex items-center gap-2" dir="ltr">
+                  <span className="text-lg font-bold font-mono">
                     {captcha.num1} {captcha.operation === 'add' ? '+' : '-'} {captcha.num2} =
                   </span>
                   <Input 
@@ -191,7 +191,8 @@ const Auth = () => {
                     className="w-24" 
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="؟"
+                    placeholder="?"
+                    dir="ltr"
                   />
                 </div>
               </div>
