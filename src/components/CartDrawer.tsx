@@ -18,7 +18,7 @@ export const CartDrawer = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:opacity-70 transition-opacity">
+        <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:text-[#B3886D] transition-colors">
           <ShoppingCart className="h-6 w-6" />
         </Button>
       </SheetTrigger>
