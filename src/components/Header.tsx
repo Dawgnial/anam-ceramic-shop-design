@@ -1,4 +1,4 @@
-import { Search, Menu, Heart, ChevronDown, User, X } from "lucide-react";
+import { Search, Menu, Heart, ChevronDown, User, X, Scale } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { CartDrawer } from "./CartDrawer";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
-import compareIcon from "@/assets/compare.png";
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "./ui/sheet";
@@ -272,7 +272,7 @@ export const Header = () => {
             <div className="flex items-center gap-1 md:gap-2 lg:hidden">
               <Link to="/compare" className="relative">
                 <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-transparent hover:text-[#B3886D] transition-colors">
-                  <img src={compareIcon} alt="مقایسه" className="h-5 w-5 hover:opacity-70 transition-opacity" />
+                  <Scale className="h-5 w-5" />
                   {compareItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-4 w-4 flex items-center justify-center text-[10px]">
                       {toPersianNumber(compareItems.length)}
@@ -364,7 +364,7 @@ export const Header = () => {
             <div className="flex items-center gap-3">
               <Link to="/compare" className="relative">
                 <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-transparent hover:text-[#B3886D] transition-colors">
-                  <img src={compareIcon} alt="مقایسه" className="h-6 w-6 hover:opacity-70 transition-opacity" />
+                  <Scale className="h-6 w-6" />
                   {compareItems.length > 0 && (
                     <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {toPersianNumber(compareItems.length)}
