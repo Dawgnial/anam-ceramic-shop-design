@@ -101,23 +101,8 @@ const Blog = () => {
       <Header />
       
       {/* Hero Banner */}
-      <div className="w-full py-16 md:py-24 relative overflow-hidden" style={{ backgroundColor: '#F5F0EB' }}>
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 rounded-full border-2 border-[#B3886D]"></div>
-          <div className="absolute bottom-10 right-20 w-48 h-48 rounded-full border border-[#B3886D]"></div>
-          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-[#B3886D]/20"></div>
-        </div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ backgroundColor: '#B3886D', color: 'white' }}>
-            مقالات و آموزش‌ها
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-4">
-            بلاگ آنام
-          </h1>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            دنیای سفال و سرامیک را کشف کنید، از تکنیک‌های ساخت تا نگهداری و زیبایی‌شناسی
-          </p>
-        </div>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-black text-3xl sm:text-4xl md:text-5xl font-extrabold">بلاگ</h1>
       </div>
 
       {/* Content */}
@@ -188,7 +173,7 @@ const Blog = () => {
 
                       {/* Title */}
                       <Link to={`/blog/${post.slug}`}>
-                        <h2 className={`font-bold text-foreground mb-4 leading-relaxed transition-colors hover:text-[#B3886D] ${
+                        <h2 className={`font-black text-foreground mb-4 leading-relaxed transition-colors hover:text-[#B3886D] ${
                           index === 0 && currentPage === 1 ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-xl md:text-2xl'
                         }`}>
                           {post.title}
