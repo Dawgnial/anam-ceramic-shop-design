@@ -60,14 +60,14 @@ export const CustomerReviews = () => {
       <div className="container mx-auto px-4">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-center text-foreground mb-6 sm:mb-8 md:mb-12">نظرات مشتریان</h2>
 
-        <div className="max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mx-auto">
+        <div className="max-w-sm sm:max-w-xl md:max-w-4xl lg:max-w-5xl mx-auto">
           <div className="flex items-center gap-4">
             {/* Left Arrow */}
             <button
-              onClick={handleNext}
-              className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-primary hover:opacity-80 transition-opacity border border-primary/30"
+              onClick={handlePrev}
+              className="flex-shrink-0 flex items-center justify-center text-primary hover:opacity-70 transition-opacity"
             >
-              <ChevronLeft className="h-6 w-6 sm:h-7 sm:w-7" />
+              <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10" />
             </button>
 
             {/* Review Card */}
@@ -93,10 +93,10 @@ export const CustomerReviews = () => {
 
             {/* Right Arrow */}
             <button
-              onClick={handlePrev}
-              className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-primary hover:opacity-80 transition-opacity border border-primary/30"
+              onClick={handleNext}
+              className="flex-shrink-0 flex items-center justify-center text-primary hover:opacity-70 transition-opacity"
             >
-              <ChevronRight className="h-6 w-6 sm:h-7 sm:w-7" />
+              <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10" />
             </button>
           </div>
         </div>
