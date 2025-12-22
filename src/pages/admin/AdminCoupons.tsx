@@ -262,12 +262,12 @@ export default function AdminCoupons() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="w-full max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">
               {editingCoupon ? 'ویرایش کد تخفیف' : 'افزودن کد تخفیف جدید'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               اطلاعات کد تخفیف را وارد کنید
             </DialogDescription>
           </DialogHeader>
@@ -278,7 +278,7 @@ export default function AdminCoupons() {
                 name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>کد تخفیف</FormLabel>
+                    <FormLabel className="text-sm">کد تخفیف</FormLabel>
                     <FormControl>
                       <Input placeholder="مثال: SUMMER2024" {...field} />
                     </FormControl>
@@ -287,13 +287,13 @@ export default function AdminCoupons() {
                 )}
               />
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="discount_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>نوع تخفیف</FormLabel>
+                      <FormLabel className="text-sm">نوع تخفیف</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -315,7 +315,7 @@ export default function AdminCoupons() {
                   name="discount_value"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>مقدار تخفیف</FormLabel>
+                      <FormLabel className="text-sm">مقدار تخفیف</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -334,7 +334,7 @@ export default function AdminCoupons() {
                 name="min_purchase"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>حداقل مبلغ خرید (تومان)</FormLabel>
+                    <FormLabel className="text-sm">حداقل مبلغ خرید (تومان)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"

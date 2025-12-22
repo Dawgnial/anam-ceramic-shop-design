@@ -111,21 +111,21 @@ export function ProductAttributesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>مدیریت ویژگی‌های محصول</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-base sm:text-lg">مدیریت ویژگی‌های محصول</DialogTitle>
+          <DialogDescription className="text-sm">
             محصول: {productName}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Add New Attribute Form */}
-          <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
-            <h3 className="font-semibold text-lg">افزودن ویژگی جدید</h3>
+          <div className="border rounded-lg p-3 sm:p-4 space-y-4 bg-muted/30">
+            <h3 className="font-semibold text-sm sm:text-lg">افزودن ویژگی جدید</h3>
             
             <div className="space-y-2">
-              <Label>نام ویژگی (مثل: رنگ، اندازه، جنس)</Label>
+              <Label className="text-sm">نام ویژگی (مثل: رنگ، اندازه، جنس)</Label>
               <Input
                 value={newAttributeName}
                 onChange={(e) => setNewAttributeName(e.target.value)}
@@ -134,12 +134,13 @@ export function ProductAttributesDialog({
             </div>
 
             <div className="space-y-2">
-              <Label>مقادیر ویژگی</Label>
+              <Label className="text-sm">مقادیر ویژگی</Label>
               <div className="flex gap-2">
                 <Input
                   value={newAttributeValue}
                   onChange={(e) => setNewAttributeValue(e.target.value)}
                   placeholder="مقدار را وارد کنید (مثل: قرمز، بزرگ، پارچه)"
+                  className="flex-1"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();

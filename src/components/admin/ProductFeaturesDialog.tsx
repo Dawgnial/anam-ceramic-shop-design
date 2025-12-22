@@ -92,18 +92,18 @@ export function ProductFeaturesDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-2xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>مدیریت ویژگی‌های محصول: {productName}</DialogTitle>
+          <DialogTitle className="text-base sm:text-lg">مدیریت ویژگی‌های محصول: {productName}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Add New Feature Form */}
-          <div className="border rounded-lg p-4 space-y-4" style={{ backgroundColor: '#F9F9F9' }}>
-            <h4 className="font-semibold">افزودن ویژگی جدید</h4>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="border rounded-lg p-3 sm:p-4 space-y-4" style={{ backgroundColor: '#F9F9F9' }}>
+            <h4 className="font-semibold text-sm sm:text-base">افزودن ویژگی جدید</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label>نام ویژگی</Label>
+                <Label className="text-sm">نام ویژگی</Label>
                 <Input
                   placeholder="مثال: سایز، وزن، جنس"
                   value={newFeature.key}
@@ -111,7 +111,7 @@ export function ProductFeaturesDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label>مقدار</Label>
+                <Label className="text-sm">مقدار</Label>
                 <Input
                   placeholder="مثال: بزرگ، ۵۰۰ گرم، سرامیک"
                   value={newFeature.value}
@@ -140,16 +140,16 @@ export function ProductFeaturesDialog({
                 {features.map((feature) => (
                   <div
                     key={feature.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent transition-colors"
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 border rounded-lg hover:bg-accent transition-colors gap-3"
                   >
-                    <div className="flex-1 grid grid-cols-2 gap-4">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                       <div>
-                        <span className="text-sm text-muted-foreground">نام:</span>
-                        <p className="font-medium">{feature.feature_key}</p>
+                        <span className="text-xs sm:text-sm text-muted-foreground">نام:</span>
+                        <p className="font-medium text-sm sm:text-base">{feature.feature_key}</p>
                       </div>
                       <div>
-                        <span className="text-sm text-muted-foreground">مقدار:</span>
-                        <p className="font-medium">{feature.feature_value}</p>
+                        <span className="text-xs sm:text-sm text-muted-foreground">مقدار:</span>
+                        <p className="font-medium text-sm sm:text-base">{feature.feature_value}</p>
                       </div>
                     </div>
                     <Button
@@ -157,6 +157,7 @@ export function ProductFeaturesDialog({
                       size="sm"
                       onClick={() => deleteFeatureMutation.mutate(feature.id)}
                       disabled={deleteFeatureMutation.isPending}
+                      className="w-full sm:w-auto"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

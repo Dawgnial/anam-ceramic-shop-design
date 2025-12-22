@@ -108,15 +108,15 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-4xl max-h-[85vh] overflow-y-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#B3886D' }}></div>
           </div>
         ) : product ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Images Section */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="aspect-square rounded-lg overflow-hidden bg-muted">
                 <img
                   src={product.images?.[selectedImage] || '/placeholder.svg'}
@@ -127,12 +127,12 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
               
               {/* Thumbnail Images */}
               {product.images && product.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
+                <div className="flex gap-2 overflow-x-auto pb-2">
                   {product.images.map((image: string, index: number) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
+                      className={`flex-shrink-0 w-16 sm:w-20 h-16 sm:h-20 rounded-lg overflow-hidden border-2 transition-colors ${
                         selectedImage === index ? 'border-[#B3886D]' : 'border-transparent'
                       }`}
                     >
@@ -148,13 +148,13 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
             </div>
 
             {/* Product Info Section */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-bold">{product.name}</DialogTitle>
+                <DialogTitle className="text-xl sm:text-2xl font-bold">{product.name}</DialogTitle>
               </DialogHeader>
 
-              <div className="flex items-center gap-4">
-                <p className="text-3xl font-bold" style={{ color: '#B3886D' }}>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                <p className="text-2xl sm:text-3xl font-bold" style={{ color: '#B3886D' }}>
                   {formatPrice(product.price)} تومان
                 </p>
                 {product.discount_percentage && (
