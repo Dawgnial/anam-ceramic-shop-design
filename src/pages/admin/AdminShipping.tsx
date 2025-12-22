@@ -161,13 +161,13 @@ const AdminShipping = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Truck className="h-8 w-8" style={{ color: '#B3886D' }} />
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Truck className="h-6 w-6 sm:h-8 sm:w-8" style={{ color: '#B3886D' }} />
             <div>
-              <h1 className="text-3xl font-bold">هزینه ارسال</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-xl sm:text-3xl font-bold">هزینه ارسال</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 تنظیم هزینه ارسال برای هر استان
               </p>
             </div>
@@ -176,7 +176,7 @@ const AdminShipping = () => {
             onClick={handleSaveAll}
             disabled={Object.keys(editingCosts).length === 0 || updateAllMutation.isPending}
             style={{ backgroundColor: '#B3886D' }}
-            className="text-white"
+            className="text-white w-full sm:w-auto"
           >
             {updateAllMutation.isPending ? (
               <Loader2 className="ml-2 h-4 w-4 animate-spin" />
@@ -187,13 +187,14 @@ const AdminShipping = () => {
           </Button>
         </div>
 
-        <div className="bg-muted/30 p-4 rounded-lg">
-          <p className="text-sm text-muted-foreground">
+        <div className="bg-muted/30 p-3 sm:p-4 rounded-lg">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             💡 هزینه‌ها را به تومان وارد کنید. برای ارسال رایگان به یک استان، مقدار ۰ را وارد کنید.
           </p>
         </div>
 
-        <div className="border rounded-lg">
+        {/* Desktop Table */}
+        <div className="hidden lg:block border rounded-lg">
           <Table>
             <TableHeader>
               <TableRow>
@@ -236,9 +237,43 @@ const AdminShipping = () => {
           </Table>
         </div>
 
-        <div className="bg-background border rounded-lg p-4">
-          <h3 className="font-bold mb-2">راهنما:</h3>
-          <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+        {/* Mobile Cards */}
+        <div className="lg:hidden space-y-3">
+          {shippingCosts?.map((item, index) => (
+            <div key={item.id} className="border rounded-lg p-3 bg-card">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                    {toPersianNumber(index + 1)}
+                  </span>
+                  <span className="font-medium text-sm">{item.province_name}</span>
+                </div>
+                <Switch
+                  checked={item.is_active}
+                  onCheckedChange={(checked) => 
+                    toggleActiveMutation.mutate({ id: item.id, is_active: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground flex-shrink-0">هزینه:</span>
+                <Input
+                  type="text"
+                  value={toPersianNumber(getCostValue(item))}
+                  onChange={(e) => handleCostChange(item.id, e.target.value)}
+                  className="flex-1 text-left h-9 text-sm"
+                  dir="ltr"
+                  placeholder="هزینه ارسال"
+                />
+                <span className="text-xs text-muted-foreground flex-shrink-0">تومان</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-background border rounded-lg p-3 sm:p-4">
+          <h3 className="font-bold mb-2 text-sm sm:text-base">راهنما:</h3>
+          <ul className="text-xs sm:text-sm text-muted-foreground space-y-1 list-disc list-inside">
             <li>هزینه ارسال را برای هر استان به تومان وارد کنید</li>
             <li>برای ارسال رایگان مقدار ۰ وارد کنید</li>
             <li>استان‌های غیرفعال در لیست انتخاب مشتری نمایش داده نمی‌شوند</li>

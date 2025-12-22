@@ -102,60 +102,172 @@ function AdminReviewsContent() {
   const approvedReviews = reviews.filter((r) => r.is_approved);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-2">مدیریت نظرات</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">مدیریت نظرات</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           تایید یا رد نظرات کاربران
         </p>
       </div>
 
       {/* Pending Reviews */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold">
+          <h3 className="text-base sm:text-xl font-bold">
             نظرات در انتظار تایید ({pendingReviews.length.toLocaleString('fa-IR')})
           </h3>
         </div>
 
         {pendingReviews.length > 0 ? (
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">محصول</TableHead>
-                  <TableHead className="text-right">امتیاز</TableHead>
-                  <TableHead className="text-right">نظر</TableHead>
-                  <TableHead className="text-right">تاریخ</TableHead>
-                  <TableHead className="text-right">عملیات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingReviews.map((review) => (
-                  <TableRow key={review.id}>
-                    <TableCell className="font-medium">
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block border rounded-lg">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-right">محصول</TableHead>
+                    <TableHead className="text-right">امتیاز</TableHead>
+                    <TableHead className="text-right">نظر</TableHead>
+                    <TableHead className="text-right">تاریخ</TableHead>
+                    <TableHead className="text-right">عملیات</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {pendingReviews.map((review) => (
+                    <TableRow key={review.id}>
+                      <TableCell className="font-medium">
+                        {review.products?.name || 'محصول حذف شده'}
+                      </TableCell>
+                      <TableCell>
+                        {renderStars(review.rating)}
+                      </TableCell>
+                      <TableCell className="max-w-md">
+                        <p className="text-sm line-clamp-2">{review.comment}</p>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(review.created_at).toLocaleDateString('fa-IR')}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => approveMutation.mutate(review.id)}
+                            disabled={approveMutation.isPending}
+                            style={{ backgroundColor: '#28A745' }}
+                          >
+                            <Check className="w-4 h-4 ml-1" />
+                            تایید
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => rejectMutation.mutate(review.id)}
+                            disabled={rejectMutation.isPending}
+                          >
+                            <X className="w-4 h-4 ml-1" />
+                            رد
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-3">
+              {pendingReviews.map((review) => (
+                <div key={review.id} className="border rounded-lg p-3 bg-card">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="font-medium text-sm truncate flex-1">
                       {review.products?.name || 'محصول حذف شده'}
-                    </TableCell>
-                    <TableCell>
-                      {renderStars(review.rating)}
-                    </TableCell>
-                    <TableCell className="max-w-md">
-                      <p className="text-sm line-clamp-2">{review.comment}</p>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    </p>
+                    {renderStars(review.rating)}
+                  </div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{review.comment}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
                       {new Date(review.created_at).toLocaleDateString('fa-IR')}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          onClick={() => approveMutation.mutate(review.id)}
-                          disabled={approveMutation.isPending}
-                          style={{ backgroundColor: '#28A745' }}
-                        >
-                          <Check className="w-4 h-4 ml-1" />
-                          تایید
-                        </Button>
+                    </span>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => approveMutation.mutate(review.id)}
+                        disabled={approveMutation.isPending}
+                        style={{ backgroundColor: '#28A745' }}
+                        className="h-8 text-xs px-2"
+                      >
+                        <Check className="w-3 h-3 ml-1" />
+                        تایید
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => rejectMutation.mutate(review.id)}
+                        disabled={rejectMutation.isPending}
+                        className="h-8 text-xs px-2"
+                      >
+                        <X className="w-3 h-3 ml-1" />
+                        رد
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="border rounded-lg p-6 sm:p-8 text-center text-muted-foreground text-sm">
+            نظری در انتظار تایید نیست
+          </div>
+        )}
+      </div>
+
+      {/* Approved Reviews */}
+      <div className="space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base sm:text-xl font-bold">
+            نظرات تایید شده ({approvedReviews.length.toLocaleString('fa-IR')})
+          </h3>
+        </div>
+
+        {approvedReviews.length > 0 ? (
+          <>
+            {/* Desktop Table */}
+            <div className="hidden lg:block border rounded-lg">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-right">محصول</TableHead>
+                    <TableHead className="text-right">امتیاز</TableHead>
+                    <TableHead className="text-right">نظر</TableHead>
+                    <TableHead className="text-right">تاریخ</TableHead>
+                    <TableHead className="text-right">وضعیت</TableHead>
+                    <TableHead className="text-right">عملیات</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {approvedReviews.map((review) => (
+                    <TableRow key={review.id}>
+                      <TableCell className="font-medium">
+                        {review.products?.name || 'محصول حذف شده'}
+                      </TableCell>
+                      <TableCell>
+                        {renderStars(review.rating)}
+                      </TableCell>
+                      <TableCell className="max-w-md">
+                        <p className="text-sm line-clamp-2">{review.comment}</p>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(review.created_at).toLocaleDateString('fa-IR')}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="default" style={{ backgroundColor: '#28A745' }}>
+                          تایید شده
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         <Button
                           size="sm"
                           variant="destructive"
@@ -163,81 +275,50 @@ function AdminReviewsContent() {
                           disabled={rejectMutation.isPending}
                         >
                           <X className="w-4 h-4 ml-1" />
-                          رد
+                          حذف
                         </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : (
-          <div className="border rounded-lg p-8 text-center text-muted-foreground">
-            نظری در انتظار تایید نیست
-          </div>
-        )}
-      </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
-      {/* Approved Reviews */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold">
-            نظرات تایید شده ({approvedReviews.length.toLocaleString('fa-IR')})
-          </h3>
-        </div>
-
-        {approvedReviews.length > 0 ? (
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-right">محصول</TableHead>
-                  <TableHead className="text-right">امتیاز</TableHead>
-                  <TableHead className="text-right">نظر</TableHead>
-                  <TableHead className="text-right">تاریخ</TableHead>
-                  <TableHead className="text-right">وضعیت</TableHead>
-                  <TableHead className="text-right">عملیات</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {approvedReviews.map((review) => (
-                  <TableRow key={review.id}>
-                    <TableCell className="font-medium">
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-3">
+              {approvedReviews.map((review) => (
+                <div key={review.id} className="border rounded-lg p-3 bg-card">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="font-medium text-sm truncate flex-1">
                       {review.products?.name || 'محصول حذف شده'}
-                    </TableCell>
-                    <TableCell>
-                      {renderStars(review.rating)}
-                    </TableCell>
-                    <TableCell className="max-w-md">
-                      <p className="text-sm line-clamp-2">{review.comment}</p>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    </p>
+                    <Badge variant="default" style={{ backgroundColor: '#28A745' }} className="text-xs flex-shrink-0">
+                      تایید شده
+                    </Badge>
+                  </div>
+                  <div className="mb-2">{renderStars(review.rating)}</div>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{review.comment}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
                       {new Date(review.created_at).toLocaleDateString('fa-IR')}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="default" style={{ backgroundColor: '#28A745' }}>
-                        تایید شده
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => rejectMutation.mutate(review.id)}
-                        disabled={rejectMutation.isPending}
-                      >
-                        <X className="w-4 h-4 ml-1" />
-                        حذف
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => rejectMutation.mutate(review.id)}
+                      disabled={rejectMutation.isPending}
+                      className="h-8 text-xs px-2"
+                    >
+                      <X className="w-3 h-3 ml-1" />
+                      حذف
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
-          <div className="border rounded-lg p-8 text-center text-muted-foreground">
+          <div className="border rounded-lg p-6 sm:p-8 text-center text-muted-foreground text-sm">
             نظر تایید شده‌ای وجود ندارد
           </div>
         )}

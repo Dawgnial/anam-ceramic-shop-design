@@ -194,17 +194,18 @@ export default function AdminInventory() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
           <div>
-            <h2 className="text-3xl font-bold">مدیریت موجودی</h2>
-            <p className="text-muted-foreground mt-2">
+            <h2 className="text-xl sm:text-3xl font-bold">مدیریت موجودی</h2>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">
               تاریخچه حرکات انبار و هشدار موجودی پایین
             </p>
           </div>
           <Button
             onClick={() => setDialogOpen(true)}
             style={{ backgroundColor: '#B3886D' }}
+            className="w-full sm:w-auto"
           >
             <Plus className="ml-2 h-4 w-4" />
             ثبت حرکت جدید
@@ -214,31 +215,31 @@ export default function AdminInventory() {
         {/* Low Stock Alert */}
         {lowStockProducts.length > 0 && (
           <Card className="border-orange-200 bg-orange-50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-orange-800">
-                <AlertTriangle className="w-5 h-5" />
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="flex items-center gap-2 text-orange-800 text-sm sm:text-base">
+                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
                 هشدار موجودی پایین ({lowStockProducts.length.toLocaleString('fa-IR')} محصول)
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {lowStockProducts.map((product: any) => (
                   <div
                     key={product.id}
-                    className="flex items-center gap-3 p-3 bg-white rounded-lg border border-orange-200"
+                    className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-white rounded-lg border border-orange-200"
                   >
                     <img
                       src={product.image || '/placeholder.svg'}
                       alt={product.name}
-                      className="w-12 h-12 object-cover rounded"
+                      className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{product.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
+                      <p className="font-medium text-xs sm:text-sm truncate">{product.name}</p>
+                      <div className="flex items-center gap-1 sm:gap-2 mt-1 flex-wrap">
+                        <Badge variant="outline" className="text-[10px] sm:text-xs">
                           موجودی: {product.stock?.toLocaleString('fa-IR') || '۰'}
                         </Badge>
-                        <Badge variant="destructive" className="text-xs">
+                        <Badge variant="destructive" className="text-[10px] sm:text-xs">
                           کمبود: {product.stock_shortage?.toLocaleString('fa-IR') || '۰'}
                         </Badge>
                       </div>
@@ -252,74 +253,118 @@ export default function AdminInventory() {
 
         {/* Inventory Movements History */}
         <Card>
-          <CardHeader>
-            <CardTitle>تاریخچه حرکات انبار</CardTitle>
+          <CardHeader className="p-3 sm:p-6">
+            <CardTitle className="text-sm sm:text-base">تاریخچه حرکات انبار</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-3 sm:p-6 pt-0">
             {movementsLoading ? (
-              <div className="text-center py-8">در حال بارگذاری...</div>
+              <div className="text-center py-6 sm:py-8 text-sm">در حال بارگذاری...</div>
             ) : movements.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
                 هیچ حرکتی ثبت نشده است
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>محصول</TableHead>
-                    <TableHead>نوع حرکت</TableHead>
-                    <TableHead>تعداد</TableHead>
-                    <TableHead>یادداشت</TableHead>
-                    <TableHead>تاریخ</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>محصول</TableHead>
+                        <TableHead>نوع حرکت</TableHead>
+                        <TableHead>تعداد</TableHead>
+                        <TableHead>یادداشت</TableHead>
+                        <TableHead>تاریخ</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {movements.map((movement: any) => (
+                        <TableRow key={movement.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={movement.products?.images?.[0] || '/placeholder.svg'}
+                                alt={movement.products?.name}
+                                className="w-10 h-10 object-cover rounded"
+                              />
+                              <span className="font-medium">
+                                {movement.products?.name || 'محصول حذف شده'}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={getMovementBadgeVariant(movement.movement_type)}>
+                              <div className="flex items-center gap-1">
+                                {getMovementIcon(movement.movement_type)}
+                                {getMovementLabel(movement.movement_type)}
+                              </div>
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className={movement.quantity > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+                              {movement.quantity > 0 ? '+' : ''}
+                              {movement.quantity.toLocaleString('fa-IR')}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-muted-foreground">
+                              {movement.notes || '-'}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {new Date(movement.created_at).toLocaleDateString('fa-IR', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-3">
                   {movements.map((movement: any) => (
-                    <TableRow key={movement.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={movement.products?.images?.[0] || '/placeholder.svg'}
-                            alt={movement.products?.name}
-                            className="w-10 h-10 object-cover rounded"
-                          />
-                          <span className="font-medium">
+                    <Card key={movement.id} className="p-3">
+                      <div className="flex items-start gap-3">
+                        <img
+                          src={movement.products?.images?.[0] || '/placeholder.svg'}
+                          alt={movement.products?.name}
+                          className="w-12 h-12 object-cover rounded flex-shrink-0"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
                             {movement.products?.name || 'محصول حذف شده'}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={getMovementBadgeVariant(movement.movement_type)}>
-                          <div className="flex items-center gap-1">
-                            {getMovementIcon(movement.movement_type)}
-                            {getMovementLabel(movement.movement_type)}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                            <Badge variant={getMovementBadgeVariant(movement.movement_type)} className="text-xs">
+                              {getMovementIcon(movement.movement_type)}
+                              <span className="mr-1">{getMovementLabel(movement.movement_type)}</span>
+                            </Badge>
+                            <span className={`text-sm font-semibold ${movement.quantity > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {movement.quantity > 0 ? '+' : ''}{movement.quantity.toLocaleString('fa-IR')}
+                            </span>
                           </div>
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className={movement.quantity > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
-                          {movement.quantity > 0 ? '+' : ''}
-                          {movement.quantity.toLocaleString('fa-IR')}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-muted-foreground">
-                          {movement.notes || '-'}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(movement.created_at).toLocaleDateString('fa-IR', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </TableCell>
-                    </TableRow>
+                          {movement.notes && (
+                            <p className="text-xs text-muted-foreground mt-1 truncate">{movement.notes}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(movement.created_at).toLocaleDateString('fa-IR', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
