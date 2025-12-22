@@ -42,30 +42,32 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen flex w-full" dir="rtl">
       {/* Desktop Sidebar - Fixed 20% width */}
-      <aside className="hidden lg:block w-[20%] border-l bg-background sticky top-0 h-screen overflow-y-auto">
+      <aside className="hidden lg:block w-[20%] min-w-[220px] border-l bg-background sticky top-0 h-screen overflow-y-auto">
         <AdminSidebar />
       </aside>
 
       {/* Main Content - 80% width on desktop */}
       <div className="flex-1 lg:w-[80%] flex flex-col">
         {/* Mobile Header with Menu Toggle */}
-        <header className="h-16 border-b flex items-center justify-between px-4 bg-background sticky top-0 z-10 lg:justify-start">
-          <h1 className="text-xl font-bold">پنل مدیریت آنام</h1>
+        <header className="h-14 sm:h-16 border-b flex items-center justify-between px-3 sm:px-4 bg-background sticky top-0 z-10 lg:justify-start">
+          <h1 className="text-base sm:text-xl font-bold" style={{ color: '#B3886D' }}>
+            پنل مدیریت آنام
+          </h1>
           
           {/* Mobile Menu Toggle */}
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" className="h-10 w-10">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[280px] p-0">
+            <SheetContent side="right" className="w-[85%] max-w-[320px] p-0">
               <AdminSidebar />
             </SheetContent>
           </Sheet>
         </header>
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-3 sm:p-6">
           {children}
         </main>
       </div>
