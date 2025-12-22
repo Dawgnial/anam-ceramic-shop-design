@@ -154,11 +154,11 @@ export default function AdminBlog() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold">مدیریت بلاگ</h2>
-            <p className="text-muted-foreground mt-2">
+            <h2 className="text-xl sm:text-3xl font-bold">مدیریت بلاگ</h2>
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
               افزودن، ویرایش و حذف پست‌های بلاگ
             </p>
           </div>
@@ -168,6 +168,7 @@ export default function AdminBlog() {
               setDialogOpen(true);
             }}
             style={{ backgroundColor: '#B3886D' }}
+            className="w-full sm:w-auto"
           >
             <Plus className="ml-2 h-4 w-4" />
             افزودن پست جدید
@@ -176,9 +177,9 @@ export default function AdminBlog() {
 
         <Card>
           <CardHeader>
-            <CardTitle>پست‌های بلاگ</CardTitle>
+            <CardTitle className="text-base sm:text-lg">پست‌های بلاگ</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 sm:p-6">
             {isLoading ? (
               <div className="text-center py-8">در حال بارگذاری...</div>
             ) : !posts || posts.length === 0 ? (
@@ -186,80 +187,138 @@ export default function AdminBlog() {
                 هیچ پستی ثبت نشده است
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>تصویر</TableHead>
-                    <TableHead>عنوان</TableHead>
-                    <TableHead>خلاصه</TableHead>
-                    <TableHead>وضعیت</TableHead>
-                    <TableHead>تاریخ</TableHead>
-                    <TableHead>عملیات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>تصویر</TableHead>
+                        <TableHead>عنوان</TableHead>
+                        <TableHead>خلاصه</TableHead>
+                        <TableHead>وضعیت</TableHead>
+                        <TableHead>تاریخ</TableHead>
+                        <TableHead>عملیات</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {posts.map((post: any) => (
+                        <TableRow key={post.id}>
+                          <TableCell>
+                            <img
+                              src={post.image_url || '/placeholder.svg'}
+                              alt={post.title}
+                              className="w-16 h-16 object-cover rounded"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium max-w-xs">
+                            {post.title}
+                          </TableCell>
+                          <TableCell className="max-w-md">
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {post.excerpt}
+                            </p>
+                          </TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={post.is_published ? "default" : "secondary"}
+                              style={post.is_published ? { backgroundColor: '#28A745' } : undefined}
+                            >
+                              {post.is_published ? 'منتشر شده' : 'پیش‌نویس'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-sm text-muted-foreground">
+                            {new Date(post.created_at).toLocaleDateString('fa-IR')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => handleEdit(post)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="destructive"
+                                onClick={() => handleDelete(post)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-3">
                   {posts.map((post: any) => (
-                    <TableRow key={post.id}>
-                      <TableCell>
-                        <img
-                          src={post.image_url || '/placeholder.svg'}
-                          alt={post.title}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium max-w-xs">
-                        {post.title}
-                      </TableCell>
-                      <TableCell className="max-w-md">
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {post.excerpt}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <Badge 
-                          variant={post.is_published ? "default" : "secondary"}
-                          style={post.is_published ? { backgroundColor: '#28A745' } : undefined}
-                        >
-                          {post.is_published ? 'منتشر شده' : 'پیش‌نویس'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(post.created_at).toLocaleDateString('fa-IR')}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
+                    <Card key={post.id} className="overflow-hidden">
+                      <CardContent className="p-3">
+                        <div className="flex gap-3">
+                          <img
+                            src={post.image_url || '/placeholder.svg'}
+                            alt={post.title}
+                            className="w-20 h-20 object-cover rounded flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm line-clamp-2">{post.title}</h3>
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              {post.excerpt}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                              <Badge 
+                                variant={post.is_published ? "default" : "secondary"}
+                                style={post.is_published ? { backgroundColor: '#28A745' } : undefined}
+                                className="text-xs"
+                              >
+                                {post.is_published ? 'منتشر شده' : 'پیش‌نویس'}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(post.created_at).toLocaleDateString('fa-IR')}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 mt-3">
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="outline"
                             onClick={() => handleEdit(post)}
+                            className="flex-1"
                           >
-                            <Pencil className="h-4 w-4" />
+                            <Pencil className="h-4 w-4 ml-1" />
+                            ویرایش
                           </Button>
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="destructive"
                             onClick={() => handleDelete(post)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </CardContent>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-full max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">
               {editingPost ? 'ویرایش پست' : 'افزودن پست جدید'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               {editingPost
                 ? 'اطلاعات پست را ویرایش کنید'
                 : 'اطلاعات پست جدید را وارد کنید'}

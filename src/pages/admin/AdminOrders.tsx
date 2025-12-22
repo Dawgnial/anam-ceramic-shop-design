@@ -58,19 +58,19 @@ export default function AdminOrders() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div>
-          <h2 className="text-3xl font-bold">مدیریت سفارشات</h2>
-          <p className="text-muted-foreground mt-2">
+          <h2 className="text-xl sm:text-3xl font-bold">مدیریت سفارشات</h2>
+          <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
             مشاهده و مدیریت تمام سفارشات
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>لیست سفارشات</CardTitle>
+            <CardTitle className="text-base sm:text-lg">لیست سفارشات</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 sm:p-6">
             {isLoading ? (
               <div className="text-center py-8">در حال بارگذاری...</div>
             ) : !orders || orders.length === 0 ? (
@@ -78,52 +78,108 @@ export default function AdminOrders() {
                 هیچ سفارشی ثبت نشده است
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>شماره موبایل</TableHead>
-                    <TableHead>تعداد محصولات</TableHead>
-                    <TableHead>مبلغ کل</TableHead>
-                    <TableHead>وضعیت</TableHead>
-                    <TableHead>آدرس</TableHead>
-                    <TableHead>تاریخ</TableHead>
-                    <TableHead>عملیات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>شماره موبایل</TableHead>
+                        <TableHead>تعداد محصولات</TableHead>
+                        <TableHead>مبلغ کل</TableHead>
+                        <TableHead>وضعیت</TableHead>
+                        <TableHead>آدرس</TableHead>
+                        <TableHead>تاریخ</TableHead>
+                        <TableHead>عملیات</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {orders.map((order: any) => (
+                        <TableRow key={order.id}>
+                          <TableCell>{order.profiles?.phone || '-'}</TableCell>
+                          <TableCell>
+                            {order.order_items?.length.toLocaleString('fa-IR') || '۰'}
+                          </TableCell>
+                          <TableCell>
+                            {order.total_amount.toLocaleString('fa-IR')} تومان
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={statusColors[order.status]}>
+                              {statusLabels[order.status] || order.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="max-w-xs truncate">
+                            {order.shipping_address}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(order.created_at).toLocaleDateString('fa-IR')}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={() => handleViewDetails(order)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-3">
                   {orders.map((order: any) => (
-                    <TableRow key={order.id}>
-                      <TableCell>{order.profiles?.phone || '-'}</TableCell>
-                      <TableCell>
-                        {order.order_items?.length.toLocaleString('fa-IR') || '۰'}
-                      </TableCell>
-                      <TableCell>
-                        {order.total_amount.toLocaleString('fa-IR')} تومان
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={statusColors[order.status]}>
-                          {statusLabels[order.status] || order.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        {order.shipping_address}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(order.created_at).toLocaleDateString('fa-IR')}
-                      </TableCell>
-                      <TableCell>
+                    <Card key={order.id} className="overflow-hidden">
+                      <CardContent className="p-3">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <p className="font-semibold text-sm">{order.profiles?.phone || '-'}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(order.created_at).toLocaleDateString('fa-IR')}
+                            </p>
+                          </div>
+                          <Badge className={`${statusColors[order.status]} text-xs`}>
+                            {statusLabels[order.status] || order.status}
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">تعداد محصولات:</span>
+                            <span className="font-medium">
+                              {order.order_items?.length.toLocaleString('fa-IR') || '۰'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">مبلغ کل:</span>
+                            <span className="font-bold" style={{ color: '#B3886D' }}>
+                              {order.total_amount.toLocaleString('fa-IR')} تومان
+                            </span>
+                          </div>
+                          <div className="pt-2 border-t">
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {order.shipping_address}
+                            </p>
+                          </div>
+                        </div>
+                        
                         <Button
-                          size="icon"
+                          size="sm"
                           variant="outline"
                           onClick={() => handleViewDetails(order)}
+                          className="w-full mt-3"
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-4 w-4 ml-2" />
+                          مشاهده جزئیات
                         </Button>
-                      </TableCell>
-                    </TableRow>
+                      </CardContent>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
