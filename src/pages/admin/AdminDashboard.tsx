@@ -141,26 +141,26 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div>
-          <h2 className="text-3xl font-bold">داشبورد</h2>
-          <p className="text-muted-foreground mt-2">خلاصه‌ای از وضعیت فروشگاه</p>
+          <h2 className="text-xl sm:text-3xl font-bold">داشبورد</h2>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1 sm:mt-2">خلاصه‌ای از وضعیت فروشگاه</p>
         </div>
 
         {/* Low Stock Alert */}
         <LowStockAlert />
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat) => (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">
+            <Card key={stat.title} className="p-3 sm:p-4">
+              <CardHeader className="flex flex-row items-center justify-between p-0 pb-1 sm:pb-2">
+                <CardTitle className="text-xs sm:text-sm font-medium">
                   {stat.title}
                 </CardTitle>
-                <stat.icon className="h-4 w-4" style={{ color: stat.color }} />
+                <stat.icon className="h-3 w-3 sm:h-4 sm:w-4" style={{ color: stat.color }} />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold" style={{ color: stat.color }}>
+              <CardContent className="p-0">
+                <div className="text-base sm:text-2xl font-bold" style={{ color: stat.color }}>
                   {isLoading ? "..." : typeof stat.value === 'number' ? stat.value.toLocaleString('fa-IR') : stat.value}
                 </div>
               </CardContent>
@@ -169,14 +169,14 @@ export default function AdminDashboard() {
         </div>
 
         {/* Charts Row */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
           {/* Revenue Chart */}
           <Card>
-            <CardHeader>
-              <CardTitle>نمودار درآمد (۷ روز اخیر)</CardTitle>
-              <CardDescription>روند درآمد روزانه</CardDescription>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-sm sm:text-base">نمودار درآمد (۷ روز اخیر)</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">روند درآمد روزانه</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-6 pt-0">
               {chartData && chartData.length > 0 ? (
                 <ChartContainer
                   config={{
@@ -185,13 +185,13 @@ export default function AdminDashboard() {
                       color: "#B3886D",
                     },
                   }}
-                  className="h-[300px]"
+                  className="h-[180px] sm:h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
+                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} width={40} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Line 
                         type="monotone" 
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                   </ResponsiveContainer>
                 </ChartContainer>
               ) : (
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                <div className="h-[180px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm">
                   داده‌ای برای نمایش وجود ندارد
                 </div>
               )}
@@ -212,11 +212,11 @@ export default function AdminDashboard() {
 
           {/* Orders Chart */}
           <Card>
-            <CardHeader>
-              <CardTitle>نمودار سفارشات (۷ روز اخیر)</CardTitle>
-              <CardDescription>تعداد سفارشات روزانه</CardDescription>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-sm sm:text-base">نمودار سفارشات (۷ روز اخیر)</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">تعداد سفارشات روزانه</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-6 pt-0">
               {chartData && chartData.length > 0 ? (
                 <ChartContainer
                   config={{
@@ -225,20 +225,20 @@ export default function AdminDashboard() {
                       color: "#896A59",
                     },
                   }}
-                  className="h-[300px]"
+                  className="h-[180px] sm:h-[300px]"
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
+                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} width={40} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="orders" fill="#896A59" />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
               ) : (
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
+                <div className="h-[180px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm">
                   داده‌ای برای نمایش وجود ندارد
                 </div>
               )}
@@ -247,43 +247,43 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Products and Order Status */}
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 lg:grid-cols-2">
           {/* Top Selling Products */}
           <Card>
-            <CardHeader>
-              <CardTitle>محصولات پرفروش</CardTitle>
-              <CardDescription>۵ محصول برتر براساس تعداد فروش</CardDescription>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-sm sm:text-base">محصولات پرفروش</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">۵ محصول برتر براساس تعداد فروش</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-6 pt-0">
               {topProducts && topProducts.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {topProducts.map((product, index) => (
-                    <div key={index} className="flex items-center justify-between border-b pb-3">
-                      <div className="flex items-center gap-3">
+                    <div key={index} className="flex items-center justify-between border-b pb-2 sm:pb-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
                         <div 
-                          className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold"
+                          className="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm"
                           style={{ backgroundColor: '#B3886D' }}
                         >
                           {(index + 1).toLocaleString('fa-IR')}
                         </div>
-                        <div>
-                          <p className="font-medium">{product.name}</p>
-                          <p className="text-sm text-muted-foreground">
+                        <div className="min-w-0">
+                          <p className="font-medium text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">{product.name}</p>
+                          <p className="text-xs text-muted-foreground">
                             {product.quantity.toLocaleString('fa-IR')} فروش
                           </p>
                         </div>
                       </div>
-                      <div className="text-left">
-                        <p className="font-bold" style={{ color: '#28A745' }}>
+                      <div className="text-left flex-shrink-0">
+                        <p className="font-bold text-xs sm:text-sm" style={{ color: '#28A745' }}>
                           {product.revenue.toLocaleString('fa-IR')}
                         </p>
-                        <p className="text-xs text-muted-foreground">تومان</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">تومان</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center text-muted-foreground py-8">
+                <div className="text-center text-muted-foreground py-6 sm:py-8 text-sm">
                   هنوز فروشی ثبت نشده است
                 </div>
               )}
@@ -292,38 +292,38 @@ export default function AdminDashboard() {
 
           {/* Order Status */}
           <Card>
-            <CardHeader>
-              <CardTitle>وضعیت سفارشات</CardTitle>
-              <CardDescription>آمار سفارشات براساس وضعیت</CardDescription>
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-sm sm:text-base">وضعیت سفارشات</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">آمار سفارشات براساس وضعیت</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <span className="font-medium">در انتظار پردازش</span>
+            <CardContent className="p-3 sm:p-6 pt-0">
+              <div className="space-y-2 sm:space-y-4">
+                <div className="flex items-center justify-between p-2 sm:p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-yellow-500"></div>
+                    <span className="font-medium text-xs sm:text-base">در انتظار پردازش</span>
                   </div>
-                  <span className="text-2xl font-bold" style={{ color: '#896A59' }}>
+                  <span className="text-lg sm:text-2xl font-bold" style={{ color: '#896A59' }}>
                     {(revenueData?.pendingOrders || 0).toLocaleString('fa-IR')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="font-medium">تکمیل شده</span>
+                <div className="flex items-center justify-between p-2 sm:p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-500"></div>
+                    <span className="font-medium text-xs sm:text-base">تکمیل شده</span>
                   </div>
-                  <span className="text-2xl font-bold" style={{ color: '#28A745' }}>
+                  <span className="text-lg sm:text-2xl font-bold" style={{ color: '#28A745' }}>
                     {(revenueData?.completedOrders || 0).toLocaleString('fa-IR')}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#B3886D' }}></div>
-                    <span className="font-medium">کل سفارشات</span>
+                <div className="flex items-center justify-between p-2 sm:p-4 border rounded-lg">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" style={{ backgroundColor: '#B3886D' }}></div>
+                    <span className="font-medium text-xs sm:text-base">کل سفارشات</span>
                   </div>
-                  <span className="text-2xl font-bold" style={{ color: '#B3886D' }}>
+                  <span className="text-lg sm:text-2xl font-bold" style={{ color: '#B3886D' }}>
                     {(stats?.orders || 0).toLocaleString('fa-IR')}
                   </span>
                 </div>
