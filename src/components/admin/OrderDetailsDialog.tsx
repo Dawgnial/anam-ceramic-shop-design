@@ -78,12 +78,12 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-full max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <DialogTitle>جزئیات سفارش</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-base sm:text-lg">جزئیات سفارش</DialogTitle>
+              <DialogDescription className="text-sm">
                 مشاهده اطلاعات کامل سفارش و تغییر وضعیت
               </DialogDescription>
             </div>
@@ -91,7 +91,7 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
               variant="outline"
               size="sm"
               onClick={() => generateInvoicePDF(order)}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto"
             >
               <Download className="h-4 w-4" />
               دانلود فاکتور
@@ -99,17 +99,17 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Order Status */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">وضعیت سفارش</h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <h3 className="font-semibold text-sm sm:text-base">وضعیت سفارش</h3>
               <Badge className={statusColors[order.status]}>
                 {statusLabels[order.status]}
               </Badge>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Select value={newStatus} onValueChange={setNewStatus}>
                 <SelectTrigger className="flex-1">
                   <SelectValue />
@@ -125,6 +125,7 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
                 onClick={handleStatusChange}
                 disabled={newStatus === order.status || updateStatusMutation.isPending}
                 style={{ backgroundColor: '#B3886D' }}
+                className="w-full sm:w-auto"
               >
                 {updateStatusMutation.isPending ? 'در حال ذخیره...' : 'ذخیره'}
               </Button>
@@ -170,26 +171,26 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
 
           {/* Order Items */}
           <div className="space-y-3">
-            <h3 className="font-semibold">محصولات سفارش</h3>
+            <h3 className="font-semibold text-sm sm:text-base">محصولات سفارش</h3>
             <div className="space-y-3">
               {order.order_items?.map((item: any, index: number) => (
-                <div key={index} className="flex gap-4 p-3 border rounded-lg">
+                <div key={index} className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 border rounded-lg">
                   {item.product_image && (
                     <img
                       src={item.product_image}
                       alt={item.product_name}
-                      className="w-20 h-20 object-cover rounded"
+                      className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded"
                     />
                   )}
                   <div className="flex-1 space-y-1">
-                    <h4 className="font-medium">{item.product_name}</h4>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <h4 className="font-medium text-sm sm:text-base">{item.product_name}</h4>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                       <span>تعداد: {toPersianNumber(item.quantity)}</span>
                       <span>قیمت واحد: {formatPrice(item.price)} تومان</span>
                     </div>
                   </div>
-                  <div className="text-left">
-                    <p className="font-semibold">
+                  <div className="text-right sm:text-left">
+                    <p className="font-semibold text-sm sm:text-base">
                       {formatPrice(item.quantity * item.price)} تومان
                     </p>
                   </div>

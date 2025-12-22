@@ -249,11 +249,11 @@ export default function AdminProducts() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h2 className="text-3xl font-bold">مدیریت محصولات</h2>
-            <p className="text-muted-foreground mt-2">
+            <h2 className="text-xl sm:text-3xl font-bold">مدیریت محصولات</h2>
+            <p className="text-muted-foreground mt-1 sm:mt-2 text-sm sm:text-base">
               افزودن، ویرایش و حذف محصولات
             </p>
           </div>
@@ -263,6 +263,7 @@ export default function AdminProducts() {
               setDialogOpen(true);
             }}
             style={{ backgroundColor: '#B3886D' }}
+            className="w-full sm:w-auto"
           >
             <Plus className="ml-2 h-4 w-4" />
             افزودن محصول
@@ -271,9 +272,9 @@ export default function AdminProducts() {
 
         <Card>
           <CardHeader>
-            <CardTitle>لیست محصولات</CardTitle>
+            <CardTitle className="text-base sm:text-lg">لیست محصولات</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-2 sm:p-6">
             {isLoading ? (
               <div className="text-center py-8">در حال بارگذاری...</div>
             ) : !products || products.length === 0 ? (
@@ -281,110 +282,196 @@ export default function AdminProducts() {
                 هیچ محصولی ثبت نشده است
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>تصویر</TableHead>
-                    <TableHead>نام محصول</TableHead>
-                    <TableHead>دسته‌بندی</TableHead>
-                    <TableHead>قیمت</TableHead>
-                    <TableHead>تخفیف</TableHead>
-                    <TableHead>موجودی</TableHead>
-                    <TableHead>وضعیت</TableHead>
-                    <TableHead>عملیات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Desktop Table */}
+                <div className="hidden lg:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>تصویر</TableHead>
+                        <TableHead>نام محصول</TableHead>
+                        <TableHead>دسته‌بندی</TableHead>
+                        <TableHead>قیمت</TableHead>
+                        <TableHead>تخفیف</TableHead>
+                        <TableHead>موجودی</TableHead>
+                        <TableHead>وضعیت</TableHead>
+                        <TableHead>عملیات</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {products.map((product: any) => (
+                        <TableRow key={product.id}>
+                          <TableCell>
+                            <img
+                              src={product.images[0] || '/placeholder.svg'}
+                              alt={product.name}
+                              className="w-12 h-12 object-cover rounded"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {product.name}
+                          </TableCell>
+                          <TableCell>
+                            {product.categories?.length > 0 
+                              ? product.categories.map((cat: any) => cat.name).join('، ')
+                              : '-'}
+                          </TableCell>
+                          <TableCell>
+                            {product.price.toLocaleString('fa-IR')} تومان
+                          </TableCell>
+                          <TableCell>
+                            {product.discount_percentage ? (
+                              <Badge variant="secondary">
+                                {product.discount_percentage.toLocaleString('fa-IR')}٪
+                              </Badge>
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={product.stock > 0 ? "default" : "destructive"}>
+                              {product.stock?.toLocaleString('fa-IR') ?? '-'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1 flex-wrap">
+                              {product.is_featured && (
+                                <Badge style={{ backgroundColor: '#B3886D' }}>
+                                  ویژه
+                                </Badge>
+                              )}
+                              {product.in_stock ? (
+                                <Badge variant="outline" className="text-green-600 border-green-600">
+                                  موجود
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-red-600 border-red-600">
+                                  ناموجود
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => handleManageAttributes(product)}
+                                title="مدیریت ویژگی‌ها (رنگ، اندازه، ...)"
+                              >
+                                <Tags className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => handleManageFeatures(product)}
+                                title="مدیریت مشخصات فنی"
+                              >
+                                <Settings className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                onClick={() => handleEdit(product)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="destructive"
+                                onClick={() => handleDelete(product)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="lg:hidden space-y-3">
                   {products.map((product: any) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <img
-                          src={product.images[0] || '/placeholder.svg'}
-                          alt={product.name}
-                          className="w-12 h-12 object-cover rounded"
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {product.name}
-                      </TableCell>
-                      <TableCell>
-                        {product.categories?.length > 0 
-                          ? product.categories.map((cat: any) => cat.name).join('، ')
-                          : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {product.price.toLocaleString('fa-IR')} تومان
-                      </TableCell>
-                      <TableCell>
-                        {product.discount_percentage ? (
-                          <Badge variant="secondary">
-                            {product.discount_percentage.toLocaleString('fa-IR')}٪
-                          </Badge>
-                        ) : (
-                          '-'
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={product.stock > 0 ? "default" : "destructive"}>
-                          {product.stock?.toLocaleString('fa-IR') ?? '-'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1 flex-wrap">
-                          {product.is_featured && (
-                            <Badge style={{ backgroundColor: '#B3886D' }}>
-                              ویژه
-                            </Badge>
-                          )}
-                          {product.in_stock ? (
-                            <Badge variant="outline" className="text-green-600 border-green-600">
-                              موجود
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-red-600 border-red-600">
-                              ناموجود
-                            </Badge>
-                          )}
+                    <Card key={product.id} className="overflow-hidden">
+                      <CardContent className="p-3">
+                        <div className="flex gap-3">
+                          <img
+                            src={product.images[0] || '/placeholder.svg'}
+                            alt={product.name}
+                            className="w-20 h-20 object-cover rounded flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-sm truncate">{product.name}</h3>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {product.categories?.length > 0 
+                                ? product.categories.map((cat: any) => cat.name).join('، ')
+                                : '-'}
+                            </p>
+                            <p className="font-bold text-sm mt-1" style={{ color: '#B3886D' }}>
+                              {product.price.toLocaleString('fa-IR')} تومان
+                            </p>
+                            <div className="flex gap-1 flex-wrap mt-2">
+                              {product.is_featured && (
+                                <Badge style={{ backgroundColor: '#B3886D' }} className="text-xs">
+                                  ویژه
+                                </Badge>
+                              )}
+                              {product.in_stock ? (
+                                <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
+                                  موجود
+                                </Badge>
+                              ) : (
+                                <Badge variant="outline" className="text-red-600 border-red-600 text-xs">
+                                  ناموجود
+                                </Badge>
+                              )}
+                              <Badge variant="secondary" className="text-xs">
+                                موجودی: {product.stock?.toLocaleString('fa-IR') ?? '-'}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 mt-3 flex-wrap">
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="outline"
                             onClick={() => handleManageAttributes(product)}
-                            title="مدیریت ویژگی‌ها (رنگ، اندازه، ...)"
+                            className="flex-1"
                           >
-                            <Tags className="h-4 w-4" />
+                            <Tags className="h-4 w-4 ml-1" />
+                            ویژگی‌ها
                           </Button>
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="outline"
                             onClick={() => handleManageFeatures(product)}
-                            title="مدیریت مشخصات فنی"
+                            className="flex-1"
                           >
-                            <Settings className="h-4 w-4" />
+                            <Settings className="h-4 w-4 ml-1" />
+                            مشخصات
                           </Button>
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="outline"
                             onClick={() => handleEdit(product)}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
-                            size="icon"
+                            size="sm"
                             variant="destructive"
                             onClick={() => handleDelete(product)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </CardContent>
+                    </Card>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
