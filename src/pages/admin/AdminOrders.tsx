@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Eye, Search, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -13,6 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { OrderDetailsDialog } from "@/components/admin/OrderDetailsDialog";
 
@@ -33,6 +41,10 @@ const statusLabels: Record<string, string> = {
 export default function AdminOrders() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ['admin-orders'],
@@ -51,6 +63,30 @@ export default function AdminOrders() {
     },
   });
 
+  // Filter orders based on search and filters
+  const filteredOrders = useMemo(() => {
+    if (!orders) return [];
+    
+    return orders.filter((order: any) => {
+      // Search filter (phone number or address)
+      const matchesSearch = searchQuery === "" || 
+        order.profiles?.phone?.includes(searchQuery) ||
+        order.shipping_address?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Status filter
+      const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [orders, searchQuery, statusFilter]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("all");
+  };
+
+  const hasActiveFilters = searchQuery !== "" || statusFilter !== "all";
+
   const handleViewDetails = (order: any) => {
     setSelectedOrder(order);
     setDetailsDialogOpen(true);
@@ -66,6 +102,46 @@ export default function AdminOrders() {
           </p>
         </div>
 
+        {/* Search and Filter Section */}
+        <Card className="p-3 sm:p-4">
+          <div className="flex flex-col gap-3">
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="جستجو با شماره موبایل یا آدرس..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="وضعیت سفارش" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه وضعیت‌ها</SelectItem>
+                  <SelectItem value="pending">در انتظار</SelectItem>
+                  <SelectItem value="processing">در حال پردازش</SelectItem>
+                  <SelectItem value="completed">تکمیل شده</SelectItem>
+                  <SelectItem value="cancelled">لغو شده</SelectItem>
+                </SelectContent>
+              </Select>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto">
+                  <X className="h-4 w-4 ml-2" />
+                  پاک کردن فیلترها
+                </Button>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <p className="text-sm text-muted-foreground">
+                {filteredOrders.length.toLocaleString('fa-IR')} سفارش یافت شد
+              </p>
+            )}
+          </div>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base sm:text-lg">لیست سفارشات</CardTitle>
@@ -76,6 +152,10 @@ export default function AdminOrders() {
             ) : !orders || orders.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 هیچ سفارشی ثبت نشده است
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                سفارشی با این مشخصات یافت نشد
               </div>
             ) : (
               <>
@@ -94,7 +174,7 @@ export default function AdminOrders() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {orders.map((order: any) => (
+                      {filteredOrders.map((order: any) => (
                         <TableRow key={order.id}>
                           <TableCell>{order.profiles?.phone || '-'}</TableCell>
                           <TableCell>
@@ -131,7 +211,7 @@ export default function AdminOrders() {
 
                 {/* Mobile Cards */}
                 <div className="lg:hidden space-y-3">
-                  {orders.map((order: any) => (
+                      {filteredOrders.map((order: any) => (
                     <Card key={order.id} className="overflow-hidden">
                       <CardContent className="p-3">
                         <div className="flex justify-between items-start mb-3">

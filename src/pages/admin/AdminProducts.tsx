@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Settings, Tags } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Pencil, Trash2, Settings, Tags, Search, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { ProductFeaturesDialog } from "@/components/admin/ProductFeaturesDialog";
@@ -45,6 +53,12 @@ export default function AdminProducts() {
   const [managingProduct, setManagingProduct] = useState<any>(null);
   const [attributesDialogOpen, setAttributesDialogOpen] = useState(false);
   const [managingAttributesProduct, setManagingAttributesProduct] = useState<any>(null);
+  
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stockFilter, setStockFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  
   const queryClient = useQueryClient();
 
   const { data: products, isLoading } = useQuery({
@@ -247,6 +261,48 @@ export default function AdminProducts() {
     }
   };
 
+  // Get unique categories for filter
+  const categories = useMemo(() => {
+    if (!products) return [];
+    const allCategories = products.flatMap((p: any) => p.categories || []);
+    const uniqueCategories = allCategories.filter((cat: any, index: number, self: any[]) => 
+      index === self.findIndex((c) => c.id === cat.id)
+    );
+    return uniqueCategories;
+  }, [products]);
+
+  // Filter products based on search and filters
+  const filteredProducts = useMemo(() => {
+    if (!products) return [];
+    
+    return products.filter((product: any) => {
+      // Search filter
+      const matchesSearch = searchQuery === "" || 
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Stock filter
+      const matchesStock = stockFilter === "all" ||
+        (stockFilter === "in_stock" && product.in_stock && product.stock > 0) ||
+        (stockFilter === "out_of_stock" && (!product.in_stock || product.stock === 0)) ||
+        (stockFilter === "low_stock" && product.stock > 0 && product.stock <= (product.low_stock_threshold || 10));
+      
+      // Category filter
+      const matchesCategory = categoryFilter === "all" ||
+        product.category_ids?.includes(categoryFilter);
+      
+      return matchesSearch && matchesStock && matchesCategory;
+    });
+  }, [products, searchQuery, stockFilter, categoryFilter]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setStockFilter("all");
+    setCategoryFilter("all");
+  };
+
+  const hasActiveFilters = searchQuery !== "" || stockFilter !== "all" || categoryFilter !== "all";
+
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
@@ -270,6 +326,56 @@ export default function AdminProducts() {
           </Button>
         </div>
 
+        {/* Search and Filter Section */}
+        <Card className="p-3 sm:p-4">
+          <div className="flex flex-col gap-3">
+            <div className="relative">
+              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="جستجو در محصولات..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Select value={stockFilter} onValueChange={setStockFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="وضعیت موجودی" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه</SelectItem>
+                  <SelectItem value="in_stock">موجود</SelectItem>
+                  <SelectItem value="out_of_stock">ناموجود</SelectItem>
+                  <SelectItem value="low_stock">موجودی کم</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="دسته‌بندی" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">همه دسته‌بندی‌ها</SelectItem>
+                  {categories.map((cat: any) => (
+                    <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {hasActiveFilters && (
+                <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto">
+                  <X className="h-4 w-4 ml-2" />
+                  پاک کردن فیلترها
+                </Button>
+              )}
+            </div>
+            {hasActiveFilters && (
+              <p className="text-sm text-muted-foreground">
+                {filteredProducts.length.toLocaleString('fa-IR')} محصول یافت شد
+              </p>
+            )}
+          </div>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base sm:text-lg">لیست محصولات</CardTitle>
@@ -280,6 +386,10 @@ export default function AdminProducts() {
             ) : !products || products.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 هیچ محصولی ثبت نشده است
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                محصولی با این مشخصات یافت نشد
               </div>
             ) : (
               <>
@@ -299,7 +409,7 @@ export default function AdminProducts() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {products.map((product: any) => (
+                      {filteredProducts.map((product: any) => (
                         <TableRow key={product.id}>
                           <TableCell>
                             <img
@@ -393,7 +503,7 @@ export default function AdminProducts() {
 
                 {/* Mobile Cards */}
                 <div className="lg:hidden space-y-3">
-                  {products.map((product: any) => (
+                  {filteredProducts.map((product: any) => (
                     <Card key={product.id} className="overflow-hidden">
                       <CardContent className="p-3">
                         <div className="flex gap-3">
