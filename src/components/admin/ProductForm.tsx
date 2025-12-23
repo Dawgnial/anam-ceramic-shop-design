@@ -52,14 +52,14 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      price: defaultValues?.price || 0,
+      price: defaultValues?.price,
       stock: defaultValues?.stock,
       category_ids: defaultValues?.category_ids || [],
       images: defaultValues?.images || [],
       is_featured: defaultValues?.is_featured || false,
       discount_percentage: defaultValues?.discount_percentage,
       in_stock: defaultValues?.in_stock ?? true,
-      low_stock_threshold: defaultValues?.low_stock_threshold || 10,
+      low_stock_threshold: defaultValues?.low_stock_threshold,
     },
   });
 
@@ -130,9 +130,10 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="۰"
+                    placeholder="قیمت به تومان"
                     {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                   />
                 </FormControl>
                 <FormMessage />
@@ -149,7 +150,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="۰"
+                    placeholder="تعداد موجودی"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
@@ -219,7 +220,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                 <FormControl>
                   <Input
                     type="number"
-                    placeholder="۰"
+                    placeholder="درصد تخفیف (۰ تا ۱۰۰)"
                     {...field}
                     value={field.value ?? ""}
                     onChange={(e) => {
