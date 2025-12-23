@@ -61,8 +61,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[85%] max-w-[320px] p-0">
-              <AdminSidebar />
+            <SheetContent side="right" className="w-[85%] max-w-[320px] p-0 flex flex-col h-full overflow-hidden">
+              <div className="flex-1 overflow-hidden">
+                <AdminSidebar />
+              </div>
             </SheetContent>
           </Sheet>
         </header>
