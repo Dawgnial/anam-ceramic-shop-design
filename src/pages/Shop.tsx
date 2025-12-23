@@ -7,7 +7,7 @@ import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { QuickViewDialog } from "@/components/QuickViewDialog";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
@@ -30,6 +30,8 @@ const Shop = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("default");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -193,6 +195,8 @@ const Shop = () => {
   const resetFilters = () => {
     setSelectedCategory(null);
     setPriceRange([minPrice, maxPrice]);
+    setMinPriceInput("");
+    setMaxPriceInput("");
     setSortOrder("default");
     setCurrentPage(1);
   };
@@ -234,7 +238,11 @@ const Shop = () => {
               {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
                 <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                   {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])} تومان
-                  <button onClick={() => setPriceRange([minPrice, maxPrice])} className="hover:text-destructive">
+                  <button onClick={() => {
+                    setPriceRange([minPrice, maxPrice]);
+                    setMinPriceInput("");
+                    setMaxPriceInput("");
+                  }} className="hover:text-destructive">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
@@ -338,80 +346,81 @@ const Shop = () => {
             محدوده قیمت
           </h3>
           
-          <div className="space-y-5">
+          <div className="space-y-4">
             {/* Price inputs */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">از</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">حداقل قیمت</label>
                 <div className="relative">
                   <input
                     type="text"
-                    value={formatPrice(priceRange[0])}
-                    readOnly
-                    className="w-full text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 text-center"
+                    inputMode="numeric"
+                    value={minPriceInput}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setMinPriceInput(value);
+                    }}
+                    placeholder={formatPrice(minPrice)}
+                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                   />
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">ت</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground">تا</label>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">حداکثر قیمت</label>
                 <div className="relative">
                   <input
                     type="text"
-                    value={formatPrice(priceRange[1])}
-                    readOnly
-                    className="w-full text-sm bg-muted/50 border border-border rounded-lg px-3 py-2 text-center"
+                    inputMode="numeric"
+                    value={maxPriceInput}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setMaxPriceInput(value);
+                    }}
+                    placeholder={formatPrice(maxPrice)}
+                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
                   />
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">ت</span>
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
                 </div>
               </div>
             </div>
             
-            {/* Slider */}
-            <div className="px-1">
-              <Slider
-                min={minPrice}
-                max={maxPrice}
-                step={10000}
-                value={priceRange}
-                onValueChange={setPriceRange}
-                className="w-full"
-              />
-            </div>
+            {/* Apply price filter button */}
+            <Button
+              onClick={() => {
+                const min = minPriceInput ? parseInt(minPriceInput) : minPrice;
+                const max = maxPriceInput ? parseInt(maxPriceInput) : maxPrice;
+                if (min > max) {
+                  toast.error("حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد");
+                  return;
+                }
+                setPriceRange([min, max]);
+                setCurrentPage(1);
+              }}
+              variant="outline"
+              className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
+              <Check className="h-4 w-4 ml-2" />
+              اعمال فیلتر قیمت
+            </Button>
             
-            {/* Quick price filters */}
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setPriceRange([minPrice, 500000])}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  priceRange[1] === 500000 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'border-border hover:border-primary hover:text-primary'
-                }`}
+            {/* Reset price filter */}
+            {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
+              <Button
+                onClick={() => {
+                  setPriceRange([minPrice, maxPrice]);
+                  setMinPriceInput("");
+                  setMaxPriceInput("");
+                  setCurrentPage(1);
+                }}
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground hover:text-destructive"
               >
-                زیر ۵۰۰ هزار
-              </button>
-              <button
-                onClick={() => setPriceRange([500000, 1000000])}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  priceRange[0] === 500000 && priceRange[1] === 1000000
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'border-border hover:border-primary hover:text-primary'
-                }`}
-              >
-                ۵۰۰ تا ۱ میلیون
-              </button>
-              <button
-                onClick={() => setPriceRange([1000000, maxPrice])}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                  priceRange[0] === 1000000 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'border-border hover:border-primary hover:text-primary'
-                }`}
-              >
-                بالای ۱ میلیون
-              </button>
-            </div>
+                <RotateCcw className="h-3 w-3 ml-1" />
+                حذف فیلتر قیمت
+              </Button>
+            )}
             
             {/* Apply button for mobile */}
             <Button 
