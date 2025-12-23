@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
@@ -22,6 +22,7 @@ import StructuredData from "@/components/seo/StructuredData";
 
 const Shop = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { addToCart } = useCart();
   const { toggleWishlist } = useWishlist();
   const { toggleCompare, items: compareItems } = useCompare();
@@ -92,6 +93,17 @@ const Shop = () => {
       setPriceRange([minPrice, maxPrice]);
     }
   });
+
+  // Read category from URL and set selectedCategory
+  useEffect(() => {
+    const categorySlug = searchParams.get('category');
+    if (categorySlug && categories.length > 0) {
+      const category = categories.find(c => c.slug === categorySlug);
+      if (category) {
+        setSelectedCategory(category.id);
+      }
+    }
+  }, [searchParams, categories]);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
