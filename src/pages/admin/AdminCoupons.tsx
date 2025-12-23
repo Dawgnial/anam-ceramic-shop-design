@@ -317,11 +317,13 @@ export default function AdminCoupons() {
                     <FormItem>
                       <FormLabel className="text-sm">مقدار تخفیف</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
-                          {...field}
-                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                        />
+                      <Input
+                        type="number"
+                        placeholder="مثال: ۱۰"
+                        {...field}
+                        value={field.value || ''}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                      />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -338,7 +340,9 @@ export default function AdminCoupons() {
                     <FormControl>
                       <Input
                         type="number"
+                        placeholder="مثال: ۵۰۰۰۰۰"
                         {...field}
+                        value={field.value || ''}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                       />
                     </FormControl>

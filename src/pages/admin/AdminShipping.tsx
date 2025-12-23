@@ -216,11 +216,11 @@ const AdminShipping = () => {
                   <TableCell>
                     <Input
                       type="text"
-                      value={toPersianNumber(getCostValue(item))}
+                      value={editingCosts[item.id] !== undefined ? toPersianNumber(editingCosts[item.id]) : ''}
                       onChange={(e) => handleCostChange(item.id, e.target.value)}
                       className="w-40 text-left"
                       dir="ltr"
-                      placeholder="هزینه ارسال"
+                      placeholder={toPersianNumber(item.shipping_cost)}
                     />
                   </TableCell>
                   <TableCell>
@@ -259,11 +259,11 @@ const AdminShipping = () => {
                 <span className="text-xs text-muted-foreground flex-shrink-0">هزینه:</span>
                 <Input
                   type="text"
-                  value={toPersianNumber(getCostValue(item))}
+                  value={editingCosts[item.id] !== undefined ? toPersianNumber(editingCosts[item.id]) : ''}
                   onChange={(e) => handleCostChange(item.id, e.target.value)}
                   className="flex-1 text-left h-9 text-sm"
                   dir="ltr"
-                  placeholder="هزینه ارسال"
+                  placeholder={toPersianNumber(item.shipping_cost)}
                 />
                 <span className="text-xs text-muted-foreground flex-shrink-0">تومان</span>
               </div>
