@@ -129,9 +129,9 @@ export const Header = () => {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0">
-                <div className="flex flex-col h-full">
-                  <div className="p-4 border-b flex items-center justify-between">
+              <SheetContent side="right" className="w-[280px] sm:w-[320px] p-0 flex flex-col h-full">
+                <div className="flex flex-col h-full overflow-hidden">
+                  <div className="flex-shrink-0 p-4 border-b flex items-center justify-between">
                     <Link to="/" onClick={() => setMobileMenuOpen(false)}>
                       <img src={logo} alt="آنام" className="h-10 w-auto" />
                     </Link>
@@ -142,7 +142,7 @@ export const Header = () => {
                     </SheetClose>
                   </div>
                   
-                  <nav className="flex-1 p-4">
+                  <nav className="flex-1 overflow-y-auto p-4">
                     <ul className="space-y-2">
                       {navLinks.map((link) => (
                         <li key={link.path}>
@@ -183,7 +183,7 @@ export const Header = () => {
                     )}
                   </nav>
                   
-                  <div className="p-4 border-t">
+                  <div className="flex-shrink-0 p-4 border-t">
                     {user ? (
                       <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full gap-2">
