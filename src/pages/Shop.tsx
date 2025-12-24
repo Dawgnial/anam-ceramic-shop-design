@@ -88,11 +88,11 @@ const Shop = () => {
   const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 10000000;
 
   // Initialize price range when products load
-  useState(() => {
+  useEffect(() => {
     if (products.length > 0 && priceRange[0] === 0 && priceRange[1] === 10000000) {
       setPriceRange([minPrice, maxPrice]);
     }
-  });
+  }, [products, minPrice, maxPrice]);
 
   // Read category from URL and set selectedCategory
   useEffect(() => {
@@ -145,6 +145,8 @@ const Shop = () => {
       name: product.name,
       price: product.price,
       image: product.images?.[0] || '/placeholder.svg',
+      weight_with_packaging: product.weight_with_packaging || 0,
+      preparation_days: product.preparation_days || 1,
     });
     toast.success('محصول به سبد خرید اضافه شد');
   };
@@ -189,9 +191,9 @@ const Shop = () => {
   const displayedProducts = filteredAndSortedProducts.slice(startIndex, endIndex);
 
   // Reset to page 1 when filters change
-  useState(() => {
+  useEffect(() => {
     setCurrentPage(1);
-  });
+  }, [selectedCategory, priceRange, sortOrder]);
 
   const [showAllCategories, setShowAllCategories] = useState(false);
   
