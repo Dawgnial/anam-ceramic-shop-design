@@ -62,12 +62,12 @@ export const CustomerReviews = () => {
 
         <div className="max-w-sm sm:max-w-xl md:max-w-4xl lg:max-w-5xl mx-auto">
           <div className="flex items-center gap-4">
-            {/* Left Arrow */}
+            {/* Right Arrow (Previous) */}
             <button
               onClick={handlePrev}
               className="flex-shrink-0 flex items-center justify-center text-primary hover:opacity-70 transition-opacity"
             >
-              <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10" />
+              <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10" />
             </button>
 
             {/* Review Card */}
@@ -91,12 +91,12 @@ export const CustomerReviews = () => {
               </CardContent>
             </Card>
 
-            {/* Right Arrow */}
+            {/* Left Arrow (Next) */}
             <button
               onClick={handleNext}
               className="flex-shrink-0 flex items-center justify-center text-primary hover:opacity-70 transition-opacity"
             >
-              <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10" />
+              <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10" />
             </button>
           </div>
         </div>
