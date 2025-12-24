@@ -8,6 +8,7 @@ import { CartProvider } from "./contexts/CartContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CompareProvider } from "./contexts/CompareContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
+import { SupportChat } from "./components/SupportChat";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -28,6 +29,7 @@ import AdminBlog from "./pages/admin/AdminBlog";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminReviews from "./pages/admin/AdminReviews";
 import AdminInventory from "./pages/admin/AdminInventory";
+import AdminSupport from "./pages/admin/AdminSupport";
 import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
@@ -53,6 +55,7 @@ const App = () => (
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
+                  <SupportChat />
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/shop" element={<Shop />} />
@@ -74,6 +77,7 @@ const App = () => (
                     <Route path="/admin/coupons" element={<AdminCoupons />} />
                     <Route path="/admin/reviews" element={<AdminReviews />} />
                     <Route path="/admin/inventory" element={<AdminInventory />} />
+                    <Route path="/admin/support" element={<AdminSupport />} />
                     <Route path="/store-rules" element={<StoreRules />} />
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/profile" element={<Profile />} />
