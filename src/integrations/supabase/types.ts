@@ -583,6 +583,83 @@ export type Database = {
         }
         Relationships: []
       }
+      support_chats: {
+        Row: {
+          admin_unread_count: number
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          guest_name: string | null
+          guest_phone: string | null
+          id: string
+          status: string
+          unread_count: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_unread_count?: number
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_unread_count?: number
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          chat_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          sender_type: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          sender_type: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "support_chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string

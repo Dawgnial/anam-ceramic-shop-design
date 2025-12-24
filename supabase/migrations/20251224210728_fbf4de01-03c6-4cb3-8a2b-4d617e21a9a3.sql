@@ -1,0 +1,112 @@
+-- Create support_chats table
+CREATE TABLE public.support_chats (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  guest_name TEXT,
+  guest_phone TEXT,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'closed')),
+  unread_count INTEGER NOT NULL DEFAULT 0,
+  admin_unread_count INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  closed_at TIMESTAMP WITH TIME ZONE,
+  closed_by TEXT CHECK (closed_by IN ('user', 'admin'))
+);
+
+-- Create support_messages table
+CREATE TABLE public.support_messages (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  chat_id UUID NOT NULL REFERENCES public.support_chats(id) ON DELETE CASCADE,
+  sender_type TEXT NOT NULL CHECK (sender_type IN ('user', 'admin')),
+  message TEXT NOT NULL,
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Enable RLS
+ALTER TABLE public.support_chats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.support_messages ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for support_chats
+CREATE POLICY "Users can view their own chats"
+ON public.support_chats FOR SELECT
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own chats"
+ON public.support_chats FOR INSERT
+WITH CHECK (auth.uid() = user_id OR user_id IS NULL);
+
+CREATE POLICY "Users can update their own chats"
+ON public.support_chats FOR UPDATE
+USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can view all chats"
+ON public.support_chats FOR SELECT
+USING (has_role(auth.uid(), 'admin'::app_role));
+
+CREATE POLICY "Admins can update all chats"
+ON public.support_chats FOR UPDATE
+USING (has_role(auth.uid(), 'admin'::app_role));
+
+-- RLS policies for support_messages
+CREATE POLICY "Users can view messages of their chats"
+ON public.support_messages FOR SELECT
+USING (EXISTS (
+  SELECT 1 FROM public.support_chats
+  WHERE support_chats.id = support_messages.chat_id
+  AND support_chats.user_id = auth.uid()
+));
+
+CREATE POLICY "Users can create messages in their chats"
+ON public.support_messages FOR INSERT
+WITH CHECK (EXISTS (
+  SELECT 1 FROM public.support_chats
+  WHERE support_chats.id = support_messages.chat_id
+  AND (support_chats.user_id = auth.uid() OR support_chats.user_id IS NULL)
+));
+
+CREATE POLICY "Admins can view all messages"
+ON public.support_messages FOR SELECT
+USING (has_role(auth.uid(), 'admin'::app_role));
+
+CREATE POLICY "Admins can create messages"
+ON public.support_messages FOR INSERT
+WITH CHECK (has_role(auth.uid(), 'admin'::app_role));
+
+CREATE POLICY "Admins can update messages"
+ON public.support_messages FOR UPDATE
+USING (has_role(auth.uid(), 'admin'::app_role));
+
+-- Enable realtime
+ALTER PUBLICATION supabase_realtime ADD TABLE public.support_chats;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.support_messages;
+
+-- Create index for performance
+CREATE INDEX idx_support_messages_chat_id ON public.support_messages(chat_id);
+CREATE INDEX idx_support_chats_user_id ON public.support_chats(user_id);
+CREATE INDEX idx_support_chats_status ON public.support_chats(status);
+
+-- Function to update unread counts
+CREATE OR REPLACE FUNCTION public.update_chat_unread_count()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.sender_type = 'user' THEN
+    UPDATE public.support_chats
+    SET admin_unread_count = admin_unread_count + 1,
+        updated_at = now()
+    WHERE id = NEW.chat_id;
+  ELSIF NEW.sender_type = 'admin' THEN
+    UPDATE public.support_chats
+    SET unread_count = unread_count + 1,
+        updated_at = now()
+    WHERE id = NEW.chat_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+-- Trigger to auto-update unread counts
+CREATE TRIGGER update_unread_on_new_message
+AFTER INSERT ON public.support_messages
+FOR EACH ROW
+EXECUTE FUNCTION public.update_chat_unread_count();
