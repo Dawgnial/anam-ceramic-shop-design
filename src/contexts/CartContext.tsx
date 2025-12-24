@@ -8,6 +8,9 @@ export interface CartItem {
   quantity: number;
   color?: string;
   attributes?: Record<string, string>;
+  // New fields for weight-based shipping
+  weight_with_packaging?: number; // in grams
+  preparation_days?: number;
 }
 
 interface CartContextType {
@@ -18,6 +21,9 @@ interface CartContextType {
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalItems: () => number;
+  getTotalWeight: () => number;
+  getMaxPreparationDays: () => number;
+  getShippingCost: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -44,6 +50,23 @@ const saveCartToStorage = (items: CartItem[]) => {
   } catch (error) {
     console.error('Error saving cart to localStorage:', error);
   }
+};
+
+// Calculate shipping cost based on weight
+// First 1kg = 80,000 تومان
+// Each additional kg = 30,000 تومان
+const calculateShippingCost = (totalWeightGrams: number): number => {
+  if (totalWeightGrams <= 0) return 0;
+  
+  const totalWeightKg = totalWeightGrams / 1000;
+  
+  if (totalWeightKg <= 1) {
+    return 80000;
+  }
+  
+  // First kg = 80,000, additional kgs = 30,000 each
+  const additionalKg = Math.ceil(totalWeightKg - 1);
+  return 80000 + (additionalKg * 30000);
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
@@ -95,6 +118,26 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return items.reduce((total, item) => total + item.quantity, 0);
   }, [items]);
 
+  // Calculate total weight in grams
+  const getTotalWeight = useCallback(() => {
+    return items.reduce((total, item) => {
+      const weight = item.weight_with_packaging || 0;
+      return total + (weight * item.quantity);
+    }, 0);
+  }, [items]);
+
+  // Get maximum preparation days among all items
+  const getMaxPreparationDays = useCallback(() => {
+    if (items.length === 0) return 0;
+    return Math.max(...items.map(item => item.preparation_days || 1));
+  }, [items]);
+
+  // Get shipping cost based on total weight
+  const getShippingCost = useCallback(() => {
+    const totalWeight = getTotalWeight();
+    return calculateShippingCost(totalWeight);
+  }, [getTotalWeight]);
+
   return (
     <CartContext.Provider
       value={{
@@ -105,6 +148,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         getTotalPrice,
         getTotalItems,
+        getTotalWeight,
+        getMaxPreparationDays,
+        getShippingCost,
       }}
     >
       {children}

@@ -464,48 +464,66 @@ export type Database = {
           created_at: string
           description: string | null
           discount_percentage: number | null
+          has_variations: boolean | null
           id: string
           images: string[] | null
           in_stock: boolean | null
           is_featured: boolean | null
           low_stock_threshold: number | null
           name: string
+          preparation_days: number | null
           price: number
           slug: string
           stock: number | null
+          unit_quantity: number | null
+          unit_type: string | null
           updated_at: string
+          weight: number | null
+          weight_with_packaging: number | null
         }
         Insert: {
           category_id?: string | null
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
+          has_variations?: boolean | null
           id?: string
           images?: string[] | null
           in_stock?: boolean | null
           is_featured?: boolean | null
           low_stock_threshold?: number | null
           name: string
+          preparation_days?: number | null
           price: number
           slug: string
           stock?: number | null
+          unit_quantity?: number | null
+          unit_type?: string | null
           updated_at?: string
+          weight?: number | null
+          weight_with_packaging?: number | null
         }
         Update: {
           category_id?: string | null
           created_at?: string
           description?: string | null
           discount_percentage?: number | null
+          has_variations?: boolean | null
           id?: string
           images?: string[] | null
           in_stock?: boolean | null
           is_featured?: boolean | null
           low_stock_threshold?: number | null
           name?: string
+          preparation_days?: number | null
           price?: number
           slug?: string
           stock?: number | null
+          unit_quantity?: number | null
+          unit_type?: string | null
           updated_at?: string
+          weight?: number | null
+          weight_with_packaging?: number | null
         }
         Relationships: [
           {

@@ -132,6 +132,8 @@ export default function ProductDetail() {
       price: product.price,
       image: product.images[0],
       attributes: selectedAttributes,
+      weight_with_packaging: product.weight_with_packaging || 0,
+      preparation_days: product.preparation_days || 1,
     });
 
     toast.success('محصول به سبد خرید اضافه شد');
