@@ -36,6 +36,13 @@ const productSchema = z.object({
   discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional().nullable(),
   in_stock: z.boolean().default(true),
   low_stock_threshold: z.number().min(0).optional(),
+  // New fields
+  weight: z.number().min(1, "وزن محصول الزامی است"),
+  weight_with_packaging: z.number().min(1, "وزن با بسته‌بندی الزامی است"),
+  unit_quantity: z.number().min(1, "مقدار واحد باید حداقل ۱ باشد").default(1),
+  unit_type: z.string().default("عددی"),
+  has_variations: z.boolean().default(false),
+  preparation_days: z.number().min(1, "زمان آماده‌سازی الزامی است").default(1),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -45,6 +52,17 @@ interface ProductFormProps {
   onSubmit: (values: ProductFormValues) => Promise<void>;
   submitLabel: string;
 }
+
+const unitTypes = [
+  { value: "عددی", label: "عددی" },
+  { value: "کیلوگرم", label: "کیلوگرم" },
+  { value: "گرم", label: "گرم" },
+  { value: "متر", label: "متر" },
+  { value: "سانتی‌متر", label: "سانتی‌متر" },
+  { value: "بسته", label: "بسته" },
+  { value: "جفت", label: "جفت" },
+  { value: "دست", label: "دست" },
+];
 
 export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFormProps) {
   const form = useForm<ProductFormValues>({
@@ -60,6 +78,13 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       discount_percentage: defaultValues?.discount_percentage,
       in_stock: defaultValues?.in_stock ?? true,
       low_stock_threshold: defaultValues?.low_stock_threshold,
+      // New fields
+      weight: defaultValues?.weight,
+      weight_with_packaging: defaultValues?.weight_with_packaging,
+      unit_quantity: defaultValues?.unit_quantity || 1,
+      unit_type: defaultValues?.unit_type || "عددی",
+      has_variations: defaultValues?.has_variations || false,
+      preparation_days: defaultValues?.preparation_days || 1,
     },
   });
 
@@ -93,7 +118,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>نام محصول</FormLabel>
+              <FormLabel>نام محصول *</FormLabel>
               <FormControl>
                 <Input placeholder="نام محصول را وارد کنید" {...field} />
               </FormControl>
@@ -120,54 +145,12 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>قیمت (تومان)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="قیمت به تومان"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="stock"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>موجودی (اختیاری)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="تعداد موجودی"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
         <FormField
           control={form.control}
           name="category_ids"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>دسته‌بندی‌ها</FormLabel>
+              <FormLabel>دسته‌بندی‌ها *</FormLabel>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {categories?.map((category) => (
                   <Button
@@ -194,7 +177,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           name="images"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>تصاویر محصول</FormLabel>
+              <FormLabel>تصاویر محصول *</FormLabel>
               <FormControl>
                 <ImageUpload
                   images={field.value}
@@ -210,7 +193,105 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
           )}
         />
 
+        {/* Unit and Quantity Section */}
+        <div className="border rounded-lg p-4 space-y-4">
+          <h3 className="font-semibold text-lg">مقدار و واحد فروش</h3>
+          <FormDescription>
+            محصولی که مشتریت به سبد خریدش اضافه می‌کنه بر اساس واحد و مقدار و قیمت اینجا براش محاسبه میشه
+          </FormDescription>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="unit_quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>مقدار *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="مثال: ۱"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="unit_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>واحد فروش *</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="انتخاب واحد" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {unitTypes.map((unit) => (
+                        <SelectItem key={unit.value} value={unit.value}>
+                          {unit.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Variations Toggle */}
+        <FormField
+          control={form.control}
+          name="has_variations"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">تنوع رنگ و سایز و... داره؟</FormLabel>
+                <FormDescription>
+                  اگر محصول رنگ‌ها یا سایزهای مختلف دارد فعال کنید
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {/* Price Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>قیمت محصول (تومان) *</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="قیمت به تومان"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="discount_percentage"
@@ -241,6 +322,29 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
               </FormItem>
             )}
           />
+        </div>
+
+        {/* Stock Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="stock"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>موجودی (اختیاری)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="تعداد موجودی"
+                    {...field}
+                    value={field.value ?? ""}
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}
@@ -259,6 +363,97 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Shipping Info Section */}
+        <div className="border rounded-lg p-4 space-y-4">
+          <h3 className="font-semibold text-lg">اطلاعات ارسال</h3>
+          <FormDescription>
+            هزینه ارسال بر اساس وزن محصولات محاسبه می‌شود. لطفا دقت کنید که دقیق بزنید.
+          </FormDescription>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وزن محصول چند گرم است؟ *</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder="مثال: ۱۸۰۰"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="pl-12"
+                      />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                        گرم
+                      </span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="weight_with_packaging"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>وزن محصول با بسته‌بندی چند گرم است؟ *</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        placeholder="مثال: ۲۵۰۰"
+                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="pl-12"
+                      />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                        گرم
+                      </span>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="preparation_days"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>زمان آماده‌سازی *</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      placeholder="مثال: ۵"
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
+                      className="pl-12"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                      روز
+                    </span>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  چند روز طول می‌کشد تا محصول آماده ارسال شود؟
+                </FormDescription>
+                <FormMessage />
               </FormItem>
             )}
           />

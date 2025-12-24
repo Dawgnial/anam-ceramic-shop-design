@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -9,27 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-
-interface ShippingCost {
-  id: string;
-  province_name: string;
-  shipping_cost: number;
-  is_active: boolean;
-}
+import { Loader2, Package, Truck, Clock } from "lucide-react";
 
 const Checkout = () => {
-  const { items, getTotalPrice, clearCart } = useCart();
+  const { items, getTotalPrice, getShippingCost, getTotalWeight, getMaxPreparationDays, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -37,37 +22,13 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [selectedProvince, setSelectedProvince] = useState("");
   const [address, setAddress] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
 
-  // Fetch shipping costs from database
-  const { data: shippingCosts, isLoading: shippingLoading } = useQuery({
-    queryKey: ["shipping-costs"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("shipping_costs")
-        .select("*")
-        .eq("is_active", true)
-        .order("province_name");
-
-      if (error) throw error;
-      return data as ShippingCost[];
-    },
-  });
-
-  const getShippingCost = () => {
-    if (!selectedProvince || !shippingCosts) return 0;
-    const province = shippingCosts.find(p => p.id === selectedProvince);
-    return province?.shipping_cost || 0;
-  };
-
-  const getSelectedProvinceName = () => {
-    if (!selectedProvince || !shippingCosts) return "";
-    const province = shippingCosts.find(p => p.id === selectedProvince);
-    return province?.province_name || "";
-  };
+  const shippingCost = getShippingCost();
+  const totalWeight = getTotalWeight();
+  const maxPreparationDays = getMaxPreparationDays();
 
   const getDiscount = () => {
     if (!appliedCoupon) return 0;
@@ -81,7 +42,7 @@ const Checkout = () => {
   };
 
   const getFinalTotal = () => {
-    return getTotalPrice() - getDiscount() + getShippingCost();
+    return getTotalPrice() - getDiscount() + shippingCost;
   };
 
   const handleApplyCoupon = async () => {
@@ -173,7 +134,7 @@ const Checkout = () => {
       return;
     }
 
-    if (!name.trim() || !phone.trim() || !selectedProvince || !address.trim()) {
+    if (!name.trim() || !phone.trim() || !address.trim()) {
       toast({
         title: "اطلاعات ناقص",
         description: "لطفا تمام فیلدهای الزامی را پر کنید",
@@ -205,7 +166,6 @@ const Checkout = () => {
     setLoading(true);
 
     try {
-      const provinceName = getSelectedProvinceName();
       const finalAmount = getFinalTotal();
       
       // Prepare order data with product_id for inventory management
@@ -218,7 +178,6 @@ const Checkout = () => {
       }));
 
       // Call zarinpal-request edge function
-      // Note: user_id is extracted from JWT token server-side for security
       const { data, error } = await supabase.functions.invoke("zarinpal-request", {
         body: {
           amount: finalAmount,
@@ -226,7 +185,7 @@ const Checkout = () => {
           mobile: phone,
           callback_url: `${window.location.origin}/payment/callback`,
           order_data: {
-            shipping_address: `${name} - ${phone} - ${provinceName} - ${address}`,
+            shipping_address: `${name} - ${phone} - ${address}`,
             items: orderItems,
             coupon_id: appliedCoupon?.id || null
           }
@@ -264,6 +223,15 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Format weight for display
+  const formatWeight = (grams: number) => {
+    if (grams >= 1000) {
+      const kg = grams / 1000;
+      return `${toPersianNumber(kg.toFixed(1))} کیلوگرم`;
+    }
+    return `${toPersianNumber(grams)} گرم`;
   };
 
   if (items.length === 0) {
@@ -322,58 +290,63 @@ const Checkout = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="province">استان *</Label>
-                  <Select value={selectedProvince} onValueChange={setSelectedProvince}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="استان خود را انتخاب کنید" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {shippingLoading ? (
-                        <div className="p-2 text-center">
-                          <Loader2 className="h-4 w-4 animate-spin mx-auto" />
-                        </div>
-                      ) : (
-                        shippingCosts?.map((province) => (
-                          <SelectItem key={province.id} value={province.id}>
-                            {province.province_name}
-                            {province.shipping_cost > 0 && (
-                              <span className="text-muted-foreground mr-2">
-                                ({toPersianNumber(province.shipping_cost)} تومان)
-                              </span>
-                            )}
-                            {province.shipping_cost === 0 && (
-                              <span className="text-green-600 mr-2">(رایگان)</span>
-                            )}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
                   <Label htmlFor="address">آدرس کامل *</Label>
                   <Textarea
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="شهر، خیابان، کوچه، پلاک و واحد"
+                    placeholder="استان، شهر، خیابان، کوچه، پلاک و واحد"
                     rows={3}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Shipping Cost Info */}
-            {selectedProvince && (
+            {/* Shipping Info - Weight Based */}
+            <div className="border rounded-lg p-6 bg-background">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Truck className="h-6 w-6" />
+                هزینه ارسال
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    هزینه ارسال بر اساس وزن محصولات محاسبه می‌شود:
+                  </p>
+                  <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                    <li>تا ۱ کیلوگرم: {toPersianNumber(80000)} تومان</li>
+                    <li>هر کیلوگرم اضافی: {toPersianNumber(30000)} تومان</li>
+                  </ul>
+                </div>
+
+                <div className="flex items-center justify-between py-2 border-b">
+                  <div className="flex items-center gap-2">
+                    <Package className="h-5 w-5 text-muted-foreground" />
+                    <span>وزن کل محصولات:</span>
+                  </div>
+                  <span className="font-medium">{formatWeight(totalWeight)}</span>
+                </div>
+
+                <div className="flex items-center justify-between py-2">
+                  <span className="font-medium">هزینه ارسال:</span>
+                  <span className="font-bold text-lg" style={{ color: '#B3886D' }}>
+                    {toPersianNumber(shippingCost)} تومان
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Preparation Time */}
+            {maxPreparationDays > 0 && (
               <div className="border rounded-lg p-6 bg-background">
-                <h2 className="text-2xl font-bold mb-4">هزینه ارسال</h2>
-                <div className="flex items-center justify-between">
-                  <span>ارسال به استان {getSelectedProvinceName()}:</span>
-                  {getShippingCost() === 0 ? (
-                    <span className="text-green-600 font-bold text-lg">رایگان</span>
-                  ) : (
-                    <span className="font-bold text-lg">{toPersianNumber(getShippingCost())} تومان</span>
-                  )}
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <Clock className="h-6 w-6" />
+                  زمان آماده‌سازی
+                </h2>
+                <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4">
+                  <p className="text-amber-800 dark:text-amber-200">
+                    سفارش شما حداکثر تا <strong>{toPersianNumber(maxPreparationDays)} روز کاری</strong> آماده ارسال خواهد بود.
+                  </p>
                 </div>
               </div>
             )}
@@ -450,16 +423,8 @@ const Checkout = () => {
                 )}
                 
                 <div className="flex justify-between">
-                  <span>هزینه ارسال:</span>
-                  <span>
-                    {!selectedProvince ? (
-                      <span className="text-muted-foreground">استان را انتخاب کنید</span>
-                    ) : getShippingCost() === 0 ? (
-                      <span className="text-green-600 font-bold">رایگان</span>
-                    ) : (
-                      `${formatPrice(getShippingCost())} تومان`
-                    )}
-                  </span>
+                  <span>هزینه ارسال ({formatWeight(totalWeight)}):</span>
+                  <span>{formatPrice(shippingCost)} تومان</span>
                 </div>
                 
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
@@ -470,19 +435,26 @@ const Checkout = () => {
 
               <Button
                 onClick={handleOnlinePayment}
-                disabled={loading || !selectedProvince}
+                disabled={loading}
                 className="w-full mt-6 text-white"
                 style={{ backgroundColor: '#B3886D' }}
               >
                 {loading ? (
                   <>
                     <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                    در حال اتصال به درگاه پرداخت...
+                    در حال پردازش...
                   </>
                 ) : (
-                  "پرداخت آنلاین"
+                  `پرداخت آنلاین - ${formatPrice(getFinalTotal())} تومان`
                 )}
               </Button>
+
+              {/* Preparation Time Notice */}
+              {maxPreparationDays > 0 && (
+                <p className="text-sm text-muted-foreground mt-4 text-center">
+                  زمان آماده‌سازی: تا {toPersianNumber(maxPreparationDays)} روز کاری
+                </p>
+              )}
             </div>
           </div>
         </div>
