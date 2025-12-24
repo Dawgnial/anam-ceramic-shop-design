@@ -84,7 +84,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       unit_quantity: defaultValues?.unit_quantity || 1,
       unit_type: defaultValues?.unit_type || "عددی",
       has_variations: defaultValues?.has_variations || false,
-      preparation_days: defaultValues?.preparation_days || 1,
+      preparation_days: defaultValues?.preparation_days,
     },
   });
 
@@ -439,10 +439,10 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                   <div className="relative">
                     <Input
                       type="number"
-                      placeholder="مثال: ۵"
+                      placeholder="مثال: ۵ روز"
                       {...field}
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                       className="pl-12"
                     />
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
