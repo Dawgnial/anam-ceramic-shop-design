@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ShoppingCart, Heart, ArrowLeftRight, Minus, Plus, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ShoppingCart, Heart, ArrowLeftRight, Minus, Plus, ChevronLeft, ChevronRight, X, Package, Clock } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
@@ -299,6 +299,35 @@ export default function ProductDetail() {
                 }
               </Badge>
             </div>
+
+            {/* Weight & Preparation Time Info */}
+            {(product.weight_with_packaging || product.preparation_days) && (
+              <div className="grid grid-cols-2 gap-3">
+                {product.weight_with_packaging && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                    <Package className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">وزن با بسته‌بندی</p>
+                      <p className="font-medium">
+                        {product.weight_with_packaging >= 1000 
+                          ? `${(product.weight_with_packaging / 1000).toLocaleString('fa-IR')} کیلوگرم`
+                          : `${product.weight_with_packaging.toLocaleString('fa-IR')} گرم`
+                        }
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {product.preparation_days && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">زمان آماده‌سازی</p>
+                      <p className="font-medium">{product.preparation_days.toLocaleString('fa-IR')} روز کاری</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <Separator />
 
