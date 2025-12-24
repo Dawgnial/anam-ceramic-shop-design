@@ -49,17 +49,17 @@ export const BlogPosts = () => {
       <div className="container mx-auto px-4">
         <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-center text-foreground mb-6 sm:mb-8 md:mb-12">آخرین پست‌ها</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
           {posts.map(post => (
-            <Card key={post.id} className="overflow-hidden flex flex-col h-full max-w-[320px] mx-auto w-full border-0 shadow-none">
+            <Card key={post.id} className="overflow-hidden flex flex-col h-full max-w-[400px] mx-auto w-full border border-border rounded-lg shadow-sm bg-card">
               <CardContent className="p-0">
                 <LazyImage 
                   src={post.image_url || '/placeholder.svg'} 
                   alt={post.title} 
-                  className="h-36 sm:h-40 md:h-48" 
+                  className="h-40 sm:h-44 md:h-52" 
                 />
               </CardContent>
-              <CardFooter className="gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 flex-col flex items-center justify-between flex-1 bg-white border border-t-0 border-border">
+              <CardFooter className="gap-2 sm:gap-3 p-4 sm:p-5 md:p-6 flex-col flex items-center justify-between flex-1 bg-card">
                 <div className="flex flex-col items-center gap-2 sm:gap-3">
                   <h3 className="font-extrabold text-base sm:text-lg text-foreground text-center">{post.title}</h3>
                   <p className="text-muted-foreground text-xs sm:text-sm text-center line-clamp-3">
