@@ -3,7 +3,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Eye, Search, X } from "lucide-react";
+import { Eye, Search, X, Download, FileSpreadsheet } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { OrderDetailsDialog } from "@/components/admin/OrderDetailsDialog";
+import { toast } from "sonner";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500",
@@ -92,6 +93,36 @@ export default function AdminOrders() {
     setDetailsDialogOpen(true);
   };
 
+  // Export orders to CSV
+  const exportToCSV = () => {
+    if (!filteredOrders || filteredOrders.length === 0) {
+      toast.error('سفارشی برای خروجی‌گیری وجود ندارد');
+      return;
+    }
+
+    const headers = ['شماره موبایل', 'تعداد محصولات', 'مبلغ کل', 'وضعیت', 'آدرس', 'تاریخ'];
+    const rows = filteredOrders.map((order: any) => [
+      order.profiles?.phone || '-',
+      order.order_items?.length || 0,
+      order.total_amount,
+      statusLabels[order.status] || order.status,
+      `"${order.shipping_address?.replace(/"/g, '""') || ''}"`,
+      new Date(order.created_at).toLocaleDateString('fa-IR'),
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `orders-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('فایل سفارشات دانلود شد');
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
@@ -133,6 +164,10 @@ export default function AdminOrders() {
                   پاک کردن فیلترها
                 </Button>
               )}
+              <Button variant="outline" onClick={exportToCSV} className="w-full sm:w-auto">
+                <FileSpreadsheet className="h-4 w-4 ml-2" />
+                خروجی Excel
+              </Button>
             </div>
             {hasActiveFilters && (
               <p className="text-sm text-muted-foreground">

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -186,8 +187,40 @@ export default function ProductDetail() {
     { name: product.name, url: `https://anamzoroof.ir/product/${product.slug}` },
   ];
 
+  const pageTitle = `${product.name} | فروشگاه آنام`;
+  const pageDescription = product.description 
+    ? product.description.substring(0, 160) 
+    : `خرید ${product.name} از فروشگاه آنام - ظروف سرامیکی شیک و بادوام با ارسال به سراسر ایران`;
+  const pageImage = product.images?.[0] || 'https://anamzoroof.ir/og-image.png';
+  const pageUrl = `https://anamzoroof.ir/product/${product.slug}`;
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Dynamic SEO Meta Tags */}
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={pageImage} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:site_name" content="فروشگاه آنام" />
+        <meta property="og:locale" content="fa_IR" />
+        <meta property="product:price:amount" content={product.price.toString()} />
+        <meta property="product:price:currency" content="IRR" />
+        <meta property="product:availability" content={product.stock > 0 ? 'in stock' : 'out of stock'} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={pageImage} />
+      </Helmet>
+
       {/* Structured Data for SEO */}
       <StructuredData
         type="Product"

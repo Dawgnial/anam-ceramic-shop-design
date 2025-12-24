@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -60,8 +61,36 @@ const BlogPost = () => {
     ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'style', 'target', 'rel'],
   });
 
+  const pageTitle = `${post.title} | بلاگ آنام`;
+  const pageDescription = post.excerpt || post.title;
+  const pageImage = post.image_url || 'https://anamzoroof.ir/og-image.png';
+  const pageUrl = `https://anamzoroof.ir/blog/${post.slug}`;
+
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Dynamic SEO Meta Tags */}
+      <Helmet>
+        <title>{pageTitle}</title>
+        <meta name="description" content={pageDescription} />
+        <link rel="canonical" href={pageUrl} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={pageTitle} />
+        <meta property="og:description" content={pageDescription} />
+        <meta property="og:image" content={pageImage} />
+        <meta property="og:url" content={pageUrl} />
+        <meta property="og:site_name" content="فروشگاه آنام" />
+        <meta property="og:locale" content="fa_IR" />
+        <meta property="article:published_time" content={post.created_at || ''} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={pageImage} />
+      </Helmet>
+
       <Header />
       
       {/* Hero Banner */}
