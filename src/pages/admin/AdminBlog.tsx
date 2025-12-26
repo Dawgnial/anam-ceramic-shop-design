@@ -312,7 +312,12 @@ export default function AdminBlog() {
         </Card>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setEditingPost(null);
+        }
+      }}>
         <DialogContent className="w-full max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg">
@@ -325,6 +330,7 @@ export default function AdminBlog() {
             </DialogDescription>
           </DialogHeader>
           <BlogPostForm
+            key={editingPost?.id || 'new'}
             defaultValues={editingPost || undefined}
             onSubmit={handleSubmit}
             submitLabel={editingPost ? 'ذخیره تغییرات' : 'افزودن پست'}
