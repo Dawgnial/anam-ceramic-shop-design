@@ -44,6 +44,9 @@ export default function AdminCoupons() {
       discount_type: "percentage",
       discount_value: 0,
       min_purchase: 0,
+      max_discount: undefined,
+      usage_limit: undefined,
+      expires_at: "",
       is_active: true,
     },
   });

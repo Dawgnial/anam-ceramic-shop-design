@@ -261,7 +261,12 @@ export default function AdminCategories() {
         </Card>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setEditingCategory(null);
+        }
+      }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -274,6 +279,7 @@ export default function AdminCategories() {
             </DialogDescription>
           </DialogHeader>
           <CategoryForm
+            key={editingCategory?.id || 'new'}
             defaultValues={editingCategory || undefined}
             onSubmit={handleSubmit}
             submitLabel={editingCategory ? 'ذخیره تغییرات' : 'افزودن دسته‌بندی'}

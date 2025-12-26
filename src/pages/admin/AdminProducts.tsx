@@ -587,7 +587,12 @@ export default function AdminProducts() {
         </Card>
       </div>
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setEditingProduct(null);
+        }
+      }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
@@ -600,6 +605,7 @@ export default function AdminProducts() {
             </DialogDescription>
           </DialogHeader>
           <ProductForm
+            key={editingProduct?.id || 'new'}
             defaultValues={editingProduct || undefined}
             onSubmit={handleSubmit}
             submitLabel={editingProduct ? 'ذخیره تغییرات' : 'افزودن محصول'}

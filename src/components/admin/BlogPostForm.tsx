@@ -40,13 +40,20 @@ export function BlogPostForm({
 }: BlogPostFormProps) {
   const form = useForm<BlogPostFormValues>({
     resolver: zodResolver(blogPostSchema),
-    defaultValues: defaultValues || {
-      title: "",
-      excerpt: "",
-      content: "",
-      image_url: "",
-      is_published: false,
+    defaultValues: {
+      title: defaultValues?.title ?? "",
+      excerpt: defaultValues?.excerpt ?? "",
+      content: defaultValues?.content ?? "",
+      image_url: defaultValues?.image_url ?? "",
+      is_published: defaultValues?.is_published ?? false,
     },
+    values: defaultValues ? {
+      title: defaultValues.title ?? "",
+      excerpt: defaultValues.excerpt ?? "",
+      content: defaultValues.content ?? "",
+      image_url: defaultValues.image_url ?? "",
+      is_published: defaultValues.is_published ?? false,
+    } : undefined,
   });
 
   const [images, setImages] = useState<string[]>(

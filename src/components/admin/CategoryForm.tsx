@@ -33,10 +33,15 @@ export function CategoryForm({ defaultValues, onSubmit, submitLabel }: CategoryF
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      name: defaultValues?.name || "",
-      description: defaultValues?.description || "",
-      image_url: defaultValues?.image_url || "",
+      name: defaultValues?.name ?? "",
+      description: defaultValues?.description ?? "",
+      image_url: defaultValues?.image_url ?? "",
     },
+    values: defaultValues ? {
+      name: defaultValues.name ?? "",
+      description: defaultValues.description ?? "",
+      image_url: defaultValues.image_url ?? "",
+    } : undefined,
   });
 
   const handleImageChange = (images: string[]) => {
