@@ -287,7 +287,7 @@ export const SupportChat = () => {
       {/* Chat Button */}
       <button
         onClick={handleOpen}
-        className="fixed bottom-8 left-8 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all z-50 bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center"
+        className="fixed bottom-8 right-8 rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-all z-50 bg-emerald-600 hover:bg-emerald-700 flex items-center justify-center"
       >
         <MessageCircle className="w-6 h-6 text-white" />
         {unreadCount > 0 && (
@@ -299,7 +299,7 @@ export const SupportChat = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 left-4 sm:left-8 w-[calc(100vw-2rem)] sm:w-96 h-[70vh] sm:h-[500px] bg-background border rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 right-4 sm:right-8 w-[calc(100vw-2rem)] sm:w-96 h-[70vh] sm:h-[500px] bg-background border rounded-2xl shadow-2xl z-[100] flex flex-col overflow-hidden">
           {/* Header */}
           <div className="bg-emerald-600 text-white p-4 flex items-center justify-between">
             <div>
