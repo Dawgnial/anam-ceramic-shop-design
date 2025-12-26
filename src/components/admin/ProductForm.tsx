@@ -36,13 +36,13 @@ const productSchema = z.object({
   discount_percentage: z.number().min(0, "تخفیف نمی‌تواند منفی باشد").max(100, "تخفیف نمی‌تواند بیشتر از ۱۰۰ درصد باشد").optional().nullable(),
   in_stock: z.boolean().default(true),
   low_stock_threshold: z.number().min(0).optional(),
-  // New fields
-  weight: z.number().min(1, "وزن محصول الزامی است"),
-  weight_with_packaging: z.number().min(1, "وزن با بسته‌بندی الزامی است"),
+  // New fields - made optional for backwards compatibility
+  weight: z.number().min(1, "وزن محصول الزامی است").optional(),
+  weight_with_packaging: z.number().min(1, "وزن با بسته‌بندی الزامی است").optional(),
   unit_quantity: z.number().min(1, "مقدار واحد باید حداقل ۱ باشد").default(1),
   unit_type: z.string().default("عددی"),
   has_variations: z.boolean().default(false),
-  preparation_days: z.number().min(1, "زمان آماده‌سازی الزامی است").default(1),
+  preparation_days: z.number().min(1, "زمان آماده‌سازی الزامی است").optional(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
