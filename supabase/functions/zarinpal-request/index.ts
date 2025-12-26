@@ -41,10 +41,12 @@ serve(async (req) => {
   try {
     // Get merchant ID from environment variable
     const merchantId = Deno.env.get("ZARINPAL_MERCHANT_ID");
-    if (!merchantId) {
-      console.error("ZARINPAL_MERCHANT_ID not configured");
+    console.log("Merchant ID from env:", merchantId, "Length:", merchantId?.length);
+    
+    if (!merchantId || merchantId.length < 36) {
+      console.error("ZARINPAL_MERCHANT_ID not configured or invalid. Value:", merchantId);
       return new Response(
-        JSON.stringify({ error: "Payment configuration error" }),
+        JSON.stringify({ error: "Payment configuration error - invalid merchant ID" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
