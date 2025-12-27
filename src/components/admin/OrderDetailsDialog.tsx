@@ -19,9 +19,33 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
-import { useState } from "react";
-import { Download } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Download, Truck, CreditCard, Banknote, Box } from "lucide-react";
 import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
+
+// Helper to extract shipping method from shipping_address
+const parseShippingInfo = (shippingAddress: string) => {
+  const methodMatch = shippingAddress.match(/روش ارسال:\s*(.*?)(?:\s*-|$)/);
+  const shippingMethod = methodMatch ? methodMatch[1].trim() : null;
+  
+  // Remove shipping method from address for cleaner display
+  const cleanAddress = shippingAddress.replace(/\s*-\s*روش ارسال:.*$/, '').trim();
+  
+  return { shippingMethod, cleanAddress };
+};
+
+const getShippingMethodInfo = (method: string | null) => {
+  switch (method) {
+    case 'پرداخت آنلاین':
+      return { label: 'پرداخت آنلاین هزینه ارسال', icon: CreditCard, color: 'bg-green-500' };
+    case 'پس کرایه':
+      return { label: 'پس کرایه (پرداخت هنگام تحویل)', icon: Banknote, color: 'bg-amber-500' };
+    case 'اسنپ باکس':
+      return { label: 'اسنپ باکس (ویژه مشهد)', icon: Box, color: 'bg-blue-500' };
+    default:
+      return { label: method || 'نامشخص', icon: Truck, color: 'bg-gray-500' };
+  }
+};
 
 interface OrderDetailsDialogProps {
   order: any;
@@ -75,6 +99,11 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
   if (!order) return null;
 
   const totalItems = order.order_items?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
+  
+  // Parse shipping info from address
+  const { shippingMethod, cleanAddress } = parseShippingInfo(order.shipping_address || '');
+  const shippingInfo = getShippingMethodInfo(shippingMethod);
+  const ShippingIcon = shippingInfo.icon;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -159,11 +188,32 @@ export function OrderDetailsDialog({ order, open, onOpenChange }: OrderDetailsDi
 
           <Separator />
 
+          {/* Shipping Method */}
+          <div className="space-y-3">
+            <h3 className="font-semibold flex items-center gap-2">
+              <Truck className="h-5 w-5" />
+              روش ارسال
+            </h3>
+            <div className="flex items-center gap-3 p-3 border rounded-lg bg-muted/30">
+              <div className={`p-2 rounded-full ${shippingInfo.color}`}>
+                <ShippingIcon className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-medium">{shippingInfo.label}</p>
+                {shippingMethod === 'پس کرایه' && (
+                  <p className="text-sm text-amber-600">هزینه ارسال توسط مشتری هنگام تحویل پرداخت می‌شود</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Shipping Address */}
           <div className="space-y-3">
             <h3 className="font-semibold">آدرس ارسال</h3>
             <p className="text-sm bg-muted p-3 rounded-lg">
-              {order.shipping_address}
+              {cleanAddress || order.shipping_address}
             </p>
           </div>
 
