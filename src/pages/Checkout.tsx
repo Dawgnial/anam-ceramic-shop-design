@@ -177,13 +177,16 @@ const Checkout = () => {
         price: item.price
       }));
 
+      // Use production domain for ZarinPal callback (must match registered domain)
+      const productionDomain = "https://anamzoroof.ir";
+      
       // Call zarinpal-request edge function
       const { data, error } = await supabase.functions.invoke("zarinpal-request", {
         body: {
           amount: finalAmount,
           description: `خرید از فروشگاه آنام - ${items.length} محصول`,
           mobile: phone,
-          callback_url: `${window.location.origin}/payment/callback`,
+          callback_url: `${productionDomain}/payment/callback`,
           order_data: {
             shipping_address: `${name} - ${phone} - ${address}`,
             items: orderItems,
