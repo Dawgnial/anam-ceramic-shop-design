@@ -524,10 +524,7 @@ const Checkout = () => {
                       پس کرایه (پرداخت هنگام تحویل)
                     </Label>
                     <p className="text-sm text-muted-foreground mt-1">
-                      هزینه ارسال را هنگام تحویل مرسوله پرداخت می‌کنید
-                    </p>
-                    <p className="text-sm font-medium mt-2 text-amber-600">
-                      هزینه ارسال: {toPersianNumber(calculateRegularShipping())} تومان (پرداخت هنگام تحویل)
+                      هزینه ارسال را هنگام تحویل مرسوله به مامور پست پرداخت می‌کنید
                     </p>
                   </div>
                 </div>
@@ -578,12 +575,7 @@ const Checkout = () => {
                   </span>
                   <div className="text-left">
                     {shippingMethod === 'cod' ? (
-                      <div>
-                        <span className="text-amber-600 font-medium">پس کرایه</span>
-                        <p className="text-xs text-muted-foreground">
-                          ({toPersianNumber(getShippingCostDisplay())} تومان هنگام تحویل)
-                        </p>
-                      </div>
+                      <span className="text-amber-600 font-medium">پرداخت هنگام تحویل</span>
                     ) : (
                       <span className="font-bold text-lg" style={{ color: '#B3886D' }}>
                         {toPersianNumber(shippingCost)} تومان
@@ -691,7 +683,7 @@ const Checkout = () => {
 
                 {shippingMethod === 'cod' && (
                   <div className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
-                    هزینه ارسال ({toPersianNumber(getShippingCostDisplay())} تومان) هنگام تحویل پرداخت می‌شود
+                    هزینه ارسال هنگام تحویل به مامور پست پرداخت می‌شود
                   </div>
                 )}
                 
