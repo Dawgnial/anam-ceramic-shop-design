@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -8,13 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Package, Truck, Clock } from "lucide-react";
+import { Loader2, Package, Truck, Clock, CreditCard, Banknote, Box } from "lucide-react";
+import { iranProvinces, getCitiesForProvince, isMashhad } from "@/data/iranLocations";
+
+type ShippingMethod = "prepaid" | "cod" | "snappbox";
 
 const Checkout = () => {
-  const { items, getTotalPrice, getShippingCost, getTotalWeight, getMaxPreparationDays, clearCart } = useCart();
+  const { items, getTotalPrice, getTotalWeight, getMaxPreparationDays, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -22,13 +27,86 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [province, setProvince] = useState("");
+  const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("prepaid");
 
-  const shippingCost = getShippingCost();
   const totalWeight = getTotalWeight();
   const maxPreparationDays = getMaxPreparationDays();
+
+  // Get cities for selected province
+  const availableCities = useMemo(() => {
+    return province ? getCitiesForProvince(province) : [];
+  }, [province]);
+
+  // Check if Mashhad is selected
+  const isMashhadSelected = useMemo(() => {
+    return city === "مشهد";
+  }, [city]);
+
+  // Reset city when province changes
+  const handleProvinceChange = (value: string) => {
+    setProvince(value);
+    setCity("");
+    // Reset shipping method if not Mashhad
+    if (shippingMethod === "snappbox") {
+      setShippingMethod("prepaid");
+    }
+  };
+
+  // Handle city change
+  const handleCityChange = (value: string) => {
+    setCity(value);
+    // Reset shipping method if not Mashhad
+    if (value !== "مشهد" && shippingMethod === "snappbox") {
+      setShippingMethod("prepaid");
+    }
+  };
+
+  // Calculate weight-based shipping cost (regular post)
+  const calculateRegularShipping = (): number => {
+    const weightInKg = totalWeight / 1000;
+    if (weightInKg <= 1) {
+      return 80000;
+    }
+    const extraKg = Math.ceil(weightInKg - 1);
+    return 80000 + (extraKg * 30000);
+  };
+
+  // Calculate Snapp Box shipping cost for Mashhad
+  const calculateSnappBoxShipping = (): number => {
+    const weightInKg = Math.ceil(totalWeight / 1000);
+    if (weightInKg <= 1) {
+      return 40000;
+    }
+    const extraKg = weightInKg - 1;
+    return 40000 + (extraKg * 5000);
+  };
+
+  // Get current shipping cost based on method
+  const getShippingCost = (): number => {
+    if (shippingMethod === "cod") {
+      return 0; // Will be paid on delivery
+    }
+    if (shippingMethod === "snappbox" && isMashhadSelected) {
+      return calculateSnappBoxShipping();
+    }
+    return calculateRegularShipping();
+  };
+
+  // Get shipping cost to display (for COD, show the amount that will be paid later)
+  const getShippingCostDisplay = (): number => {
+    if (shippingMethod === "snappbox" && isMashhadSelected) {
+      return calculateSnappBoxShipping();
+    }
+    return calculateRegularShipping();
+  };
+
+  const shippingCost = getShippingCost();
 
   const getDiscount = () => {
     if (!appliedCoupon) return 0;
@@ -134,7 +212,7 @@ const Checkout = () => {
       return;
     }
 
-    if (!name.trim() || !phone.trim() || !address.trim()) {
+    if (!name.trim() || !phone.trim() || !province || !city || !address.trim()) {
       toast({
         title: "اطلاعات ناقص",
         description: "لطفا تمام فیلدهای الزامی را پر کنید",
@@ -177,6 +255,16 @@ const Checkout = () => {
         price: item.price
       }));
 
+      // Build full address with province, city, and postal code
+      const fullAddress = `${province}، ${city}${postalCode ? ` - کدپستی: ${postalCode}` : ""} - ${address}`;
+      
+      // Shipping method description
+      const shippingMethodText = shippingMethod === "cod" 
+        ? "پس کرایه" 
+        : shippingMethod === "snappbox" 
+          ? "اسنپ باکس" 
+          : "پرداخت آنلاین";
+
       // Use production domain for ZarinPal callback (must match registered domain)
       const productionDomain = "https://anamzoroof.ir";
       
@@ -184,13 +272,15 @@ const Checkout = () => {
       const { data, error } = await supabase.functions.invoke("zarinpal-request", {
         body: {
           amount: finalAmount,
-          description: `خرید از فروشگاه آنام - ${items.length} محصول`,
+          description: `خرید از فروشگاه آنام - ${items.length} محصول - ${shippingMethodText}`,
           mobile: phone,
           callback_url: `${productionDomain}/payment/callback`,
           order_data: {
-            shipping_address: `${name} - ${phone} - ${address}`,
+            shipping_address: `${name} - ${phone} - ${fullAddress} - روش ارسال: ${shippingMethodText}`,
             items: orderItems,
-            coupon_id: appliedCoupon?.id || null
+            coupon_id: appliedCoupon?.id || null,
+            shipping_method: shippingMethod,
+            shipping_cost: shippingMethod === "cod" ? getShippingCostDisplay() : shippingCost
           }
         }
       });
@@ -292,36 +382,139 @@ const Checkout = () => {
                     placeholder="۰۹XXXXXXXXX"
                   />
                 </div>
+                
+                {/* Province and City */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>استان *</Label>
+                    <Select value={province} onValueChange={handleProvinceChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="استان را انتخاب کنید" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] bg-background">
+                        {iranProvinces.map((prov) => (
+                          <SelectItem key={prov.name} value={prov.name}>
+                            {prov.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label>شهر *</Label>
+                    <Select value={city} onValueChange={handleCityChange} disabled={!province}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={province ? "شهر را انتخاب کنید" : "ابتدا استان را انتخاب کنید"} />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] bg-background">
+                        {availableCities.map((c) => (
+                          <SelectItem key={c.name} value={c.name}>
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="postalCode">کدپستی (اختیاری)</Label>
+                  <Input
+                    id="postalCode"
+                    value={postalCode}
+                    onChange={(e) => setPostalCode(e.target.value)}
+                    placeholder="کدپستی ۱۰ رقمی"
+                    maxLength={10}
+                  />
+                </div>
+
                 <div>
                   <Label htmlFor="address">آدرس کامل *</Label>
                   <Textarea
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    placeholder="استان، شهر، خیابان، کوچه، پلاک و واحد"
+                    placeholder="خیابان، کوچه، پلاک و واحد"
                     rows={3}
                   />
                 </div>
               </div>
             </div>
 
-            {/* Shipping Info - Weight Based */}
+            {/* Shipping Method Selection */}
             <div className="border rounded-lg p-6 bg-background">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
                 <Truck className="h-6 w-6" />
-                هزینه ارسال
+                روش ارسال
               </h2>
-              <div className="space-y-4">
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground mb-3">
-                    هزینه ارسال بر اساس وزن محصولات محاسبه می‌شود:
-                  </p>
-                  <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                    <li>تا ۱ کیلوگرم: {toPersianNumber(80000)} تومان</li>
-                    <li>هر کیلوگرم اضافی: {toPersianNumber(30000)} تومان</li>
-                  </ul>
+              
+              <RadioGroup value={shippingMethod} onValueChange={(value) => setShippingMethod(value as ShippingMethod)} className="space-y-4">
+                {/* Prepaid Option */}
+                <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'prepaid' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value="prepaid" id="prepaid" className="mt-1" />
+                  <div className="flex-1">
+                    <Label htmlFor="prepaid" className="flex items-center gap-2 cursor-pointer font-medium">
+                      <CreditCard className="h-5 w-5" />
+                      پرداخت آنلاین هزینه ارسال
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      هزینه ارسال به مبلغ سفارش اضافه می‌شود و الان پرداخت می‌کنید
+                    </p>
+                    <p className="text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
+                      هزینه: {toPersianNumber(calculateRegularShipping())} تومان
+                    </p>
+                  </div>
                 </div>
 
+                {/* Cash on Delivery Option */}
+                <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <RadioGroupItem value="cod" id="cod" className="mt-1" />
+                  <div className="flex-1">
+                    <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer font-medium">
+                      <Banknote className="h-5 w-5" />
+                      پس کرایه (پرداخت هنگام تحویل)
+                    </Label>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      هزینه ارسال را هنگام تحویل مرسوله پرداخت می‌کنید
+                    </p>
+                    <p className="text-sm font-medium mt-2 text-amber-600">
+                      هزینه ارسال: {toPersianNumber(calculateRegularShipping())} تومان (پرداخت هنگام تحویل)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Snapp Box Option - Only for Mashhad */}
+                {isMashhadSelected && (
+                  <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'snappbox' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                    <RadioGroupItem value="snappbox" id="snappbox" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="snappbox" className="flex items-center gap-2 cursor-pointer font-medium">
+                        <Box className="h-5 w-5" />
+                        اسنپ باکس (ویژه مشهد)
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        ارسال سریع با اسنپ باکس - فقط برای شهر مشهد
+                      </p>
+                      <div className="text-xs text-muted-foreground mt-2 bg-muted/50 p-2 rounded">
+                        <p>• ۱ کیلو اول: {toPersianNumber(40000)} تومان</p>
+                        <p>• هر کیلو اضافی: {toPersianNumber(5000)} تومان</p>
+                      </div>
+                      <p className="text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
+                        هزینه: {toPersianNumber(calculateSnappBoxShipping())} تومان
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </RadioGroup>
+            </div>
+
+            {/* Shipping Info - Weight Based */}
+            <div className="border rounded-lg p-6 bg-background">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <Package className="h-6 w-6" />
+                اطلاعات بسته
+              </h2>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between py-2 border-b">
                   <div className="flex items-center gap-2">
                     <Package className="h-5 w-5 text-muted-foreground" />
@@ -331,10 +524,23 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex items-center justify-between py-2">
-                  <span className="font-medium">هزینه ارسال:</span>
-                  <span className="font-bold text-lg" style={{ color: '#B3886D' }}>
-                    {toPersianNumber(shippingCost)} تومان
+                  <span className="font-medium">
+                    هزینه ارسال ({shippingMethod === 'snappbox' ? 'اسنپ باکس' : 'پست'}):
                   </span>
+                  <div className="text-left">
+                    {shippingMethod === 'cod' ? (
+                      <div>
+                        <span className="text-amber-600 font-medium">پس کرایه</span>
+                        <p className="text-xs text-muted-foreground">
+                          ({toPersianNumber(getShippingCostDisplay())} تومان هنگام تحویل)
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="font-bold text-lg" style={{ color: '#B3886D' }}>
+                        {toPersianNumber(shippingCost)} تومان
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -427,8 +633,18 @@ const Checkout = () => {
                 
                 <div className="flex justify-between">
                   <span>هزینه ارسال ({formatWeight(totalWeight)}):</span>
-                  <span>{formatPrice(shippingCost)} تومان</span>
+                  {shippingMethod === 'cod' ? (
+                    <span className="text-amber-600">پس کرایه</span>
+                  ) : (
+                    <span>{formatPrice(shippingCost)} تومان</span>
+                  )}
                 </div>
+
+                {shippingMethod === 'cod' && (
+                  <div className="text-xs text-muted-foreground bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
+                    هزینه ارسال ({toPersianNumber(getShippingCostDisplay())} تومان) هنگام تحویل پرداخت می‌شود
+                  </div>
+                )}
                 
                 <div className="flex justify-between text-lg font-bold border-t pt-3">
                   <span>مبلغ قابل پرداخت:</span>
