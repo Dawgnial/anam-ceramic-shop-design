@@ -1,7 +1,7 @@
 import { ShoppingCart, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import {
   Sheet,
@@ -22,7 +22,7 @@ export const CartDrawer = () => {
           <ShoppingCart className="h-6 w-6" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[400px]">
+      <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <SheetHeader>
           <SheetTitle>سبد خرید</SheetTitle>
         </SheetHeader>
@@ -41,7 +41,7 @@ export const CartDrawer = () => {
                   <div className="flex-1">
                     <h4 className="font-medium text-sm">{item.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {formatPrice(item.quantity)} × {formatPrice(item.price)} تومان
+                      {toPersianNumber(item.quantity)} × {formatPrice(item.price)} تومان
                     </p>
                   </div>
                   <Button

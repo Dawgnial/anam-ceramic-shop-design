@@ -1,4 +1,5 @@
 import { MessageCircle, Send, MapPin, Clock, Phone, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -28,11 +29,11 @@ export const Footer = () => {
           <div>
             <h4 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">دسترسی سریع</h4>
             <ul className="space-y-1 sm:space-y-2">
-              <li><a href="/" className="text-xs sm:text-sm hover:text-primary transition-colors">صفحه اصلی</a></li>
-              <li><a href="/about" className="text-xs sm:text-sm hover:text-primary transition-colors">درباره ما</a></li>
-              <li><a href="/blog" className="text-xs sm:text-sm hover:text-primary transition-colors">بلاگ</a></li>
-              <li><a href="/contact" className="text-xs sm:text-sm hover:text-primary transition-colors">ارتباط با ما</a></li>
-              <li><a href="/store-rules" className="text-xs sm:text-sm hover:text-primary transition-colors">قوانین فروشگاه</a></li>
+              <li><Link to="/" className="text-xs sm:text-sm hover:text-primary transition-colors">صفحه اصلی</Link></li>
+              <li><Link to="/about" className="text-xs sm:text-sm hover:text-primary transition-colors">درباره ما</Link></li>
+              <li><Link to="/blog" className="text-xs sm:text-sm hover:text-primary transition-colors">بلاگ</Link></li>
+              <li><Link to="/contact" className="text-xs sm:text-sm hover:text-primary transition-colors">ارتباط با ما</Link></li>
+              <li><Link to="/store-rules" className="text-xs sm:text-sm hover:text-primary transition-colors">قوانین فروشگاه</Link></li>
             </ul>
           </div>
 
@@ -40,11 +41,11 @@ export const Footer = () => {
           <div>
             <h4 className="text-base sm:text-lg font-bold mb-3 sm:mb-4">خدمات مشتریان</h4>
             <ul className="space-y-1 sm:space-y-2">
-              <li><a href="/faq" className="text-xs sm:text-sm hover:text-primary transition-colors">پرسش های متداول</a></li>
-              <li><a href="/buying-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای خرید</a></li>
-              <li><a href="/shipping-method" className="text-xs sm:text-sm hover:text-primary transition-colors">شیوه ارسال</a></li>
-              <li><a href="/size-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای اندازه ها</a></li>
-              <li><a href="/returns" className="text-xs sm:text-sm hover:text-primary transition-colors">بازگشت کالا</a></li>
+              <li><Link to="/faq" className="text-xs sm:text-sm hover:text-primary transition-colors">پرسش های متداول</Link></li>
+              <li><Link to="/buying-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای خرید</Link></li>
+              <li><Link to="/shipping-method" className="text-xs sm:text-sm hover:text-primary transition-colors">شیوه ارسال</Link></li>
+              <li><Link to="/size-guide" className="text-xs sm:text-sm hover:text-primary transition-colors">راهنمای اندازه ها</Link></li>
+              <li><Link to="/returns" className="text-xs sm:text-sm hover:text-primary transition-colors">بازگشت کالا</Link></li>
             </ul>
           </div>
 
