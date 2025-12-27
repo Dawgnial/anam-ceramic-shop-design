@@ -72,6 +72,7 @@ export const CartDrawer = () => {
                 className="w-full"
                 variant="outline"
                 style={{ backgroundColor: '#B3886D', color: 'white' }}
+                onClick={() => navigate('/checkout')}
               >
                 تسویه حساب
               </Button>
