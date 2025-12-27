@@ -41,8 +41,8 @@ const BlogPost = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-          <h1 className="text-black text-4xl font-bold">پست یافت نشد</h1>
+        <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center px-4" style={{ backgroundColor: '#DDDDDD' }}>
+          <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">پست یافت نشد</h1>
         </div>
         <div className="flex-1 container mx-auto px-4 py-12 text-center">
           <p className="text-muted-foreground mb-4">این پست وجود ندارد یا منتشر نشده است.</p>
@@ -94,8 +94,8 @@ const BlogPost = () => {
       <Header />
       
       {/* Hero Banner */}
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-4xl font-bold">بلاگ</h1>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center px-4" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-bold">بلاگ</h1>
       </div>
 
       {/* Content */}
