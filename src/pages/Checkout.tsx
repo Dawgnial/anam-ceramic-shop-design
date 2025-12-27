@@ -499,10 +499,10 @@ const Checkout = () => {
               
               <RadioGroup value={shippingMethod} onValueChange={(value) => setShippingMethod(value as ShippingMethod)} className="space-y-4">
                 {/* Prepaid Option */}
-                <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'prepaid' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'prepaid' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                   <RadioGroupItem value="prepaid" id="prepaid" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="prepaid" className="flex items-center gap-2 cursor-pointer font-medium">
+                  <div className="flex-1 text-right">
+                    <Label htmlFor="prepaid" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
                       <CreditCard className="h-5 w-5" />
                       پرداخت آنلاین هزینه ارسال
                     </Label>
@@ -516,10 +516,10 @@ const Checkout = () => {
                 </div>
 
                 {/* Cash on Delivery Option */}
-                <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                   <RadioGroupItem value="cod" id="cod" className="mt-1" />
-                  <div className="flex-1">
-                    <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer font-medium">
+                  <div className="flex-1 text-right">
+                    <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
                       <Banknote className="h-5 w-5" />
                       پس کرایه (پرداخت هنگام تحویل)
                     </Label>
@@ -531,17 +531,17 @@ const Checkout = () => {
 
                 {/* Snapp Box Option - Only for Mashhad */}
                 {isMashhadSelected && (
-                  <div className={`flex items-start space-x-3 space-x-reverse p-4 rounded-lg border ${shippingMethod === 'snappbox' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'snappbox' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                     <RadioGroupItem value="snappbox" id="snappbox" className="mt-1" />
-                    <div className="flex-1">
-                      <Label htmlFor="snappbox" className="flex items-center gap-2 cursor-pointer font-medium">
+                    <div className="flex-1 text-right">
+                      <Label htmlFor="snappbox" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
                         <Box className="h-5 w-5" />
                         اسنپ باکس (ویژه مشهد)
                       </Label>
                       <p className="text-sm text-muted-foreground mt-1">
                         ارسال سریع با اسنپ باکس - فقط برای شهر مشهد
                       </p>
-                      <div className="text-xs text-muted-foreground mt-2 bg-muted/50 p-2 rounded">
+                      <div className="text-xs text-muted-foreground mt-2 bg-muted/50 p-2 rounded text-right">
                         <p>• ۱ کیلو اول: {toPersianNumber(shippingSettings.snappbox_first_kg)} تومان</p>
                         <p>• هر کیلو اضافی: {toPersianNumber(shippingSettings.snappbox_extra_kg)} تومان</p>
                       </div>
@@ -573,7 +573,7 @@ const Checkout = () => {
                   <span className="font-medium">
                     هزینه ارسال ({shippingMethod === 'snappbox' ? 'اسنپ باکس' : 'پست'}):
                   </span>
-                  <div className="text-left">
+                  <div>
                     {shippingMethod === 'cod' ? (
                       <span className="text-amber-600 font-medium">پرداخت هنگام تحویل</span>
                     ) : (
