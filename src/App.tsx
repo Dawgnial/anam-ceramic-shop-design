@@ -9,6 +9,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { CompareProvider } from "./contexts/CompareContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
 import { SupportChat } from "./components/SupportChat";
+import { ScrollToTop } from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -56,6 +57,7 @@ const App = () => (
                 <TooltipProvider>
                   <Toaster />
                   <Sonner />
+                  <ScrollToTop />
                   <SupportChat />
                   <Routes>
                     <Route path="/" element={<Index />} />
