@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -14,9 +14,16 @@ import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Package, Truck, Clock, CreditCard, Banknote, Box } from "lucide-react";
-import { iranProvinces, getCitiesForProvince, isMashhad } from "@/data/iranLocations";
+import { iranProvinces, getCitiesForProvince } from "@/data/iranLocations";
 
 type ShippingMethod = "prepaid" | "cod" | "snappbox";
+
+interface ShippingSettings {
+  regular_first_kg: number;
+  regular_extra_kg: number;
+  snappbox_first_kg: number;
+  snappbox_extra_kg: number;
+}
 
 const Checkout = () => {
   const { items, getTotalPrice, getTotalWeight, getMaxPreparationDays, clearCart } = useCart();
@@ -34,9 +41,51 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("prepaid");
+  
+  // Shipping settings from database
+  const [shippingSettings, setShippingSettings] = useState<ShippingSettings>({
+    regular_first_kg: 80000,
+    regular_extra_kg: 40000,
+    snappbox_first_kg: 40000,
+    snappbox_extra_kg: 5000
+  });
 
   const totalWeight = getTotalWeight();
   const maxPreparationDays = getMaxPreparationDays();
+
+  // Fetch shipping settings from database
+  useEffect(() => {
+    const fetchShippingSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("shipping_settings")
+          .select("*");
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          const settings: ShippingSettings = {
+            regular_first_kg: 80000,
+            regular_extra_kg: 40000,
+            snappbox_first_kg: 40000,
+            snappbox_extra_kg: 5000
+          };
+          
+          data.forEach((item) => {
+            if (item.setting_key in settings) {
+              (settings as any)[item.setting_key] = item.setting_value;
+            }
+          });
+          
+          setShippingSettings(settings);
+        }
+      } catch (error) {
+        console.error("Error fetching shipping settings:", error);
+      }
+    };
+    
+    fetchShippingSettings();
+  }, []);
 
   // Get cities for selected province
   const availableCities = useMemo(() => {
@@ -67,24 +116,24 @@ const Checkout = () => {
     }
   };
 
-  // Calculate weight-based shipping cost (regular post)
+  // Calculate weight-based shipping cost (regular post) - using settings from database
   const calculateRegularShipping = (): number => {
     const weightInKg = totalWeight / 1000;
     if (weightInKg <= 1) {
-      return 80000;
+      return shippingSettings.regular_first_kg;
     }
     const extraKg = Math.ceil(weightInKg - 1);
-    return 80000 + (extraKg * 30000);
+    return shippingSettings.regular_first_kg + (extraKg * shippingSettings.regular_extra_kg);
   };
 
-  // Calculate Snapp Box shipping cost for Mashhad
+  // Calculate Snapp Box shipping cost for Mashhad - using settings from database
   const calculateSnappBoxShipping = (): number => {
     const weightInKg = Math.ceil(totalWeight / 1000);
     if (weightInKg <= 1) {
-      return 40000;
+      return shippingSettings.snappbox_first_kg;
     }
     const extraKg = weightInKg - 1;
-    return 40000 + (extraKg * 5000);
+    return shippingSettings.snappbox_first_kg + (extraKg * shippingSettings.snappbox_extra_kg);
   };
 
   // Get current shipping cost based on method
@@ -496,8 +545,8 @@ const Checkout = () => {
                         ارسال سریع با اسنپ باکس - فقط برای شهر مشهد
                       </p>
                       <div className="text-xs text-muted-foreground mt-2 bg-muted/50 p-2 rounded">
-                        <p>• ۱ کیلو اول: {toPersianNumber(40000)} تومان</p>
-                        <p>• هر کیلو اضافی: {toPersianNumber(5000)} تومان</p>
+                        <p>• ۱ کیلو اول: {toPersianNumber(shippingSettings.snappbox_first_kg)} تومان</p>
+                        <p>• هر کیلو اضافی: {toPersianNumber(shippingSettings.snappbox_extra_kg)} تومان</p>
                       </div>
                       <p className="text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
                         هزینه: {toPersianNumber(calculateSnappBoxShipping())} تومان
