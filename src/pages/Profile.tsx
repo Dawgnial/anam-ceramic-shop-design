@@ -228,8 +228,8 @@ const Profile = () => {
       <Header />
       
       {/* Banner */}
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-4xl font-bold text-black">پروفایل کاربری</h1>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center px-4" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black">پروفایل کاربری</h1>
       </div>
 
       {/* Main Content */}

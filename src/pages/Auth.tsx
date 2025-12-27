@@ -124,8 +124,8 @@ const Auth = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <h1 className="text-black text-4xl font-black">حساب کاربری من</h1>
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center px-4" style={{ backgroundColor: '#DDDDDD' }}>
+        <h1 className="text-black text-2xl sm:text-3xl md:text-4xl font-black">حساب کاربری من</h1>
       </div>
 
       {/* Content */}

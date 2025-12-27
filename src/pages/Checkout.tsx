@@ -395,8 +395,8 @@ const Checkout = () => {
     <div className="min-h-screen flex flex-col">
       <Header />
       
-      <div className="w-full h-[165px] flex items-center justify-center" style={{ backgroundColor: '#DDDDDD' }}>
-        <div className="flex items-center gap-3 text-2xl">
+      <div className="w-full h-[100px] sm:h-[130px] md:h-[165px] flex items-center justify-center px-4" style={{ backgroundColor: '#DDDDDD' }}>
+        <div className="flex items-center gap-2 sm:gap-3 text-sm sm:text-lg md:text-2xl flex-wrap justify-center">
           <span className="text-gray-400">سبد خرید</span>
           <span className="text-gray-400">←</span>
           <span className="font-bold text-black">تسویه حساب</span>
