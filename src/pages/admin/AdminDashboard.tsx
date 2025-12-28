@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Package, ShoppingCart, Users, FolderTree, TrendingUp, DollarSign } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { LowStockAlert } from "@/components/admin/LowStockAlert";
+
+// Custom tooltip for charts
+const ChartTooltip = Tooltip;
 
 export default function AdminDashboard() {
   // Fetch basic stats
@@ -178,30 +180,49 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
               {chartData && chartData.length > 0 ? (
-                <ChartContainer
-                  config={{
-                    revenue: {
-                      label: "درآمد",
-                      color: "#B3886D",
-                    },
-                  }}
-                  className="h-[180px] sm:h-[300px]"
-                >
+                <div className="h-[180px] sm:h-[300px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                      <YAxis tick={{ fontSize: 10 }} width={40} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
+                    <LineChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10, fill: '#666' }} 
+                        tickLine={false}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 10, fill: '#666' }} 
+                        width={50}
+                        tickLine={false}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        tickFormatter={(value) => value.toLocaleString('fa-IR')}
+                      />
+                      <ChartTooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-background border rounded-lg shadow-lg p-3 text-sm">
+                                <p className="font-medium mb-1">{label}</p>
+                                <p className="text-[#B3886D]">
+                                  درآمد: {payload[0].value?.toLocaleString('fa-IR')} تومان
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
                       <Line 
                         type="monotone" 
                         dataKey="revenue" 
                         stroke="#B3886D" 
                         strokeWidth={2}
+                        dot={{ fill: '#B3886D', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: '#B3886D' }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
-                </ChartContainer>
+                </div>
               ) : (
                 <div className="h-[180px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm">
                   داده‌ای برای نمایش وجود ندارد
@@ -218,25 +239,47 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="p-2 sm:p-6 pt-0">
               {chartData && chartData.length > 0 ? (
-                <ChartContainer
-                  config={{
-                    orders: {
-                      label: "سفارشات",
-                      color: "#896A59",
-                    },
-                  }}
-                  className="h-[180px] sm:h-[300px]"
-                >
+                <div className="h-[180px] sm:h-[300px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                      <YAxis tick={{ fontSize: 10 }} width={40} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="orders" fill="#896A59" />
+                    <BarChart data={chartData} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10, fill: '#666' }} 
+                        tickLine={false}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 10, fill: '#666' }} 
+                        width={30}
+                        tickLine={false}
+                        axisLine={{ stroke: '#e0e0e0' }}
+                        allowDecimals={false}
+                        tickFormatter={(value) => value.toLocaleString('fa-IR')}
+                      />
+                      <ChartTooltip 
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            return (
+                              <div className="bg-background border rounded-lg shadow-lg p-3 text-sm">
+                                <p className="font-medium mb-1">{label}</p>
+                                <p className="text-[#896A59]">
+                                  تعداد سفارش: {payload[0].value?.toLocaleString('fa-IR')}
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar 
+                        dataKey="orders" 
+                        fill="#896A59" 
+                        radius={[4, 4, 0, 0]}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
-                </ChartContainer>
+                </div>
               ) : (
                 <div className="h-[180px] sm:h-[300px] flex items-center justify-center text-muted-foreground text-sm">
                   داده‌ای برای نمایش وجود ندارد
