@@ -2,6 +2,7 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/table";
 
 export default function AdminCustomers() {
-  const { data: customers, isLoading } = useQuery({
+  const { data: customers, isLoading, isError, refetch } = useQuery({
     queryKey: ['admin-customers'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -60,6 +61,13 @@ export default function AdminCustomers() {
           <CardContent>
             {isLoading ? (
               <div className="text-center py-8">در حال بارگذاری...</div>
+            ) : isError ? (
+              <div className="text-center py-8 text-destructive">
+                خطا در دریافت اطلاعات مشتریان
+                <Button variant="outline" className="mt-4" onClick={() => refetch()}>
+                  تلاش دوباره
+                </Button>
+              </div>
             ) : !customers || customers.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 هیچ مشتری‌ای ثبت نشده است
