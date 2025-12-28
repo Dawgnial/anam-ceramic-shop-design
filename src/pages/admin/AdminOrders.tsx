@@ -47,7 +47,13 @@ export default function AdminOrders() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  const { data: orders, isLoading } = useQuery({
+  const {
+    data: orders,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -184,6 +190,16 @@ export default function AdminOrders() {
           <CardContent className="p-2 sm:p-6">
             {isLoading ? (
               <div className="text-center py-8">در حال بارگذاری...</div>
+            ) : isError ? (
+              <div className="text-center py-8 text-destructive">
+                خطا در دریافت سفارشات
+                <div className="mt-2 text-sm text-muted-foreground break-words">
+                  {(error as any)?.message || 'لطفاً صفحه را رفرش کنید'}
+                </div>
+                <Button variant="outline" className="mt-4" onClick={() => refetch()}>
+                  تلاش دوباره
+                </Button>
+              </div>
             ) : !orders || orders.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 هیچ سفارشی ثبت نشده است
