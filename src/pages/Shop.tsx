@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,6 +33,8 @@ const Shop = () => {
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
+  const minPriceRef = useRef<HTMLInputElement>(null);
+  const maxPriceRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
@@ -367,15 +369,12 @@ const Shop = () => {
                 <label className="text-xs font-medium text-muted-foreground">حداقل قیمت</label>
                 <div className="relative">
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    value={minPriceInput}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9]/g, '');
-                      setMinPriceInput(value);
-                    }}
+                    ref={minPriceRef}
+                    type="number"
+                    pattern="[0-9]*"
+                    defaultValue={minPriceInput}
                     placeholder={formatPrice(minPrice)}
-                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
                 </div>
@@ -384,15 +383,12 @@ const Shop = () => {
                 <label className="text-xs font-medium text-muted-foreground">حداکثر قیمت</label>
                 <div className="relative">
                   <input
-                    type="text"
-                    inputMode="numeric"
-                    value={maxPriceInput}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9]/g, '');
-                      setMaxPriceInput(value);
-                    }}
+                    ref={maxPriceRef}
+                    type="number"
+                    pattern="[0-9]*"
+                    defaultValue={maxPriceInput}
                     placeholder={formatPrice(maxPrice)}
-                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                    className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
                 </div>
@@ -402,12 +398,16 @@ const Shop = () => {
             {/* Apply price filter button */}
             <Button
               onClick={() => {
-                const min = minPriceInput ? parseInt(minPriceInput) : minPrice;
-                const max = maxPriceInput ? parseInt(maxPriceInput) : maxPrice;
+                const minValue = minPriceRef.current?.value || "";
+                const maxValue = maxPriceRef.current?.value || "";
+                const min = minValue ? parseInt(minValue) : minPrice;
+                const max = maxValue ? parseInt(maxValue) : maxPrice;
                 if (min > max) {
                   toast.error("حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد");
                   return;
                 }
+                setMinPriceInput(minValue);
+                setMaxPriceInput(maxValue);
                 setPriceRange([min, max]);
                 setCurrentPage(1);
               }}
@@ -425,6 +425,8 @@ const Shop = () => {
                   setPriceRange([minPrice, maxPrice]);
                   setMinPriceInput("");
                   setMaxPriceInput("");
+                  if (minPriceRef.current) minPriceRef.current.value = "";
+                  if (maxPriceRef.current) maxPriceRef.current.value = "";
                   setCurrentPage(1);
                 }}
                 variant="ghost"
