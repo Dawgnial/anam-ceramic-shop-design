@@ -35,4 +35,4 @@ Disallow: /payment/*
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://anamzoroof.ir/sitemap.xml
+Sitemap: https://lpwtihfypaajwymgbkko.supabase.co/functions/v1/sitemap
