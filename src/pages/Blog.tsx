@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import StructuredData from "@/components/seo/StructuredData";
+import PageSEO from "@/components/seo/PageSEO";
 import { Calendar, ArrowLeft, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { toPersianNumber } from "@/lib/utils";
 
@@ -97,6 +98,12 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <PageSEO
+        title="بلاگ"
+        description="مقالات و آموزش‌های تخصصی درباره سرامیک، سفال و صنایع دستی ایرانی. راهنمای خرید و نگهداری ظروف سرامیکی."
+        canonicalUrl="https://anamzoroof.ir/blog"
+        keywords="بلاگ سرامیک، مقالات سفال، آموزش سرامیک، صنایع دستی ایرانی"
+      />
       <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       

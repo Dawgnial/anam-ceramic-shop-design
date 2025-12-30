@@ -84,6 +84,8 @@ export const HeroSlider = () => {
                 src={slide.image}
                 alt={slide.alt}
                 className="w-full h-full object-cover"
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
               />
               <div 
                 className="absolute inset-0 flex flex-col items-center justify-start pt-8 sm:pt-12 md:pt-16 text-center px-4"

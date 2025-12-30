@@ -1,8 +1,14 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ShoppingBag } from "lucide-react";
+import PageSEO from "@/components/seo/PageSEO";
+import StructuredData from "@/components/seo/StructuredData";
 
 const ContactUs = () => {
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'ارتباط با ما', url: 'https://anamzoroof.ir/contact' },
+  ];
   const contactInfo = [
     {
       icon: MapPin,
@@ -57,6 +63,13 @@ const ContactUs = () => {
 
   return (
     <div className="min-h-screen flex flex-col" dir="rtl">
+      <PageSEO
+        title="ارتباط با ما"
+        description="با فروشگاه آنام از طریق تلفن، ایمیل، تلگرام یا ایتا در ارتباط باشید. آدرس: مشهد، خیابان نامجو ۱۷"
+        canonicalUrl="https://anamzoroof.ir/contact"
+        keywords="تماس با فروشگاه آنام، آدرس فروشگاه آنام، شماره تماس آنام"
+      />
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
       {/* Banner */}

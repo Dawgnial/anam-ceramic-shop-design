@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import aboutUsPic from "@/assets/about-us-pic2.png";
 import backLine from "@/assets/back-line.png";
+import PageSEO from "@/components/seo/PageSEO";
+import StructuredData from "@/components/seo/StructuredData";
 
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,8 +14,20 @@ const AboutUs = () => {
     setIsVisible(true);
   }, []);
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'درباره ما', url: 'https://anamzoroof.ir/about' },
+  ];
+
   return (
     <div className="min-h-screen">
+      <PageSEO
+        title="درباره ما"
+        description="فروشگاه اینترنتی آنام با سابقه ۱۰ ساله در زمینه سفال، سرامیک و صنایع دستی. آماده فروش ظروف سفالی و سرامیکی به سراسر کشور."
+        canonicalUrl="https://anamzoroof.ir/about"
+        keywords="درباره فروشگاه آنام، سابقه فروشگاه آنام، سفال ایرانی، سرامیک دست‌ساز"
+      />
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
       {/* Hero Banner */}

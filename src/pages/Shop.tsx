@@ -19,6 +19,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
 import StructuredData from "@/components/seo/StructuredData";
+import PageSEO from "@/components/seo/PageSEO";
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -482,6 +483,12 @@ const Shop = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSEO
+        title="فروشگاه"
+        description="خرید آنلاین ظروف سرامیکی و سفالی دست‌ساز با قیمت مناسب. ارسال به سراسر ایران. فیلتر بر اساس دسته‌بندی و قیمت."
+        canonicalUrl="https://anamzoroof.ir/shop"
+        keywords="خرید ظروف سرامیکی، فروشگاه سفال، ظروف دست‌ساز، سرامیک ایرانی، خرید آنلاین سفال"
+      />
       <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
