@@ -609,104 +609,125 @@ const Shop = () => {
                     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5' 
                     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
               }`}>
-                {displayedProducts.map((product) => (
-                  <div 
-                    key={product.id} 
-                    className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                  >
-                    <div className="relative aspect-square overflow-hidden">
-                      <img
-                        src={product.images?.[0] || '/placeholder.svg'}
-                        alt={product.name}
-                        className="w-full h-full object-cover cursor-pointer"
-                        onClick={() => navigate(`/product/${product.slug}`)}
-                      />
-                      
-                      {/* Hover Icons - عمودی */}
-                      <div className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                {displayedProducts.map((product) => {
+                  // Dynamic button sizes based on itemsPerPage
+                  const buttonSizeClass = itemsPerPage === 36 
+                    ? 'w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8' 
+                    : itemsPerPage === 24 
+                      ? 'w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9'
+                      : 'w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10';
+                  
+                  const iconSizeClass = itemsPerPage === 36
+                    ? 'w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4'
+                    : itemsPerPage === 24
+                      ? 'w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5'
+                      : 'w-4 h-4 sm:w-5 sm:h-5';
+                  
+                  const gapClass = itemsPerPage === 36 ? 'gap-0.5 sm:gap-1' : 'gap-1 sm:gap-2';
+                  
+                  return (
+                    <div 
+                      key={product.id} 
+                      className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                    >
+                      <div className="relative aspect-square overflow-hidden">
+                        <img
+                          src={product.images?.[0] || '/placeholder.svg'}
+                          alt={product.name}
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => navigate(`/product/${product.slug}`)}
+                        />
                         
-                        {/* افزودن به سبد خرید */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button 
-                              onClick={() => handleAddToCart(product)}
-                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}
-                            >
-                              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>افزودن به سبد خرید</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        {/* Hover Icons - عمودی */}
+                        <div className={`absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 flex flex-col ${gapClass} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                          
+                          {/* افزودن به سبد خرید */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                onClick={() => handleAddToCart(product)}
+                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                style={{ backgroundColor: '#B3886D' }}
+                              >
+                                <ShoppingCart className={`${iconSizeClass} text-white`} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>افزودن به سبد خرید</p>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        {/* نمایش سریع */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button 
-                              onClick={() => {
-                                setQuickViewProductId(product.id);
-                                setQuickViewOpen(true);
-                              }}
-                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}
-                            >
-                              <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>نمایش سریع</p>
-                          </TooltipContent>
-                        </Tooltip>
+                          {/* نمایش سریع */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                onClick={() => {
+                                  setQuickViewProductId(product.id);
+                                  setQuickViewOpen(true);
+                                }}
+                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                style={{ backgroundColor: '#B3886D' }}
+                              >
+                                <Search className={`${iconSizeClass} text-white`} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>نمایش سریع</p>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        {/* افزودن به مقایسه */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button 
-                              onClick={() => handleAddToCompare(product)}
-                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}
-                            >
-                              <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>افزودن به مقایسه</p>
-                          </TooltipContent>
-                        </Tooltip>
+                          {/* افزودن به مقایسه */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                onClick={() => handleAddToCompare(product)}
+                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                style={{ backgroundColor: '#B3886D' }}
+                              >
+                                <Shuffle className={`${iconSizeClass} text-white`} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>افزودن به مقایسه</p>
+                            </TooltipContent>
+                          </Tooltip>
 
-                        {/* افزودن به علاقه‌مندی */}
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button 
-                              onClick={() => handleAddToWishlist(product)}
-                              className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
-                              style={{ backgroundColor: '#B3886D' }}
-                            >
-                              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>افزودن به علاقه مندی</p>
-                          </TooltipContent>
-                        </Tooltip>
+                          {/* افزودن به علاقه‌مندی */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button 
+                                onClick={() => handleAddToWishlist(product)}
+                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                style={{ backgroundColor: '#B3886D' }}
+                              >
+                                <Heart className={`${iconSizeClass} text-white`} />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>افزودن به علاقه مندی</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </div>
+
+                      <div 
+                        className="p-2 sm:p-3 md:p-4 text-center cursor-pointer"
+                        onClick={() => navigate(`/product/${product.slug}`)}
+                      >
+                        <h3 className={`font-semibold text-foreground mb-1 sm:mb-2 hover:text-[#B3886D] transition-colors line-clamp-2 ${
+                          itemsPerPage === 36 ? 'text-[10px] sm:text-xs md:text-sm' : 'text-xs sm:text-sm md:text-base'
+                        }`}>
+                          {product.name}
+                        </h3>
+                        <p className={`font-bold ${
+                          itemsPerPage === 36 ? 'text-xs sm:text-sm md:text-base' : 'text-sm sm:text-base md:text-lg'
+                        }`} style={{ color: '#B3886D' }}>
+                          {formatPrice(product.price)} تومان
+                        </p>
                       </div>
                     </div>
-
-                    <div 
-                      className="p-2 sm:p-3 md:p-4 text-center cursor-pointer"
-                      onClick={() => navigate(`/product/${product.slug}`)}
-                    >
-                      <h3 className="font-semibold text-foreground mb-1 sm:mb-2 hover:text-[#B3886D] transition-colors text-xs sm:text-sm md:text-base line-clamp-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-sm sm:text-base md:text-lg font-bold" style={{ color: '#B3886D' }}>
-                        {formatPrice(product.price)} تومان
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </TooltipProvider>
 
