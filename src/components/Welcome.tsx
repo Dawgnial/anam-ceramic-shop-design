@@ -19,27 +19,26 @@ export const Welcome = () => {
         <div className={`relative z-20 transition-transform duration-1000 ${isVisible ? "translate-x-0" : "translate-x-full"}`}>
           <img 
             src={welcomeImg1} 
-            alt="Welcome" 
-            className="w-full h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover" 
+            alt="ظروف سرامیکی آنام" 
+            className="w-full h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover" 
+            loading="lazy"
           />
-          {/* Text box overlay - rectangular border extending to left image */}
-          <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 md:p-8">
+          {/* Text box overlay - responsive positioning */}
+          <div className="absolute inset-0 flex items-center justify-center p-3 xs:p-4 sm:p-6 md:p-8">
             <div 
-              className="border-2 sm:border-4 p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30"
+              className="border-2 sm:border-4 p-3 xs:p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30 w-[90%] sm:w-[85%] md:w-auto mx-auto"
               style={{
                 borderColor: '#FCE8D9',
-                width: 'calc(100% + 120px)',
                 maxWidth: '750px',
-                marginLeft: '-120px',
               }}
             >
-              <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground mb-2 sm:mb-4 font-semibold">
+              <h2 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-foreground mb-2 sm:mb-4 font-semibold">
                 خوش آمدید به فروشگاه آنلاین
               </h2>
-              <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-foreground mb-3 sm:mb-4 md:mb-6 whitespace-nowrap">
+              <h3 className="text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-foreground mb-2 xs:mb-3 sm:mb-4 md:mb-6">
                 ظروف سرامیکی
               </h3>
-              <p className="text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-6 hidden sm:block font-normal" style={{ color: '#A9A9A9' }}>
+              <p className="text-xs sm:text-sm md:text-base leading-relaxed mb-3 sm:mb-4 md:mb-6 hidden xs:block font-normal line-clamp-3 sm:line-clamp-none" style={{ color: '#A9A9A9' }}>
                 ما در فروشگاه آنلاین پاتری در تلاش هستیم تا ضمن ارائه خدمات فروش، مشاوره و خدمات پس از فروش به شما علاقه مندان رضایت شما را کسب نماییم.
               </p>
               <Button 
@@ -66,12 +65,13 @@ export const Welcome = () => {
           </div>
         </div>
 
-        {/* Left side - Image */}
+        {/* Left side - Image (hidden on mobile) */}
         <div className={`relative z-10 transition-transform duration-1000 hidden md:block ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
           <img 
             src={welcomeImg2} 
-            alt="Welcome" 
-            className="w-full h-[450px] lg:h-[500px] object-cover" 
+            alt="ظروف سفالی دست‌ساز" 
+            className="w-full h-[450px] lg:h-[500px] object-cover"
+            loading="lazy"
           />
         </div>
       </div>
