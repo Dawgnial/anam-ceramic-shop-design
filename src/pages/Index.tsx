@@ -14,12 +14,19 @@ import { useAuth } from "@/contexts/AuthContext";
 import StructuredData from "@/components/seo/StructuredData";
 import WebsiteSchema from "@/components/seo/WebsiteSchema";
 import LocalBusinessSchema from "@/components/seo/LocalBusinessSchema";
+import PageSEO from "@/components/seo/PageSEO";
 
 const Index = () => {
   const { isAdmin } = useAuth();
   
   return (
     <div className="min-h-screen">
+      <PageSEO
+        title="فروشگاه آنام | ظروف سرامیکی شیک و بادوام"
+        description="فروشگاه آنلاین آنام با سابقه ۱۰ ساله در تولید و عرضه محصولات سرامیکی، آماده فروش انواع ظروف سرامیکی به سراسر کشور است."
+        canonicalUrl="https://anamzoroof.ir/"
+        keywords="ظروف سرامیکی، سرامیک دست‌ساز، ظروف سفالی، فروشگاه آنام، سرامیک ایرانی، خرید ظروف سرامیکی"
+      />
       <StructuredData type="Organization" />
       <WebsiteSchema />
       <LocalBusinessSchema />

@@ -8,6 +8,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import PageSEO from "@/components/seo/PageSEO";
+import FAQSchema from "@/components/seo/FAQSchema";
+import StructuredData from "@/components/seo/StructuredData";
 
 const FAQ = () => {
   const faqs = [
@@ -41,8 +44,21 @@ const FAQ = () => {
     }
   ];
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'پرسش‌های متداول', url: 'https://anamzoroof.ir/faq' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
+      <PageSEO
+        title="پرسش‌های متداول"
+        description="پاسخ سوالات رایج درباره خرید ظروف سرامیکی، ارسال سفارش، پرداخت آنلاین و مرجوعی کالا در فروشگاه آنام."
+        canonicalUrl="https://anamzoroof.ir/faq"
+        keywords="سوالات متداول آنام، راهنمای خرید سرامیک، پشتیبانی فروشگاه آنام"
+      />
+      <FAQSchema faqs={faqs} />
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
       <Header />
       
       {/* Hero Banner */}

@@ -1,10 +1,12 @@
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import DOMPurify from "dompurify";
+import PageSEO from "@/components/seo/PageSEO";
+import ArticleSchema from "@/components/seo/ArticleSchema";
+import StructuredData from "@/components/seo/StructuredData";
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -66,31 +68,35 @@ const BlogPost = () => {
   const pageImage = post.image_url || 'https://anamzoroof.ir/og-image.png';
   const pageUrl = `https://anamzoroof.ir/blog/${post.slug}`;
 
+  const breadcrumbItems = [
+    { name: 'خانه', url: 'https://anamzoroof.ir/' },
+    { name: 'بلاگ', url: 'https://anamzoroof.ir/blog' },
+    { name: post.title, url: pageUrl },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Dynamic SEO Meta Tags */}
-      <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDescription} />
-        <link rel="canonical" href={pageUrl} />
-        
-        {/* Open Graph */}
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={pageDescription} />
-        <meta property="og:image" content={pageImage} />
-        <meta property="og:url" content={pageUrl} />
-        <meta property="og:site_name" content="فروشگاه آنام" />
-        <meta property="og:locale" content="fa_IR" />
-        <meta property="article:published_time" content={post.created_at || ''} />
-        
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={pageDescription} />
-        <meta name="twitter:image" content={pageImage} />
-      </Helmet>
-
+      <PageSEO
+        title={pageTitle}
+        description={pageDescription}
+        canonicalUrl={pageUrl}
+        ogImage={pageImage}
+        ogType="article"
+        article={{
+          publishedTime: post.created_at || undefined,
+          modifiedTime: post.updated_at || undefined,
+        }}
+      />
+      <ArticleSchema
+        title={post.title}
+        description={pageDescription}
+        image={pageImage}
+        datePublished={post.created_at || ''}
+        dateModified={post.updated_at || undefined}
+        url={pageUrl}
+      />
+      <StructuredData type="BreadcrumbList" items={breadcrumbItems} />
+      
       <Header />
       
       {/* Hero Banner */}
@@ -116,11 +122,12 @@ const BlogPost = () => {
               src={post.image_url} 
               alt={post.title}
               className="w-full h-64 md:h-96 object-cover rounded-lg mb-8"
+              loading="lazy"
             />
           )}
 
           {/* Post Title */}
-          <h1 className="text-2xl md:text-3xl font-bold mb-4">{post.title}</h1>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">{post.title}</h2>
 
           {/* Post Date */}
           <p className="text-muted-foreground text-sm mb-8">
