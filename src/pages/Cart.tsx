@@ -43,32 +43,52 @@ const Cart = () => {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
               {items.map((item) => (
-                <div key={item.id} className="flex items-center gap-4 border rounded-lg p-4 bg-background">
-                  <img src={item.image} alt={item.name} className="w-24 h-24 object-cover rounded" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{item.name}</h3>
-                    <p className="text-muted-foreground">{formatPrice(item.price)} تومان</p>
-                  </div>
-                  <div className="flex items-center gap-2">
+                <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 border rounded-lg p-3 sm:p-4 bg-background">
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <img src={item.image} alt={item.name} className="w-16 h-16 sm:w-24 sm:h-24 object-cover rounded flex-shrink-0" />
+                    <div className="flex-1 sm:flex-none min-w-0">
+                      <h3 className="font-semibold text-sm sm:text-lg truncate">{item.name}</h3>
+                      <p className="text-muted-foreground text-sm">{formatPrice(item.price)} تومان</p>
+                    </div>
+                    {/* Mobile remove button */}
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      variant="ghost"
+                      size="icon"
+                      className="sm:hidden h-8 w-8"
+                      onClick={() => removeFromCart(item.id)}
                     >
-                      -
-                    </Button>
-                    <span className="w-12 text-center">{toPersianNumber(item.quantity)}</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    >
-                      +
+                      <X className="h-4 w-4" />
                     </Button>
                   </div>
+                  <div className="flex items-center justify-between w-full sm:w-auto sm:flex-1">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 w-9 sm:h-8 sm:w-8"
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      >
+                        -
+                      </Button>
+                      <span className="w-10 sm:w-12 text-center font-medium">{toPersianNumber(item.quantity)}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 w-9 sm:h-8 sm:w-8"
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </Button>
+                    </div>
+                    <span className="font-semibold text-sm sm:hidden" style={{ color: '#B3886D' }}>
+                      {formatPrice(item.price * item.quantity)} تومان
+                    </span>
+                  </div>
+                  {/* Desktop remove button */}
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="hidden sm:flex"
                     onClick={() => removeFromCart(item.id)}
                   >
                     <X className="h-5 w-5" />

@@ -236,10 +236,10 @@ const Profile = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           
-          <Tabs defaultValue="profile" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="profile">اطلاعات کاربری</TabsTrigger>
-              <TabsTrigger value="orders">تاریخچه سفارشات</TabsTrigger>
+          <Tabs defaultValue="profile" className="space-y-4 sm:space-y-6">
+            <TabsList className="grid w-full grid-cols-2 h-auto">
+              <TabsTrigger value="profile" className="text-sm sm:text-base py-2.5 sm:py-2">اطلاعات کاربری</TabsTrigger>
+              <TabsTrigger value="orders" className="text-sm sm:text-base py-2.5 sm:py-2">تاریخچه سفارشات</TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}

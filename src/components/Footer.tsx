@@ -81,9 +81,9 @@ export const Footer = () => {
           </div>
 
           {/* Column 5: Enamad Badge */}
-          <div className="flex flex-col items-center justify-start col-span-2 md:col-span-1">
+          <div className="flex flex-col items-center justify-center col-span-2 md:col-span-1 mt-4 md:mt-0">
             <a referrerPolicy="origin" target="_blank" href="https://trustseal.enamad.ir/?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1">
-              <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" alt="نماد اعتماد الکترونیکی" className="cursor-pointer" />
+              <img referrerPolicy="origin" src="https://trustseal.enamad.ir/logo.aspx?id=5056189&Code=VeD89YSVDG3yaKZ7tLZH0DnCY8CofFM1" alt="نماد اعتماد الکترونیکی" className="cursor-pointer max-w-[120px] sm:max-w-[150px]" />
             </a>
           </div>
         </div>

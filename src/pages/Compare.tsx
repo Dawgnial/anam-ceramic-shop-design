@@ -164,21 +164,21 @@ export default function Compare() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-[#FCF8F4]">
-                      <TableHead className="w-[200px] font-bold text-base sticky right-0 bg-[#FCF8F4] z-10">
+                      <TableHead className="w-[100px] sm:w-[150px] md:w-[200px] font-bold text-sm sm:text-base sticky right-0 bg-[#FCF8F4] z-10">
                         مشخصات
                       </TableHead>
                       {products?.map((product) => (
-                        <TableHead key={product.id} className="text-center min-w-[250px] relative">
+                        <TableHead key={product.id} className="text-center min-w-[150px] sm:min-w-[200px] md:min-w-[250px] relative">
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="absolute top-2 left-2 hover:bg-destructive/10"
+                            className="absolute top-2 left-2 hover:bg-destructive/10 h-7 w-7 sm:h-8 sm:w-8"
                             onClick={() => {
                               removeFromCompare(product.id);
                               toast.success('محصول از لیست مقایسه حذف شد');
                             }}
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-3 h-3 sm:w-4 sm:h-4" />
                           </Button>
                         </TableHead>
                       ))}
@@ -187,16 +187,16 @@ export default function Compare() {
                   <TableBody>
                     {/* Product Images */}
                     <TableRow className="hover:bg-muted/50">
-                      <TableCell className="font-semibold sticky right-0 bg-background">
+                      <TableCell className="font-semibold sticky right-0 bg-background min-w-[100px] sm:min-w-[150px]">
                         تصویر محصول
                       </TableCell>
                       {products?.map((product) => (
-                        <TableCell key={product.id} className="text-center p-4">
+                        <TableCell key={product.id} className="text-center p-2 sm:p-4 min-w-[150px] sm:min-w-[250px]">
                           <div className="flex justify-center">
                             <img
                               src={product.images?.[0] || '/placeholder.svg'}
                               alt={product.name}
-                              className="w-48 h-48 object-cover rounded-lg shadow-md hover:scale-105 transition-transform cursor-pointer"
+                              className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 object-cover rounded-lg shadow-md hover:scale-105 transition-transform cursor-pointer"
                               onClick={() => navigate(`/product/${product.slug}`)}
                             />
                           </div>

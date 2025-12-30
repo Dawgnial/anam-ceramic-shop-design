@@ -410,8 +410,8 @@ const Checkout = () => {
           {/* Checkout Form */}
           <div className="lg:col-span-2 space-y-6">
             {/* Buyer Information */}
-            <div className="border rounded-lg p-6 bg-background">
-              <h2 className="text-2xl font-bold mb-6">اطلاعات خریدار</h2>
+            <div className="border rounded-lg p-4 sm:p-6 bg-background">
+              <h2 className="text-lg sm:text-2xl font-bold mb-4 sm:mb-6">اطلاعات خریدار</h2>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="name">نام و نام خانوادگی *</Label>
@@ -491,61 +491,61 @@ const Checkout = () => {
             </div>
 
             {/* Shipping Method Selection */}
-            <div className="border rounded-lg p-6 bg-background">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Truck className="h-6 w-6" />
+            <div className="border rounded-lg p-4 sm:p-6 bg-background">
+              <h2 className="text-lg sm:text-2xl font-bold mb-4 flex items-center gap-2">
+                <Truck className="h-5 w-5 sm:h-6 sm:w-6" />
                 روش ارسال
               </h2>
               
-              <RadioGroup value={shippingMethod} onValueChange={(value) => setShippingMethod(value as ShippingMethod)} className="space-y-4">
+              <RadioGroup value={shippingMethod} onValueChange={(value) => setShippingMethod(value as ShippingMethod)} className="space-y-3 sm:space-y-4">
                 {/* Prepaid Option */}
-                <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'prepaid' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                <div className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border ${shippingMethod === 'prepaid' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                   <RadioGroupItem value="prepaid" id="prepaid" className="mt-1" />
-                  <div className="flex-1 text-right">
-                    <Label htmlFor="prepaid" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
-                      <CreditCard className="h-5 w-5" />
-                      پرداخت آنلاین هزینه ارسال
+                  <div className="flex-1 text-right min-w-0">
+                    <Label htmlFor="prepaid" className="flex items-center gap-2 cursor-pointer font-medium justify-start text-sm sm:text-base">
+                      <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                      <span className="truncate">پرداخت آنلاین هزینه ارسال</span>
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      هزینه ارسال به مبلغ سفارش اضافه می‌شود و الان پرداخت می‌کنید
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      هزینه ارسال به مبلغ سفارش اضافه می‌شود
                     </p>
-                    <p className="text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
+                    <p className="text-xs sm:text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
                       هزینه: {toPersianNumber(calculateRegularShipping())} تومان
                     </p>
                   </div>
                 </div>
 
                 {/* Cash on Delivery Option */}
-                <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                <div className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border ${shippingMethod === 'cod' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                   <RadioGroupItem value="cod" id="cod" className="mt-1" />
-                  <div className="flex-1 text-right">
-                    <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
-                      <Banknote className="h-5 w-5" />
-                      پس کرایه (پرداخت هنگام تحویل)
+                  <div className="flex-1 text-right min-w-0">
+                    <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer font-medium justify-start text-sm sm:text-base">
+                      <Banknote className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                      <span className="truncate">پس کرایه (پرداخت هنگام تحویل)</span>
                     </Label>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      هزینه ارسال را هنگام تحویل مرسوله به مامور پست پرداخت می‌کنید
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                      هزینه ارسال را هنگام تحویل پرداخت می‌کنید
                     </p>
                   </div>
                 </div>
 
                 {/* Snapp Box Option - Only for Mashhad */}
                 {isMashhadSelected && (
-                  <div className={`flex items-start gap-3 p-4 rounded-lg border ${shippingMethod === 'snappbox' ? 'border-primary bg-primary/5' : 'border-border'}`}>
+                  <div className={`flex items-start gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border ${shippingMethod === 'snappbox' ? 'border-primary bg-primary/5' : 'border-border'}`}>
                     <RadioGroupItem value="snappbox" id="snappbox" className="mt-1" />
-                    <div className="flex-1 text-right">
-                      <Label htmlFor="snappbox" className="flex items-center gap-2 cursor-pointer font-medium justify-start">
-                        <Box className="h-5 w-5" />
-                        اسنپ باکس (ویژه مشهد)
+                    <div className="flex-1 text-right min-w-0">
+                      <Label htmlFor="snappbox" className="flex items-center gap-2 cursor-pointer font-medium justify-start text-sm sm:text-base">
+                        <Box className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                        <span className="truncate">اسنپ باکس (ویژه مشهد)</span>
                       </Label>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        ارسال سریع با اسنپ باکس - فقط برای شهر مشهد
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                        ارسال سریع با اسنپ باکس
                       </p>
                       <div className="text-xs text-muted-foreground mt-2 bg-muted/50 p-2 rounded text-right">
                         <p>• ۱ کیلو اول: {toPersianNumber(shippingSettings.snappbox_first_kg)} تومان</p>
                         <p>• هر کیلو اضافی: {toPersianNumber(shippingSettings.snappbox_extra_kg)} تومان</p>
                       </div>
-                      <p className="text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
+                      <p className="text-xs sm:text-sm font-medium mt-2" style={{ color: '#B3886D' }}>
                         هزینه: {toPersianNumber(calculateSnappBoxShipping())} تومان
                       </p>
                     </div>
