@@ -281,7 +281,7 @@ export default function ProductDetail() {
 
               {/* Thumbnail Images */}
               {product.images.length > 1 && (
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5 sm:gap-2">
                   {product.images.map((image: string, index: number) => (
                     <button
                       key={index}
@@ -404,22 +404,24 @@ export default function ProductDetail() {
 
             {/* Quantity */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg">تعداد</h3>
-              <div className="flex items-center gap-3">
+              <h3 className="font-semibold text-base sm:text-lg">تعداد</h3>
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Button
                   variant="outline"
                   size="icon"
+                  className="h-10 w-10 sm:h-9 sm:w-9"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
-                <div className="w-16 text-center font-semibold text-lg">
+                <div className="w-14 sm:w-16 text-center font-semibold text-lg">
                   {quantity.toLocaleString('fa-IR')}
                 </div>
                 <Button
                   variant="outline"
                   size="icon"
+                  className="h-10 w-10 sm:h-9 sm:w-9"
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
                   disabled={quantity >= product.stock}
                 >

@@ -108,7 +108,7 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-y-auto p-4 sm:p-6">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#B3886D' }}></div>
@@ -205,34 +205,36 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
               )}
 
               {/* Action Buttons */}
-              <div className="space-y-3 pt-4">
+              <div className="space-y-2 sm:space-y-3 pt-3 sm:pt-4">
                 <Button
                   onClick={handleAddToCart}
                   disabled={!product.in_stock || product.stock === 0}
-                  className="w-full text-white"
+                  className="w-full text-white text-sm sm:text-base"
                   style={{ backgroundColor: '#B3886D' }}
-                  size="lg"
+                  size="default"
                 >
-                  <ShoppingCart className="ml-2 h-5 w-5" />
+                  <ShoppingCart className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                   افزودن به سبد خرید
                 </Button>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <Button
                     onClick={handleAddToWishlist}
                     variant="outline"
-                    size="lg"
+                    size="default"
+                    className="text-xs sm:text-sm"
                   >
-                    <Heart className="ml-2 h-5 w-5" />
+                    <Heart className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                     علاقه‌مندی
                   </Button>
                   
                   <Button
                     onClick={handleAddToCompare}
                     variant="outline"
-                    size="lg"
+                    size="default"
+                    className="text-xs sm:text-sm"
                   >
-                    <Shuffle className="ml-2 h-5 w-5" />
+                    <Shuffle className="ml-1 sm:ml-2 h-4 w-4 sm:h-5 sm:w-5" />
                     مقایسه
                   </Button>
                 </div>
@@ -243,8 +245,8 @@ export const QuickViewDialog = ({ productId, open, onOpenChange }: QuickViewDial
                     navigate(`/product/${product.slug}`);
                   }}
                   variant="outline"
-                  className="w-full"
-                  size="lg"
+                  className="w-full text-sm sm:text-base"
+                  size="default"
                 >
                   مشاهده جزئیات کامل
                 </Button>
