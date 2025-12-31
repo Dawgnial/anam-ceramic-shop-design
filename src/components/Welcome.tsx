@@ -23,10 +23,10 @@ export const Welcome = () => {
             className="w-full h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover" 
             loading="lazy"
           />
-          {/* Text box overlay - responsive positioning */}
-          <div className="absolute inset-0 flex items-center justify-center p-3 xs:p-4 sm:p-6 md:p-8">
+          {/* Text box overlay - responsive positioning, on desktop extends over cactus */}
+          <div className="absolute inset-0 flex items-center justify-center p-3 xs:p-4 sm:p-6 md:p-8 md:justify-start md:left-auto md:-right-20 lg:-right-32">
             <div 
-              className="border-2 sm:border-4 p-3 xs:p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30 w-[90%] sm:w-[85%] md:w-auto mx-auto"
+              className="border-2 sm:border-4 p-3 xs:p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30 w-[90%] sm:w-[85%] md:w-auto mx-auto bg-background/80 backdrop-blur-sm md:bg-transparent md:backdrop-blur-none"
               style={{
                 borderColor: '#FCE8D9',
                 maxWidth: '750px',

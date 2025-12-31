@@ -22,7 +22,7 @@ const galleryImages = [
 export const ImageGallery = () => {
   return (
     <section className="w-full">
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8">
+      <div className="grid grid-cols-2 sm:grid-cols-4">
         {galleryImages.map((image, index) => (
           <LazyImage
             key={index}
