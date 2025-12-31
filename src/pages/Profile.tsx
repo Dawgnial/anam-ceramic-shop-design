@@ -9,7 +9,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut, Download } from "lucide-react";
+import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut, Download, Ticket } from "lucide-react";
+import { UserTickets } from "@/components/UserTickets";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 
@@ -237,9 +238,10 @@ const Profile = () => {
         <div className="max-w-4xl mx-auto">
           
           <Tabs defaultValue="profile" className="space-y-4 sm:space-y-6">
-            <TabsList className="grid w-full grid-cols-2 h-auto">
+            <TabsList className="grid w-full grid-cols-3 h-auto">
               <TabsTrigger value="profile" className="text-sm sm:text-base py-2.5 sm:py-2">اطلاعات کاربری</TabsTrigger>
               <TabsTrigger value="orders" className="text-sm sm:text-base py-2.5 sm:py-2">تاریخچه سفارشات</TabsTrigger>
+              <TabsTrigger value="tickets" className="text-sm sm:text-base py-2.5 sm:py-2">تیکت پشتیبانی</TabsTrigger>
             </TabsList>
 
             {/* Profile Tab */}

@@ -1,4 +1,4 @@
-import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare, Warehouse, LayoutDashboard, Headphones, Truck, Bell } from "lucide-react";
+import { Home, Package, FolderTree, ShoppingCart, FileText, Users, Tag, MessageSquare, Warehouse, LayoutDashboard, Headphones, Truck, Bell, Ticket, MessageCircleQuestion } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 
 const items = [
@@ -8,7 +8,9 @@ const items = [
   { title: "دسته‌بندی‌ها", url: "/admin/categories", icon: FolderTree },
   { title: "سفارشات", url: "/admin/orders", icon: ShoppingCart },
   { title: "هزینه ارسال", url: "/admin/shipping", icon: Truck },
-  { title: "پشتیبانی", url: "/admin/support", icon: Headphones },
+  { title: "پشتیبانی چت", url: "/admin/support", icon: Headphones },
+  { title: "تیکت‌ها", url: "/admin/tickets", icon: Ticket },
+  { title: "سوال و پاسخ", url: "/admin/qa", icon: MessageCircleQuestion },
   { title: "نظرات", url: "/admin/reviews", icon: MessageSquare },
   { title: "کوپن‌های تخفیف", url: "/admin/coupons", icon: Tag },
   { title: "بلاگ", url: "/admin/blog", icon: FileText },
