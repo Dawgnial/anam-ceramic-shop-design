@@ -65,12 +65,12 @@ export const Welcome = () => {
           </div>
         </div>
 
-        {/* Left side - Image (hidden on mobile) */}
-        <div className={`relative z-10 transition-transform duration-1000 hidden md:block ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
+        {/* Left side - Image (cactus) - visible on all screens */}
+        <div className={`relative z-10 transition-transform duration-1000 ${isVisible ? "translate-x-0" : "-translate-x-full"}`}>
           <img 
             src={welcomeImg2} 
             alt="ظروف سفالی دست‌ساز" 
-            className="w-full h-[450px] lg:h-[500px] object-cover"
+            className="w-full h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover"
             loading="lazy"
           />
         </div>
