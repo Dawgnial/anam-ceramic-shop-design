@@ -2,7 +2,9 @@ import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { AdminSidebar } from "./AdminSidebar";
+import { NotificationBell } from "./NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOrderNotifications } from "@/hooks/useOrderNotifications";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -17,6 +19,9 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
   const { isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Initialize order notifications
+  useOrderNotifications();
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -49,24 +54,29 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content - 80% width on desktop */}
       <div className="flex-1 lg:w-[80%] flex flex-col">
         {/* Mobile Header with Menu Toggle */}
-        <header className="h-14 sm:h-16 border-b flex items-center justify-between px-3 sm:px-4 bg-background sticky top-0 z-10 lg:justify-start">
+        <header className="h-14 sm:h-16 border-b flex items-center justify-between px-3 sm:px-4 bg-background sticky top-0 z-10">
           <h1 className="text-base sm:text-xl font-bold" style={{ color: '#B3886D' }}>
             پنل مدیریت آنام
           </h1>
           
-          {/* Mobile Menu Toggle */}
-          <Sheet>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="outline" size="icon" className="h-10 w-10">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[85%] max-w-[320px] p-0 flex flex-col h-full overflow-hidden">
-              <div className="flex-1 overflow-hidden">
-                <AdminSidebar />
-              </div>
-            </SheetContent>
-          </Sheet>
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <NotificationBell />
+            
+            {/* Mobile Menu Toggle */}
+            <Sheet>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="outline" size="icon" className="h-10 w-10">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[85%] max-w-[320px] p-0 flex flex-col h-full overflow-hidden">
+                <div className="flex-1 overflow-hidden">
+                  <AdminSidebar />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </header>
 
         <main className="flex-1 p-3 sm:p-6">
