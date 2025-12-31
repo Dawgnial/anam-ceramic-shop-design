@@ -510,6 +510,11 @@ const Profile = () => {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* Support Tickets Tab */}
+            <TabsContent value="tickets">
+              <UserTickets />
+            </TabsContent>
           </Tabs>
 
         </div>
