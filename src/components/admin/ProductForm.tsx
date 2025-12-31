@@ -43,6 +43,10 @@ const productSchema = z.object({
   unit_type: z.string().default("عددی"),
   has_variations: z.boolean().default(false),
   preparation_days: z.number().min(1, "زمان آماده‌سازی الزامی است").optional(),
+  // Badge fields
+  badge_new: z.boolean().default(false),
+  badge_bestseller: z.boolean().default(false),
+  badge_special_discount: z.boolean().default(false),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -84,6 +88,9 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       unit_type: defaultValues?.unit_type ?? "عددی",
       has_variations: defaultValues?.has_variations ?? false,
       preparation_days: defaultValues?.preparation_days,
+      badge_new: defaultValues?.badge_new ?? false,
+      badge_bestseller: defaultValues?.badge_bestseller ?? false,
+      badge_special_discount: defaultValues?.badge_special_discount ?? false,
     },
     values: defaultValues ? {
       name: defaultValues.name ?? "",
@@ -102,6 +109,9 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       unit_type: defaultValues.unit_type ?? "عددی",
       has_variations: defaultValues.has_variations ?? false,
       preparation_days: defaultValues.preparation_days,
+      badge_new: defaultValues.badge_new ?? false,
+      badge_bestseller: defaultValues.badge_bestseller ?? false,
+      badge_special_discount: defaultValues.badge_special_discount ?? false,
     } : undefined,
   });
 
@@ -496,6 +506,77 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
             </FormItem>
           )}
         />
+
+        {/* Badge Section */}
+        <div className="border rounded-lg p-4 space-y-4">
+          <h3 className="font-semibold text-lg">برچسب‌های ویژه</h3>
+          <FormDescription>
+            برچسب‌هایی که روی کارت محصول نمایش داده می‌شوند
+          </FormDescription>
+
+          <FormField
+            control={form.control}
+            name="badge_new"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-sm">برچسب "جدید"</FormLabel>
+                  <FormDescription className="text-xs">
+                    برای محصولات تازه اضافه شده
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="badge_bestseller"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-sm">برچسب "پرفروش"</FormLabel>
+                  <FormDescription className="text-xs">
+                    برای محصولات پرفروش
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="badge_special_discount"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-sm">برچسب "تخفیف ویژه"</FormLabel>
+                  <FormDescription className="text-xs">
+                    برای محصولات با تخفیف خاص
+                  </FormDescription>
+                </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit" className="w-full" style={{ backgroundColor: '#B3886D' }}>
           {submitLabel}

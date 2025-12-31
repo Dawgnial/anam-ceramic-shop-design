@@ -1,25 +1,29 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BackToTop } from "@/components/BackToTop";
 import { QuickViewDialog } from "@/components/QuickViewDialog";
+import { ProductBadges } from "@/components/ProductBadges";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
-import { Heart, ShoppingCart, Search, Shuffle, Filter, X, RotateCcw, Check, ChevronDown, ChevronUp, Grid3X3, LayoutGrid } from "lucide-react";
+import { Heart, ShoppingCart, Search, Shuffle, Filter, X, RotateCcw, Check, ChevronDown, ChevronUp, LayoutGrid, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
 import StructuredData from "@/components/seo/StructuredData";
 import PageSEO from "@/components/seo/PageSEO";
+
+const PAGE_SIZE = 12;
 
 const Shop = () => {
   const navigate = useNavigate();
@@ -28,49 +32,19 @@ const Shop = () => {
   const { toggleWishlist } = useWishlist();
   const { toggleCompare, items: compareItems } = useCompare();
   
-  const [itemsPerPage, setItemsPerPage] = useState(9);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortOrder, setSortOrder] = useState("default");
+  const [sortOrder, setSortOrder] = useState("newest");
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [minPriceInput, setMinPriceInput] = useState("");
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const minPriceRef = useRef<HTMLInputElement>(null);
   const maxPriceRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [inStockOnly, setInStockOnly] = useState(false);
   const [quickViewProductId, setQuickViewProductId] = useState<string | null>(null);
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-
-  // Fetch products from database
-  const { data: products = [], isLoading: loadingProducts } = useQuery({
-    queryKey: ['shop-products'],
-    queryFn: async () => {
-      // Fetch products
-      const { data: productsData, error: productsError } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (productsError) throw productsError;
-
-      // Fetch product categories
-      const { data: productCategoriesData, error: pcError } = await supabase
-        .from('product_categories')
-        .select('product_id, category_id');
-
-      if (pcError) throw pcError;
-
-      // Map categories to products
-      const productsWithCategories = productsData.map(product => ({
-        ...product,
-        category_ids: productCategoriesData
-          ?.filter((pc: any) => pc.product_id === product.id)
-          .map((pc: any) => pc.category_id) || []
-      }));
-
-      return productsWithCategories;
-    },
-  });
+  
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // Fetch categories from database
   const { data: categories = [], isLoading: loadingCategories } = useQuery({
@@ -86,17 +60,6 @@ const Shop = () => {
     },
   });
 
-  // Calculate min and max price from products
-  const minPrice = products.length > 0 ? Math.min(...products.map(p => p.price)) : 0;
-  const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 10000000;
-
-  // Initialize price range when products load
-  useEffect(() => {
-    if (products.length > 0 && priceRange[0] === 0 && priceRange[1] === 10000000) {
-      setPriceRange([minPrice, maxPrice]);
-    }
-  }, [products, minPrice, maxPrice]);
-
   // Read category from URL and set selectedCategory
   useEffect(() => {
     const categorySlug = searchParams.get('category');
@@ -108,39 +71,107 @@ const Shop = () => {
     }
   }, [searchParams, categories]);
 
-  // Filter and sort products
-  const filteredAndSortedProducts = useMemo(() => {
-    let filtered = [...products];
+  // Infinite scroll products query
+  const {
+    data: productsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: loadingProducts,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['shop-products-infinite', selectedCategory, sortOrder, priceRange, inStockOnly],
+    queryFn: async ({ pageParam = 0 }) => {
+      let query = supabase
+        .from('products')
+        .select('*, product_categories(category_id)', { count: 'exact' });
 
-    // Filter by category
-    if (selectedCategory) {
-      filtered = filtered.filter(p => p.category_ids && p.category_ids.includes(selectedCategory));
+      // Filter by category
+      if (selectedCategory) {
+        const { data: productIds } = await supabase
+          .from('product_categories')
+          .select('product_id')
+          .eq('category_id', selectedCategory);
+        
+        if (productIds && productIds.length > 0) {
+          query = query.in('id', productIds.map(p => p.product_id));
+        } else {
+          return { data: [], nextPage: undefined, totalCount: 0 };
+        }
+      }
+
+      // Filter by stock
+      if (inStockOnly) {
+        query = query.eq('in_stock', true).gt('stock', 0);
+      }
+
+      // Filter by price
+      if (priceRange[0] > 0 || priceRange[1] < 10000000) {
+        query = query.gte('price', priceRange[0]).lte('price', priceRange[1]);
+      }
+
+      // Sort
+      switch (sortOrder) {
+        case 'price-asc':
+          query = query.order('price', { ascending: true });
+          break;
+        case 'price-desc':
+          query = query.order('price', { ascending: false });
+          break;
+        case 'newest':
+          query = query.order('created_at', { ascending: false });
+          break;
+        case 'bestseller':
+          query = query.order('sales_count', { ascending: false, nullsFirst: false });
+          break;
+        case 'popular':
+          query = query.order('view_count', { ascending: false, nullsFirst: false });
+          break;
+        default:
+          query = query.order('created_at', { ascending: false });
+      }
+
+      // Pagination
+      query = query.range(pageParam * PAGE_SIZE, (pageParam + 1) * PAGE_SIZE - 1);
+
+      const { data, count, error } = await query;
+
+      if (error) throw error;
+
+      return {
+        data: data || [],
+        nextPage: data && data.length === PAGE_SIZE ? pageParam + 1 : undefined,
+        totalCount: count || 0,
+      };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0,
+  });
+
+  // Flatten pages into products array
+  const products = useMemo(() => {
+    return productsData?.pages.flatMap(page => page.data) || [];
+  }, [productsData]);
+
+  const totalCount = productsData?.pages[0]?.totalCount || 0;
+
+  // Infinite scroll observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
     }
 
-    // Filter by price range
-    filtered = filtered.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
-
-    // Sort products
-    switch (sortOrder) {
-      case 'price-asc':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'name-asc':
-        filtered.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
-        break;
-      case 'name-desc':
-        filtered.sort((a, b) => b.name.localeCompare(a.name, 'fa'));
-        break;
-      default:
-        // Keep default order (by created_at desc)
-        break;
-    }
-
-    return filtered;
-  }, [products, selectedCategory, priceRange, sortOrder]);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const handleAddToCart = (product: any) => {
     addToCart({
@@ -187,35 +218,25 @@ const Shop = () => {
     }
   };
 
-  // Calculate products for display
-  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedProducts = filteredAndSortedProducts.slice(startIndex, endIndex);
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory, priceRange, sortOrder]);
-
   const [showAllCategories, setShowAllCategories] = useState(false);
   
   // Active filters count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (selectedCategory) count++;
-    if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) count++;
+    if (inStockOnly) count++;
+    if (priceRange[0] > 0 || priceRange[1] < 10000000) count++;
     return count;
-  }, [selectedCategory, priceRange, minPrice, maxPrice]);
+  }, [selectedCategory, inStockOnly, priceRange]);
 
   // Reset all filters
   const resetFilters = () => {
     setSelectedCategory(null);
-    setPriceRange([minPrice, maxPrice]);
+    setInStockOnly(false);
+    setPriceRange([0, 10000000]);
     setMinPriceInput("");
     setMaxPriceInput("");
-    setSortOrder("default");
-    setCurrentPage(1);
+    setSortOrder("newest");
   };
 
   // Sidebar content component for reuse
@@ -252,11 +273,19 @@ const Shop = () => {
                   </button>
                 </span>
               )}
-              {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
+              {inStockOnly && (
+                <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  فقط موجود
+                  <button onClick={() => setInStockOnly(false)} className="hover:text-destructive">
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              )}
+              {(priceRange[0] > 0 || priceRange[1] < 10000000) && (
                 <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
                   {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])} تومان
                   <button onClick={() => {
-                    setPriceRange([minPrice, maxPrice]);
+                    setPriceRange([0, 10000000]);
                     setMinPriceInput("");
                     setMaxPriceInput("");
                   }} className="hover:text-destructive">
@@ -290,20 +319,12 @@ const Shop = () => {
             >
               <span className="text-sm font-medium">همه محصولات</span>
               <div className="flex items-center gap-2">
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  selectedCategory === null 
-                    ? 'bg-primary-foreground/20 text-primary-foreground' 
-                    : 'bg-muted text-muted-foreground'
-                }`}>
-                  {toPersianNumber(products.length)}
-                </span>
                 {selectedCategory === null && <Check className="h-4 w-4" />}
               </div>
             </button>
             
             {/* Categories list */}
             {displayedCategories.map((category) => {
-              const count = products.filter(p => p.category_ids && p.category_ids.includes(category.id)).length;
               const isSelected = selectedCategory === category.id;
               
               return (
@@ -321,13 +342,6 @@ const Shop = () => {
                 >
                   <span className="text-sm font-medium">{category.name}</span>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      isSelected 
-                        ? 'bg-primary-foreground/20 text-primary-foreground' 
-                        : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {toPersianNumber(count)}
-                    </span>
                     {isSelected && <Check className="h-4 w-4" />}
                   </div>
                 </button>
@@ -356,6 +370,20 @@ const Shop = () => {
           </div>
         </div>
 
+        {/* فیلتر موجودی */}
+        <div className="bg-card border border-border rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="in-stock-filter" className="text-sm font-medium cursor-pointer">
+              فقط محصولات موجود
+            </Label>
+            <Switch
+              id="in-stock-filter"
+              checked={inStockOnly}
+              onCheckedChange={setInStockOnly}
+            />
+          </div>
+        </div>
+
         {/* فیلتر بر اساس قیمت */}
         <div className="bg-card border border-border rounded-xl p-4">
           <h3 className="text-base font-black mb-4 flex items-center gap-2">
@@ -374,7 +402,7 @@ const Shop = () => {
                     type="number"
                     pattern="[0-9]*"
                     defaultValue={minPriceInput}
-                    placeholder={formatPrice(minPrice)}
+                    placeholder="۰"
                     className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
@@ -388,7 +416,7 @@ const Shop = () => {
                     type="number"
                     pattern="[0-9]*"
                     defaultValue={maxPriceInput}
-                    placeholder={formatPrice(maxPrice)}
+                    placeholder="۱۰,۰۰۰,۰۰۰"
                     className="w-full text-sm bg-background border border-border rounded-lg px-3 py-2.5 text-center focus:border-primary focus:ring-1 focus:ring-primary transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">تومان</span>
@@ -401,8 +429,8 @@ const Shop = () => {
               onClick={() => {
                 const minValue = minPriceRef.current?.value || "";
                 const maxValue = maxPriceRef.current?.value || "";
-                const min = minValue ? parseInt(minValue) : minPrice;
-                const max = maxValue ? parseInt(maxValue) : maxPrice;
+                const min = minValue ? parseInt(minValue) : 0;
+                const max = maxValue ? parseInt(maxValue) : 10000000;
                 if (min > max) {
                   toast.error("حداقل قیمت نمی‌تواند بیشتر از حداکثر قیمت باشد");
                   return;
@@ -410,7 +438,6 @@ const Shop = () => {
                 setMinPriceInput(minValue);
                 setMaxPriceInput(maxValue);
                 setPriceRange([min, max]);
-                setCurrentPage(1);
               }}
               variant="outline"
               className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
@@ -420,15 +447,14 @@ const Shop = () => {
             </Button>
             
             {/* Reset price filter */}
-            {(priceRange[0] !== minPrice || priceRange[1] !== maxPrice) && (
+            {(priceRange[0] > 0 || priceRange[1] < 10000000) && (
               <Button
                 onClick={() => {
-                  setPriceRange([minPrice, maxPrice]);
+                  setPriceRange([0, 10000000]);
                   setMinPriceInput("");
                   setMaxPriceInput("");
                   if (minPriceRef.current) minPriceRef.current.value = "";
                   if (maxPriceRef.current) maxPriceRef.current.value = "";
-                  setCurrentPage(1);
                 }}
                 variant="ghost"
                 size="sm"
@@ -453,7 +479,7 @@ const Shop = () => {
         {/* Products count info */}
         <div className="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-xl p-4 text-center">
           <p className="text-2xl font-black text-primary mb-1">
-            {toPersianNumber(filteredAndSortedProducts.length)}
+            {toPersianNumber(totalCount)}
           </p>
           <p className="text-sm text-muted-foreground">محصول یافت شد</p>
         </div>
@@ -562,45 +588,24 @@ const Shop = () => {
                   
                   {/* Results count - desktop */}
                   <div className="hidden md:flex items-center text-xs text-muted-foreground border-r pr-3 mr-1">
-                    <span className="text-primary font-bold ml-1">{toPersianNumber(filteredAndSortedProducts.length)}</span>
+                    <span className="text-primary font-bold ml-1">{toPersianNumber(totalCount)}</span>
                     محصول
                   </div>
                 </div>
 
-                {/* Left side - Controls */}
+                {/* Left side - Sort dropdown */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                  {/* Items per page selector */}
-                  <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
-                    <span className="text-xs text-muted-foreground px-2 hidden sm:inline">نمایش:</span>
-                    {[9, 24, 36].map((num) => (
-                      <button
-                        key={num}
-                        onClick={() => {
-                          setItemsPerPage(num);
-                          setCurrentPage(1);
-                        }}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
-                          itemsPerPage === num 
-                            ? 'bg-primary text-primary-foreground shadow-sm' 
-                            : 'hover:bg-background'
-                        }`}
-                      >
-                        {toPersianNumber(num)}
-                      </button>
-                    ))}
-                  </div>
-
                   {/* Sort dropdown */}
                   <Select value={sortOrder} onValueChange={setSortOrder}>
                     <SelectTrigger className="w-[130px] sm:w-[160px] text-xs sm:text-sm bg-muted/50 border-0">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="default">پیش‌فرض</SelectItem>
+                      <SelectItem value="newest">جدیدترین</SelectItem>
+                      <SelectItem value="bestseller">پرفروش‌ترین</SelectItem>
+                      <SelectItem value="popular">محبوب‌ترین</SelectItem>
                       <SelectItem value="price-asc">ارزان‌ترین</SelectItem>
                       <SelectItem value="price-desc">گران‌ترین</SelectItem>
-                      <SelectItem value="name-asc">نام: الف - ی</SelectItem>
-                      <SelectItem value="name-desc">نام: ی - الف</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -608,55 +613,60 @@ const Shop = () => {
             </div>
 
             {/* Products Grid */}
-            <TooltipProvider>
-              <div className={`grid gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 ${
-                itemsPerPage === 9 
-                  ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4' 
-                  : itemsPerPage === 24 
-                    ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5' 
-                    : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'
-              }`}>
-                {displayedProducts.map((product) => {
-                  // Dynamic button sizes based on itemsPerPage
-                  const buttonSizeClass = itemsPerPage === 36 
-                    ? 'w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8' 
-                    : itemsPerPage === 24 
-                      ? 'w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9'
-                      : 'w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10';
-                  
-                  const iconSizeClass = itemsPerPage === 36
-                    ? 'w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4'
-                    : itemsPerPage === 24
-                      ? 'w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-4.5 md:h-4.5'
-                      : 'w-4 h-4 sm:w-5 sm:h-5';
-                  
-                  const gapClass = itemsPerPage === 36 ? 'gap-0.5 sm:gap-1' : 'gap-1 sm:gap-2';
-                  
-                  return (
+            {products.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-muted-foreground text-lg mb-4">محصولی یافت نشد</p>
+                <Button variant="outline" onClick={resetFilters}>
+                  <RotateCcw className="h-4 w-4 ml-2" />
+                  پاک کردن فیلترها
+                </Button>
+              </div>
+            ) : (
+              <TooltipProvider>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+                  {products.map((product) => (
                     <div 
                       key={product.id} 
                       className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                     >
                       <div className="relative aspect-square overflow-hidden">
+                        {/* Product Badges */}
+                        <ProductBadges
+                          isNew={product.badge_new}
+                          isBestseller={product.badge_bestseller}
+                          hasSpecialDiscount={product.badge_special_discount}
+                          discountPercentage={product.discount_percentage}
+                        />
+
                         <img
                           src={product.images?.[0] || '/placeholder.svg'}
                           alt={product.name}
-                          className="w-full h-full object-cover cursor-pointer"
+                          className="w-full h-full object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
                           onClick={() => navigate(`/product/${product.slug}`)}
                         />
+
+                        {/* Out of Stock Overlay */}
+                        {(!product.in_stock || product.stock === 0) && (
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                            <span className="bg-white/90 text-foreground px-3 py-1 text-sm font-medium rounded">
+                              ناموجود
+                            </span>
+                          </div>
+                        )}
                         
-                        {/* Hover Icons - عمودی */}
-                        <div className={`absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 flex flex-col ${gapClass} opacity-0 group-hover:opacity-100 transition-opacity`}>
+                        {/* Hover Icons */}
+                        <div className="absolute left-1 sm:left-2 md:left-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
                           
                           {/* افزودن به سبد خرید */}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button 
                                 onClick={() => handleAddToCart(product)}
-                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                                 style={{ backgroundColor: '#B3886D' }}
+                                disabled={!product.in_stock || product.stock === 0}
                               >
-                                <ShoppingCart className={`${iconSizeClass} text-white`} />
+                                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -672,10 +682,10 @@ const Shop = () => {
                                   setQuickViewProductId(product.id);
                                   setQuickViewOpen(true);
                                 }}
-                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                                 style={{ backgroundColor: '#B3886D' }}
                               >
-                                <Search className={`${iconSizeClass} text-white`} />
+                                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -688,10 +698,10 @@ const Shop = () => {
                             <TooltipTrigger asChild>
                               <button 
                                 onClick={() => handleAddToCompare(product)}
-                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                                 style={{ backgroundColor: '#B3886D' }}
                               >
-                                <Shuffle className={`${iconSizeClass} text-white`} />
+                                <Shuffle className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -704,10 +714,10 @@ const Shop = () => {
                             <TooltipTrigger asChild>
                               <button 
                                 onClick={() => handleAddToWishlist(product)}
-                                className={`${buttonSizeClass} rounded-full flex items-center justify-center transition-colors`}
+                                className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors"
                                 style={{ backgroundColor: '#B3886D' }}
                               >
-                                <Heart className={`${iconSizeClass} text-white`} />
+                                <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                               </button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -721,62 +731,44 @@ const Shop = () => {
                         className="p-2 sm:p-3 md:p-4 text-center cursor-pointer"
                         onClick={() => navigate(`/product/${product.slug}`)}
                       >
-                        <h3 className={`font-semibold text-foreground mb-1 sm:mb-2 hover:text-[#B3886D] transition-colors line-clamp-2 ${
-                          itemsPerPage === 36 ? 'text-[10px] sm:text-xs md:text-sm' : 'text-xs sm:text-sm md:text-base'
-                        }`}>
+                        <h3 className="font-semibold text-foreground mb-1 sm:mb-2 hover:text-[#B3886D] transition-colors line-clamp-2 text-xs sm:text-sm md:text-base">
                           {product.name}
                         </h3>
-                        <p className={`font-bold ${
-                          itemsPerPage === 36 ? 'text-xs sm:text-sm md:text-base' : 'text-sm sm:text-base md:text-lg'
-                        }`} style={{ color: '#B3886D' }}>
-                          {formatPrice(product.price)} تومان
-                        </p>
+                        <div className="flex items-center justify-center gap-2">
+                          {product.discount_percentage ? (
+                            <>
+                              <span className="text-muted-foreground line-through text-xs">
+                                {formatPrice(product.price)}
+                              </span>
+                              <span className="font-bold text-sm sm:text-base md:text-lg" style={{ color: '#B3886D' }}>
+                                {formatPrice(Math.round(product.price * (1 - product.discount_percentage / 100)))} تومان
+                              </span>
+                            </>
+                          ) : (
+                            <span className="font-bold text-sm sm:text-base md:text-lg" style={{ color: '#B3886D' }}>
+                              {formatPrice(product.price)} تومان
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </TooltipProvider>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Pagination>
-                <PaginationContent className="flex-wrap justify-center gap-1">
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      className={`text-xs sm:text-sm ${currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
-                    />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page} className="hidden sm:block">
-                      <PaginationLink
-                        onClick={() => setCurrentPage(page)}
-                        isActive={currentPage === page}
-                        className="cursor-pointer text-xs sm:text-sm"
-                      >
-                        {toPersianNumber(page)}
-                      </PaginationLink>
-                    </PaginationItem>
                   ))}
-
-                  {/* Mobile: Show current page */}
-                  <PaginationItem className="sm:hidden">
-                    <span className="px-3 py-1 text-xs">
-                      {toPersianNumber(currentPage)} از {toPersianNumber(totalPages)}
-                    </span>
-                  </PaginationItem>
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      className={`text-xs sm:text-sm ${currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+                </div>
+              </TooltipProvider>
             )}
+
+            {/* Load More Trigger for Infinite Scroll */}
+            <div ref={loadMoreRef} className="flex justify-center py-8">
+              {isFetchingNextPage && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>در حال بارگذاری بیشتر...</span>
+                </div>
+              )}
+              {!hasNextPage && products.length > 0 && (
+                <p className="text-muted-foreground text-sm">همه محصولات نمایش داده شد</p>
+              )}
+            </div>
           </main>
 
         </div>
