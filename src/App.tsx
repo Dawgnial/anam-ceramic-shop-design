@@ -33,6 +33,8 @@ import AdminInventory from "./pages/admin/AdminInventory";
 import AdminSupport from "./pages/admin/AdminSupport";
 import AdminShipping from "./pages/admin/AdminShipping";
 import AdminNotificationSettings from "./pages/admin/AdminNotificationSettings";
+import AdminTickets from "./pages/admin/AdminTickets";
+import AdminQA from "./pages/admin/AdminQA";
 import StoreRules from "./pages/StoreRules";
 import ContactUs from "./pages/ContactUs";
 import Profile from "./pages/Profile";
@@ -84,6 +86,8 @@ const App = () => (
                     <Route path="/admin/support" element={<AdminSupport />} />
                     <Route path="/admin/shipping" element={<AdminShipping />} />
                     <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
+                    <Route path="/admin/tickets" element={<AdminTickets />} />
+                    <Route path="/admin/qa" element={<AdminQA />} />
                     <Route path="/store-rules" element={<StoreRules />} />
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/profile" element={<Profile />} />
