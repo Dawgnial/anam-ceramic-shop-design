@@ -93,24 +93,33 @@ export default function AdminTickets() {
   const { data: tickets = [], isLoading: loadingTickets } = useQuery({
     queryKey: ["admin-tickets", statusFilter],
     queryFn: async () => {
+      // First fetch tickets
       let query = supabase
         .from("support_tickets")
-        .select(`
-          *,
-          profiles!support_tickets_user_id_fkey(phone)
-        `)
+        .select("*")
         .order("updated_at", { ascending: false });
 
       if (statusFilter !== "all") {
         query = query.eq("status", statusFilter);
       }
 
-      const { data, error } = await query;
-      if (error) throw error;
+      const { data: ticketsData, error: ticketsError } = await query;
+      if (ticketsError) throw ticketsError;
       
-      return (data || []).map((ticket: any) => ({
+      if (!ticketsData || ticketsData.length === 0) return [];
+
+      // Fetch profiles for user phones
+      const userIds = [...new Set(ticketsData.map(t => t.user_id))];
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, phone")
+        .in("id", userIds);
+
+      const profileMap = new Map(profilesData?.map(p => [p.id, p.phone]) || []);
+
+      return ticketsData.map((ticket: any) => ({
         ...ticket,
-        user_phone: ticket.profiles?.phone,
+        user_phone: profileMap.get(ticket.user_id) || "نامشخص",
       })) as TicketType[];
     },
   });
