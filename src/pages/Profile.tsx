@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Lock, Phone, Calendar, Package, ShoppingBag, LogOut, Download, Ticket } from "lucide-react";
 import { UserTickets } from "@/components/UserTickets";
-import { formatPrice, toPersianNumber } from "@/lib/utils";
+import { formatPrice, toPersianNumber, generateOrderNumber } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/generateInvoicePDF";
 
 type Order = {
@@ -435,9 +435,12 @@ const Profile = () => {
                           style={{ borderColor: '#B3886D' }}
                         >
                           <div className="flex items-start justify-between mb-4 flex-row-reverse">
-                            <div className="text-right">
-                              <p className="text-sm text-muted-foreground mb-1">
-                                شماره سفارش: <span className="font-mono">{order.id.slice(0, 8)}</span>
+                            <div className="text-right space-y-1">
+                              <p className="text-sm text-muted-foreground">
+                                شماره سفارش:
+                              </p>
+                              <p className="font-mono font-bold text-base" style={{ color: '#896A59' }}>
+                                {toPersianNumber(generateOrderNumber(order.id, order.created_at))}
                               </p>
                               <p className="text-sm text-muted-foreground">
                                 تاریخ: {new Date(order.created_at).toLocaleDateString('fa-IR')}

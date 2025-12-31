@@ -24,6 +24,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { OrderDetailsDialog } from "@/components/admin/OrderDetailsDialog";
 import { toast } from "sonner";
+import { generateOrderNumber, toPersianNumber } from "@/lib/utils";
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-500",
@@ -215,11 +216,11 @@ export default function AdminOrders() {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead>شماره سفارش</TableHead>
                         <TableHead>شماره موبایل</TableHead>
                         <TableHead>تعداد محصولات</TableHead>
                         <TableHead>مبلغ کل</TableHead>
                         <TableHead>وضعیت</TableHead>
-                        <TableHead>آدرس</TableHead>
                         <TableHead>تاریخ</TableHead>
                         <TableHead>عملیات</TableHead>
                       </TableRow>
@@ -227,6 +228,9 @@ export default function AdminOrders() {
                     <TableBody>
                       {filteredOrders.map((order: any) => (
                         <TableRow key={order.id}>
+                          <TableCell className="font-mono font-bold" style={{ color: '#B3886D' }}>
+                            {toPersianNumber(generateOrderNumber(order.id, order.created_at))}
+                          </TableCell>
                           <TableCell>{order.profiles?.phone || '-'}</TableCell>
                           <TableCell>
                             {order.order_items?.length.toLocaleString('fa-IR') || '۰'}
@@ -238,9 +242,6 @@ export default function AdminOrders() {
                             <Badge className={statusColors[order.status]}>
                               {statusLabels[order.status] || order.status}
                             </Badge>
-                          </TableCell>
-                          <TableCell className="max-w-xs truncate">
-                            {order.shipping_address}
                           </TableCell>
                           <TableCell>
                             {new Date(order.created_at).toLocaleDateString('fa-IR')}
@@ -267,8 +268,14 @@ export default function AdminOrders() {
                       <CardContent className="p-3">
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <p className="font-semibold text-sm">{order.profiles?.phone || '-'}</p>
+                            <p className="text-xs text-muted-foreground mb-1">شماره سفارش</p>
+                            <p className="font-mono font-bold text-sm" style={{ color: '#B3886D' }}>
+                              {toPersianNumber(generateOrderNumber(order.id, order.created_at))}
+                            </p>
                             <p className="text-xs text-muted-foreground mt-1">
+                              {order.profiles?.phone || '-'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
                               {new Date(order.created_at).toLocaleDateString('fa-IR')}
                             </p>
                           </div>
