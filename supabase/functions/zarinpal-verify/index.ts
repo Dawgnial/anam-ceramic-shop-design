@@ -161,36 +161,30 @@ serve(async (req) => {
         console.error("Error creating order items:", itemsError);
       }
 
-      // Update product stock for each item
+      // Update product stock for each item using atomic operation
       for (const item of items) {
         if (item.product_id) {
-          // Get current stock
-          const { data: product, error: productError } = await supabase
-            .from("products")
-            .select("stock")
-            .eq("id", item.product_id)
-            .single();
+          // Use atomic decrement_stock function to prevent race conditions
+          const { data: stockUpdated, error: stockError } = await supabase
+            .rpc("decrement_stock", {
+              p_product_id: item.product_id,
+              p_quantity: item.quantity
+            });
           
-          if (!productError && product) {
-            const newStock = Math.max(0, (product.stock || 0) - item.quantity);
-            
-            // Update stock
-            await supabase
-              .from("products")
-              .update({ stock: newStock })
-              .eq("id", item.product_id);
-            
-            // Log inventory movement
-            await supabase
-              .from("inventory_movements")
-              .insert({
-                product_id: item.product_id,
-                quantity: -item.quantity,
-                movement_type: "sale",
-                reference_id: order.id,
-                notes: `فروش از سفارش ${order.id.slice(0, 8)}`
-              });
+          if (stockError) {
+            console.error("Error decrementing stock:", stockError);
           }
+          
+          // Log inventory movement regardless of stock update result
+          await supabase
+            .from("inventory_movements")
+            .insert({
+              product_id: item.product_id,
+              quantity: -item.quantity,
+              movement_type: "sale",
+              reference_id: order.id,
+              notes: `فروش از سفارش ${order.id.slice(0, 8)}`
+            });
         }
       }
 
