@@ -76,10 +76,16 @@ export default function AdminOrders() {
     if (!orders) return [];
     
     return orders.filter((order: any) => {
-      // Search filter (phone number or address)
+      // Generate order number for search
+      const orderNumber = generateOrderNumber(order.id, order.created_at);
+      const persianOrderNumber = toPersianNumber(orderNumber);
+      
+      // Search filter (phone number, address, or order number)
       const matchesSearch = searchQuery === "" || 
         order.profiles?.phone?.includes(searchQuery) ||
-        order.shipping_address?.toLowerCase().includes(searchQuery.toLowerCase());
+        order.shipping_address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        orderNumber.includes(searchQuery) ||
+        persianOrderNumber.includes(searchQuery);
       
       // Status filter
       const matchesStatus = statusFilter === "all" || order.status === statusFilter;
@@ -146,7 +152,7 @@ export default function AdminOrders() {
             <div className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="جستجو با شماره موبایل یا آدرس..."
+                placeholder="جستجو با شماره سفارش، موبایل یا آدرس..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pr-10"

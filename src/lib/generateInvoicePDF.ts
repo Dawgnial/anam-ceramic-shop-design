@@ -1,4 +1,4 @@
-import { formatPrice, toPersianNumber } from './utils';
+import { formatPrice, toPersianNumber, generateOrderNumber } from './utils';
 
 interface OrderItem {
   product_name: string;
@@ -37,13 +37,16 @@ const toPersianDate = (dateString: string): string => {
 };
 
 export const generateInvoicePDF = (order: Order): void => {
+  const orderNumber = generateOrderNumber(order.id, order.created_at);
+  const persianOrderNumber = toPersianNumber(orderNumber);
+  
   const invoiceHTML = `
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>فاکتور سفارش - ${order.id.substring(0, 8).toUpperCase()}</title>
+  <title>فاکتور سفارش - ${persianOrderNumber}</title>
   <style>
     @font-face {
       font-family: 'IRANYekan';
@@ -355,7 +358,7 @@ export const generateInvoicePDF = (order: Order): void => {
           </div>
           <div class="info-row">
             <span class="info-label">شماره سفارش:</span>
-            <span class="info-value">${order.id.substring(0, 8).toUpperCase()}</span>
+            <span class="info-value" style="font-family: monospace; color: #B3886D; font-size: 16px;">${persianOrderNumber}</span>
           </div>
           <div class="info-row">
             <span class="info-label">تاریخ سفارش:</span>
