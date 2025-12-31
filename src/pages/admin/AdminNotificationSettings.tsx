@@ -168,17 +168,17 @@ export default function AdminNotificationSettings() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#B3886D' }}>
+            <h1 className="text-xl sm:text-2xl font-bold" style={{ color: '#B3886D' }}>
               تنظیمات اعلان‌ها
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="text-muted-foreground text-sm sm:text-base mt-1">
               مدیریت نحوه دریافت اعلان‌های سفارشات جدید
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={testNotification}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={testNotification} className="w-full sm:w-auto">
               <BellRing className="h-4 w-4 ml-2" />
               تست نوتیفیکیشن
             </Button>
@@ -186,6 +186,7 @@ export default function AdminNotificationSettings() {
               onClick={() => saveMutation.mutate()} 
               disabled={saveMutation.isPending}
               style={{ backgroundColor: '#B3886D' }}
+              className="w-full sm:w-auto"
             >
               {saveMutation.isPending ? (
                 <Loader2 className="h-4 w-4 ml-2 animate-spin" />
