@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { formatPrice, toPersianNumber } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { RelatedProductsInCart } from "@/components/RelatedProductsInCart";
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, getTotalPrice } = useCart();
@@ -115,6 +116,11 @@ const Cart = () => {
                   ادامه به تسویه حساب
                 </Button>
               </div>
+            </div>
+
+            {/* Related Products */}
+            <div className="lg:col-span-3">
+              <RelatedProductsInCart />
             </div>
           </div>
         )}

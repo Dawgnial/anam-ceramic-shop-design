@@ -15,8 +15,12 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
 import { ProductReviews } from "@/components/ProductReviews";
+import { ProductQA } from "@/components/ProductQA";
 import { RelatedProducts } from "@/components/RelatedProducts";
 import { ProductFeatures } from "@/components/ProductFeatures";
+import { ProductBadges } from "@/components/ProductBadges";
+import { ViewCounter } from "@/components/ViewCounter";
+import { SocialShare } from "@/components/SocialShare";
 import StructuredData from "@/components/seo/StructuredData";
 
 export default function ProductDetail() {
