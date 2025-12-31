@@ -310,16 +310,24 @@ export default function ProductDetail() {
 
           {/* Left Side - Product Info */}
           <div className="order-1 lg:order-2 space-y-6">
-          {/* Category */}
-          {product.categories && product.categories.length > 0 && (
-            <div className="flex gap-2 flex-wrap">
-              {product.categories.map((category: any) => (
-                <Badge key={category.id} variant="outline" className="text-sm">
-                  {category.name}
-                </Badge>
-              ))}
-            </div>
-          )}
+            {/* Product Badges */}
+            <ProductBadges 
+              isNew={product.badge_new} 
+              isBestseller={product.badge_bestseller} 
+              hasSpecialDiscount={product.badge_special_discount}
+              discountPercentage={product.discount_percentage}
+            />
+
+            {/* Category */}
+            {product.categories && product.categories.length > 0 && (
+              <div className="flex gap-2 flex-wrap">
+                {product.categories.map((category: any) => (
+                  <Badge key={category.id} variant="outline" className="text-sm">
+                    {category.name}
+                  </Badge>
+                ))}
+              </div>
+            )}
 
             {/* Product Name */}
             <h1 className="text-3xl font-bold">{product.name}</h1>
@@ -469,6 +477,18 @@ export default function ProductDetail() {
                 </Button>
               </div>
             </div>
+
+            <Separator />
+
+            {/* View Counter & Social Share */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <ViewCounter productId={product.id} viewCount={product.view_count || 0} />
+              <SocialShare 
+                url={pageUrl} 
+                title={product.name} 
+                description={pageDescription} 
+              />
+            </div>
           </div>
         </div>
 
@@ -480,6 +500,11 @@ export default function ProductDetail() {
         {/* Product Reviews Section */}
         <div className="mt-12">
           <ProductReviews productId={product.id} />
+        </div>
+
+        {/* Product Q&A Section */}
+        <div className="mt-12">
+          <ProductQA productId={product.id} />
         </div>
 
         {/* Related Products Section */}
