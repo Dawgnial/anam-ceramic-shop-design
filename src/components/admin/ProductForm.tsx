@@ -39,7 +39,7 @@ const productSchema = z.object({
   // New fields - made optional for backwards compatibility
   weight: z.number().min(1, "وزن محصول الزامی است").optional(),
   weight_with_packaging: z.number().min(1, "وزن با بسته‌بندی الزامی است").optional(),
-  unit_quantity: z.number().min(1, "مقدار واحد باید حداقل ۱ باشد").default(1),
+  unit_quantity: z.number().min(1, "مقدار واحد باید حداقل ۱ باشد").optional(),
   unit_type: z.string().default("عددی"),
   has_variations: z.boolean().default(false),
   preparation_days: z.number().min(1, "زمان آماده‌سازی الزامی است").optional(),
@@ -84,7 +84,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       low_stock_threshold: defaultValues?.low_stock_threshold,
       weight: defaultValues?.weight,
       weight_with_packaging: defaultValues?.weight_with_packaging,
-      unit_quantity: defaultValues?.unit_quantity ?? 1,
+      unit_quantity: defaultValues?.unit_quantity,
       unit_type: defaultValues?.unit_type ?? "عددی",
       has_variations: defaultValues?.has_variations ?? false,
       preparation_days: defaultValues?.preparation_days,
@@ -105,7 +105,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
       low_stock_threshold: defaultValues.low_stock_threshold,
       weight: defaultValues.weight,
       weight_with_packaging: defaultValues.weight_with_packaging,
-      unit_quantity: defaultValues.unit_quantity ?? 1,
+      unit_quantity: defaultValues.unit_quantity,
       unit_type: defaultValues.unit_type ?? "عددی",
       has_variations: defaultValues.has_variations ?? false,
       preparation_days: defaultValues.preparation_days,
@@ -240,7 +240,7 @@ export function ProductForm({ defaultValues, onSubmit, submitLabel }: ProductFor
                       placeholder="مثال: ۱"
                       {...field}
                       value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                     />
                   </FormControl>
                   <FormMessage />
