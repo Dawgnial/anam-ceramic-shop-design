@@ -1055,6 +1055,10 @@ export type Database = {
       }
     }
     Functions: {
+      decrement_stock: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: boolean
+      }
       get_low_stock_products: {
         Args: never
         Returns: {

@@ -7,6 +7,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+
+// Validation schema for guest info - matches database constraints
+const guestInfoSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "نام باید حداقل ۲ حرف باشد")
+    .max(100, "نام نمی‌تواند بیش از ۱۰۰ حرف باشد"),
+  phone: z.string()
+    .trim()
+    .regex(/^[0-9+\-\s()]{5,20}$/, "شماره تماس نامعتبر است")
+});
 
 interface Message {
   id: string;
@@ -160,22 +172,30 @@ export const SupportChat = () => {
   };
 
   const createChat = async () => {
-    if (!user && (!guestInfo.name || !guestInfo.phone)) {
-      toast({
-        title: "خطا",
-        description: "لطفاً نام و شماره تماس خود را وارد کنید",
-        variant: "destructive",
-      });
-      return false;
+    // Validate guest info with Zod schema
+    if (!user) {
+      const validation = guestInfoSchema.safeParse(guestInfo);
+      if (!validation.success) {
+        const firstError = validation.error.errors[0];
+        toast({
+          title: "خطا",
+          description: firstError.message,
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     try {
+      const sanitizedName = user ? null : guestInfo.name.trim().slice(0, 100);
+      const sanitizedPhone = user ? null : guestInfo.phone.trim().slice(0, 20);
+
       const { data, error } = await supabase
         .from("support_chats")
         .insert({
           user_id: user?.id || null,
-          guest_name: user ? null : guestInfo.name,
-          guest_phone: user ? null : guestInfo.phone,
+          guest_name: sanitizedName,
+          guest_phone: sanitizedPhone,
         })
         .select()
         .single();
