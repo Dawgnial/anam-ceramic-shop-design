@@ -356,6 +356,47 @@ export type Database = {
         }
         Relationships: []
       }
+      product_answers: {
+        Row: {
+          answer: string
+          created_at: string | null
+          id: string
+          is_admin_answer: boolean | null
+          is_approved: boolean | null
+          question_id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answer: string
+          created_at?: string | null
+          id?: string
+          is_admin_answer?: boolean | null
+          is_approved?: boolean | null
+          question_id: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answer?: string
+          created_at?: string | null
+          id?: string
+          is_admin_answer?: boolean | null
+          is_approved?: boolean | null
+          question_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "product_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_attributes: {
         Row: {
           attribute_name: string
@@ -480,6 +521,51 @@ export type Database = {
           },
         ]
       }
+      product_questions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_approved: boolean | null
+          product_id: string
+          question: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          product_id: string
+          question: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          product_id?: string
+          question?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_questions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_with_ratings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_reviews: {
         Row: {
           comment: string
@@ -528,8 +614,50 @@ export type Database = {
           },
         ]
       }
+      product_views: {
+        Row: {
+          created_at: string | null
+          id: string
+          product_id: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          product_id: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_views_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_views_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_with_ratings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
+          badge_bestseller: boolean | null
+          badge_new: boolean | null
+          badge_special_discount: boolean | null
           category_id: string | null
           created_at: string
           description: string | null
@@ -543,15 +671,20 @@ export type Database = {
           name: string
           preparation_days: number | null
           price: number
+          sales_count: number | null
           slug: string
           stock: number | null
           unit_quantity: number | null
           unit_type: string | null
           updated_at: string
+          view_count: number | null
           weight: number | null
           weight_with_packaging: number | null
         }
         Insert: {
+          badge_bestseller?: boolean | null
+          badge_new?: boolean | null
+          badge_special_discount?: boolean | null
           category_id?: string | null
           created_at?: string
           description?: string | null
@@ -565,15 +698,20 @@ export type Database = {
           name: string
           preparation_days?: number | null
           price: number
+          sales_count?: number | null
           slug: string
           stock?: number | null
           unit_quantity?: number | null
           unit_type?: string | null
           updated_at?: string
+          view_count?: number | null
           weight?: number | null
           weight_with_packaging?: number | null
         }
         Update: {
+          badge_bestseller?: boolean | null
+          badge_new?: boolean | null
+          badge_special_discount?: boolean | null
           category_id?: string | null
           created_at?: string
           description?: string | null
@@ -587,11 +725,13 @@ export type Database = {
           name?: string
           preparation_days?: number | null
           price?: number
+          sales_count?: number | null
           slug?: string
           stock?: number | null
           unit_quantity?: number | null
           unit_type?: string | null
           updated_at?: string
+          view_count?: number | null
           weight?: number | null
           weight_with_packaging?: number | null
         }
@@ -756,6 +896,104 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      support_tickets: {
+        Row: {
+          closed_at: string | null
+          created_at: string | null
+          id: string
+          priority: string | null
+          status: string
+          subject: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          status?: string
+          subject: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string | null
+          id?: string
+          priority?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          attachments: string[] | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          sender_id: string | null
+          sender_type: string
+          ticket_id: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          sender_id?: string | null
+          sender_type?: string
+          ticket_id: string
+        }
+        Update: {
+          attachments?: string[] | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          sender_id?: string | null
+          sender_type?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_carts: {
+        Row: {
+          created_at: string | null
+          id: string
+          items: Json
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          items?: Json
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          items?: Json
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
