@@ -23,13 +23,13 @@ export const Welcome = () => {
             className="w-full h-[280px] xs:h-[320px] sm:h-[400px] md:h-[450px] lg:h-[500px] object-cover" 
             loading="lazy"
           />
-          {/* Text box overlay - responsive positioning */}
-          <div className="absolute inset-0 flex items-center justify-center p-3 xs:p-4 sm:p-6 md:p-8">
+          {/* Text box overlay - responsive positioning, extends to right image */}
+          <div className="absolute inset-0 flex items-center justify-center p-3 xs:p-4 sm:p-6 md:p-8 md:justify-start md:pr-0">
             <div 
-              className="border-2 sm:border-4 p-3 xs:p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30 w-[90%] sm:w-[85%] md:w-auto mx-auto"
+              className="border-2 sm:border-4 p-3 xs:p-4 sm:p-6 md:p-8 lg:p-12 text-center relative z-30 w-[90%] sm:w-[85%] md:w-[120%] lg:w-[130%] mx-auto md:mx-0 md:mr-[-20%] lg:mr-[-30%] bg-background/80 backdrop-blur-sm"
               style={{
                 borderColor: '#FCE8D9',
-                maxWidth: '750px',
+                maxWidth: '850px',
               }}
             >
               <h2 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-2xl text-foreground mb-2 sm:mb-4 font-semibold">
